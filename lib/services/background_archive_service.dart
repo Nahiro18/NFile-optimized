@@ -388,25 +388,124 @@ class BackgroundArchiveService {
     final password = args['password'] as String?;
 
     try {
-      sendPort.send({'status': 'progress', 'progress': 0.0, 'currentFile': 'Reading archive bytes...'});
+      sendPort.send({'status': 'progress', 'progress': 0.0, 'currentFile': 'Reading archive...'});
 
       final file = File(archivePath);
       if (!file.existsSync()) {
         sendPort.send({'status': 'error', 'error': 'Archive file not found'});
         return;
       }
-      final bytes = file.readAsBytesSync();
-      late Archive archive;
       final lowerPath = archivePath.toLowerCase();
 
+      // stream zip files to avoid OOM
+      if (lowerPath.endsWith('.zip') || lowerPath.contains('.zip.')) {
+        sendPort.send({'status': 'progress', 'progress': 0.1, 'currentFile': 'Opening zip...'});
+        final inputStream = InputFileStream(archivePath);
+        final archive = ZipDecoder().decodeBuffer(inputStream, password: password != null && password.isNotEmpty ? password : null);
+        final totalFiles = archive.length;
+        
+        for (int i = 0; i < totalFiles; i++) {
+          final fileEntry = archive[i];
+          final progress = 0.2 + (i / totalFiles) * 0.8;
+          sendPort.send({
+            'status': 'progress',
+            'progress': progress,
+            'currentFile': fileEntry.name,
+          });
+
+          final filename = fileEntry.name;
+          final destPath = p.join(destinationDir, filename);
+          if (fileEntry.isFile) {
+            final outputStream = OutputFileStream(destPath);
+            fileEntry.writeContent(outputStream);
+            outputStream.closeSync();
+          } else {
+            Directory(destPath).createSync(recursive: true);
+          }
+        }
+        inputStream.closeSync();
+        sendPort.send({'status': 'completed'});
+        return;
+      }
+
+      // stream tar.gz files
+      if (lowerPath.endsWith('.tar.gz') || lowerPath.endsWith('.tgz')) {
+        sendPort.send({'status': 'progress', 'progress': 0.1, 'currentFile': 'Decompressing gzip...'});
+        final tempTarFile = File(p.join(Directory.systemTemp.path, 'temp_${DateTime.now().millisecondsSinceEpoch}.tar'));
+        final inputStream = InputFileStream(archivePath);
+        final outputStream = OutputFileStream(tempTarFile.path);
+        GZipDecoder().decodeStream(inputStream, outputStream);
+        inputStream.closeSync();
+        outputStream.closeSync();
+
+        sendPort.send({'status': 'progress', 'progress': 0.3, 'currentFile': 'Extracting tar...'});
+        final tarInputStream = InputFileStream(tempTarFile.path);
+        final archive = TarDecoder().decodeBuffer(tarInputStream);
+        final totalFiles = archive.length;
+        
+        for (int i = 0; i < totalFiles; i++) {
+          final fileEntry = archive[i];
+          final progress = 0.3 + (i / totalFiles) * 0.7;
+          sendPort.send({
+            'status': 'progress',
+            'progress': progress,
+            'currentFile': fileEntry.name,
+          });
+
+          final filename = fileEntry.name;
+          final destPath = p.join(destinationDir, filename);
+          if (fileEntry.isFile) {
+            final outputStream = OutputFileStream(destPath);
+            fileEntry.writeContent(outputStream);
+            outputStream.closeSync();
+          } else {
+            Directory(destPath).createSync(recursive: true);
+          }
+        }
+        tarInputStream.closeSync();
+        try {
+          tempTarFile.deleteSync();
+        } catch (_) {}
+        sendPort.send({'status': 'completed'});
+        return;
+      }
+
+      // stream tar files
+      if (lowerPath.endsWith('.tar')) {
+        sendPort.send({'status': 'progress', 'progress': 0.1, 'currentFile': 'Opening tar...'});
+        final inputStream = InputFileStream(archivePath);
+        final archive = TarDecoder().decodeBuffer(inputStream);
+        final totalFiles = archive.length;
+        
+        for (int i = 0; i < totalFiles; i++) {
+          final fileEntry = archive[i];
+          final progress = 0.2 + (i / totalFiles) * 0.8;
+          sendPort.send({
+            'status': 'progress',
+            'progress': progress,
+            'currentFile': fileEntry.name,
+          });
+
+          final filename = fileEntry.name;
+          final destPath = p.join(destinationDir, filename);
+          if (fileEntry.isFile) {
+            final outputStream = OutputFileStream(destPath);
+            fileEntry.writeContent(outputStream);
+            outputStream.closeSync();
+          } else {
+            Directory(destPath).createSync(recursive: true);
+          }
+        }
+        inputStream.closeSync();
+        sendPort.send({'status': 'completed'});
+        return;
+      }
+
+      final bytes = file.readAsBytesSync();
+      late Archive archive;
       sendPort.send({'status': 'progress', 'progress': 0.1, 'currentFile': 'Decompressing archive...'});
 
-      if (lowerPath.endsWith('.zip') || lowerPath.contains('.zip.')) {
-        archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
-      } else if (lowerPath.endsWith('.tar.gz') || lowerPath.endsWith('.tgz')) {
-        final tarBytes = GZipDecoder().decodeBytes(bytes);
-        archive = TarDecoder().decodeBytes(tarBytes);
-      } else if (lowerPath.endsWith('.tar.bz2') || lowerPath.endsWith('.tbz2')) {
+      if (lowerPath.endsWith('.tar.bz2') || lowerPath.endsWith('.tbz2')) {
         final tarBytes = BZip2Decoder().decodeBytes(bytes);
         archive = TarDecoder().decodeBytes(tarBytes);
       } else if (lowerPath.endsWith('.tar.lz4') || lowerPath.endsWith('.tlz4')) {
@@ -415,8 +514,6 @@ class BackgroundArchiveService {
       } else if (lowerPath.endsWith('.tar.zst') || lowerPath.endsWith('.tzst')) {
         final tarBytes = const ZstdDecoder().decodeBytes(bytes);
         archive = TarDecoder().decodeBytes(Uint8List.fromList(tarBytes));
-      } else if (lowerPath.endsWith('.tar')) {
-        archive = TarDecoder().decodeBytes(bytes);
       } else if (lowerPath.endsWith('.gz')) {
         final decodedBytes = GZipDecoder().decodeBytes(bytes);
         final name = p.basenameWithoutExtension(archivePath);
@@ -450,24 +547,56 @@ class BackgroundArchiveService {
         sendPort.send({'status': 'completed'});
         return;
       } else {
-        archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
+        // try streaming zip for unknown extension to avoid OOM
+        sendPort.send({'status': 'progress', 'progress': 0.1, 'currentFile': 'Opening archive...'});
+        final inputStream = InputFileStream(archivePath);
+        try {
+          final zipArchive = ZipDecoder().decodeBuffer(inputStream, password: password != null && password.isNotEmpty ? password : null);
+          final totalFiles = zipArchive.length;
+          
+          for (int i = 0; i < totalFiles; i++) {
+            final fileEntry = zipArchive[i];
+            final progress = 0.2 + (i / totalFiles) * 0.8;
+            sendPort.send({
+              'status': 'progress',
+              'progress': progress,
+              'currentFile': fileEntry.name,
+            });
+
+            final filename = fileEntry.name;
+            final destPath = p.join(destinationDir, filename);
+            if (fileEntry.isFile) {
+              final outputStream = OutputFileStream(destPath);
+              fileEntry.writeContent(outputStream);
+              outputStream.closeSync();
+            } else {
+              Directory(destPath).createSync(recursive: true);
+            }
+          }
+          inputStream.closeSync();
+          sendPort.send({'status': 'completed'});
+          return;
+        } catch (_) {
+          inputStream.closeSync();
+          archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
+        }
       }
 
       sendPort.send({'status': 'progress', 'progress': 0.3, 'currentFile': 'Extracting files...'});
 
       final totalFiles = archive.length;
       for (int i = 0; i < totalFiles; i++) {
-        final file = archive[i];
+        final fileEntry = archive[i];
         final progress = 0.3 + (i / totalFiles) * 0.7;
         sendPort.send({
           'status': 'progress',
           'progress': progress,
-          'currentFile': file.name,
+          'currentFile': fileEntry.name,
         });
 
-        final filename = file.name;
-        if (file.isFile) {
-          final data = file.content as List<int>;
+        final filename = fileEntry.name;
+        if (fileEntry.isFile) {
+          final data = fileEntry.content as List<int>;
           final destFile = File(p.join(destinationDir, filename));
           destFile.createSync(recursive: true);
           destFile.writeAsBytesSync(data);
@@ -482,7 +611,6 @@ class BackgroundArchiveService {
         'currentFile': 'Archive extracted successfully',
       });
       await Future.delayed(const Duration(milliseconds: 300));
-
       sendPort.send({'status': 'completed'});
     } catch (e) {
       sendPort.send({'status': 'error', 'error': e.toString()});

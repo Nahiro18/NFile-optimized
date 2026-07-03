@@ -168,17 +168,80 @@ class ArchiveService {
       }
 
       final file = File(archivePath);
+      final lowerPath = archivePath.toLowerCase();
+
+      // stream zip files to avoid OOM
+      if (lowerPath.endsWith('.zip') || lowerPath.contains('.zip.')) {
+        final inputStream = InputFileStream(archivePath);
+        final archive = ZipDecoder().decodeBuffer(inputStream, password: password != null && password.isNotEmpty ? password : null);
+        
+        for (final fileEntry in archive.files) {
+          final filename = fileEntry.name;
+          final destPath = p.join(destinationDir, filename);
+          if (fileEntry.isFile) {
+            final outputStream = OutputFileStream(destPath);
+            fileEntry.writeContent(outputStream);
+            outputStream.closeSync();
+          } else {
+            Directory(destPath).createSync(recursive: true);
+          }
+        }
+        inputStream.closeSync();
+        return;
+      }
+
+      // stream tar.gz files
+      if (lowerPath.endsWith('.tar.gz') || lowerPath.endsWith('.tgz')) {
+        final tempTarFile = File(p.join(Directory.systemTemp.path, 'temp_${DateTime.now().millisecondsSinceEpoch}.tar'));
+        final inputStream = InputFileStream(archivePath);
+        final outputStream = OutputFileStream(tempTarFile.path);
+        GZipDecoder().decodeStream(inputStream, outputStream);
+        inputStream.closeSync();
+        outputStream.closeSync();
+
+        final tarInputStream = InputFileStream(tempTarFile.path);
+        final archive = TarDecoder().decodeBuffer(tarInputStream);
+        for (final fileEntry in archive.files) {
+          final filename = fileEntry.name;
+          final destPath = p.join(destinationDir, filename);
+          if (fileEntry.isFile) {
+            final outputStream = OutputFileStream(destPath);
+            fileEntry.writeContent(outputStream);
+            outputStream.closeSync();
+          } else {
+            Directory(destPath).createSync(recursive: true);
+          }
+        }
+        tarInputStream.closeSync();
+        try {
+          tempTarFile.deleteSync();
+        } catch (_) {}
+        return;
+      }
+
+      // stream tar files
+      if (lowerPath.endsWith('.tar')) {
+        final inputStream = InputFileStream(archivePath);
+        final archive = TarDecoder().decodeBuffer(inputStream);
+        for (final fileEntry in archive.files) {
+          final filename = fileEntry.name;
+          final destPath = p.join(destinationDir, filename);
+          if (fileEntry.isFile) {
+            final outputStream = OutputFileStream(destPath);
+            fileEntry.writeContent(outputStream);
+            outputStream.closeSync();
+          } else {
+            Directory(destPath).createSync(recursive: true);
+          }
+        }
+        inputStream.closeSync();
+        return;
+      }
+
       final bytes = file.readAsBytesSync();
       late Archive archive;
 
-      final lowerPath = archivePath.toLowerCase();
-
-      if (lowerPath.endsWith('.zip') || lowerPath.contains('.zip.')) {
-        archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
-      } else if (lowerPath.endsWith('.tar.gz') || lowerPath.endsWith('.tgz')) {
-        final tarBytes = GZipDecoder().decodeBytes(bytes);
-        archive = TarDecoder().decodeBytes(tarBytes);
-      } else if (lowerPath.endsWith('.tar.bz2') || lowerPath.endsWith('.tbz2')) {
+      if (lowerPath.endsWith('.tar.bz2') || lowerPath.endsWith('.tbz2')) {
         final tarBytes = BZip2Decoder().decodeBytes(bytes);
         archive = TarDecoder().decodeBytes(tarBytes);
       } else if (lowerPath.endsWith('.tar.lz4') || lowerPath.endsWith('.tlz4')) {
@@ -187,8 +250,6 @@ class ArchiveService {
       } else if (lowerPath.endsWith('.tar.zst') || lowerPath.endsWith('.tzst')) {
         final tarBytes = const ZstdDecoder().decodeBytes(bytes);
         archive = TarDecoder().decodeBytes(Uint8List.fromList(tarBytes));
-      } else if (lowerPath.endsWith('.tar')) {
-        archive = TarDecoder().decodeBytes(bytes);
       } else if (lowerPath.endsWith('.gz')) {
         final decodedBytes = GZipDecoder().decodeBytes(bytes);
         final name = p.basenameWithoutExtension(archivePath);
@@ -218,14 +279,33 @@ class ArchiveService {
         destFile.writeAsBytesSync(Uint8List.fromList(decodedBytes));
         return;
       } else {
-        // Default attempt zip decoder
-        archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
+        // try streaming zip for unknown extension to avoid OOM
+        final inputStream = InputFileStream(archivePath);
+        try {
+          final zipArchive = ZipDecoder().decodeBuffer(inputStream, password: password != null && password.isNotEmpty ? password : null);
+          for (final fileEntry in zipArchive.files) {
+            final filename = fileEntry.name;
+            final destPath = p.join(destinationDir, filename);
+            if (fileEntry.isFile) {
+              final outputStream = OutputFileStream(destPath);
+              fileEntry.writeContent(outputStream);
+              outputStream.closeSync();
+            } else {
+              Directory(destPath).createSync(recursive: true);
+            }
+          }
+          inputStream.closeSync();
+          return;
+        } catch (_) {
+          inputStream.closeSync();
+          archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
+        }
       }
 
-      for (final file in archive) {
-        final filename = file.name;
-        if (file.isFile) {
-          final data = file.content as List<int>;
+      for (final fileEntry in archive) {
+        final filename = fileEntry.name;
+        if (fileEntry.isFile) {
+          final data = fileEntry.content as List<int>;
           final destFile = File(p.join(destinationDir, filename));
           destFile.createSync(recursive: true);
           destFile.writeAsBytesSync(data);
