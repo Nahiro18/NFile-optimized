@@ -494,6 +494,36 @@ class MediaProvider extends ChangeNotifier {
     return PreferencesService.getCategoryCount(category);
   }
 
+  Map<String, dynamic> _assetToMap(AssetEntity asset) {
+    return {
+      'id': asset.id,
+      'typeInt': asset.typeInt,
+      'width': asset.width,
+      'height': asset.height,
+      'duration': asset.duration,
+      'title': asset.title,
+      'createDateSecond': asset.createDateSecond,
+      'modifiedDateSecond': asset.modifiedDateSecond,
+      'relativePath': asset.relativePath,
+      'mimeType': asset.mimeType,
+    };
+  }
+
+  AssetEntity _assetFromMap(Map<String, dynamic> map) {
+    return AssetEntity(
+      id: map['id'] as String,
+      typeInt: map['typeInt'] as int,
+      width: map['width'] as int,
+      height: map['height'] as int,
+      duration: map['duration'] as int? ?? 0,
+      title: map['title'] as String?,
+      createDateSecond: map['createDateSecond'] as int?,
+      modifiedDateSecond: map['modifiedDateSecond'] as int?,
+      relativePath: map['relativePath'] as String?,
+      mimeType: map['mimeType'] as String?,
+    );
+  }
+
   Future<void> _loadFromDiskCache() async {
     try {
       final dir = await getTemporaryDirectory();
@@ -516,6 +546,70 @@ class MediaProvider extends ChangeNotifier {
         }
         if (map.containsKey('activeCategories')) {
           _activeCategories = List<String>.from(map['activeCategories'] ?? _activeCategories);
+        }
+
+        if (map.containsKey('images')) {
+          final imgMaps = List<Map<String, dynamic>>.from(
+            (map['images'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+          );
+          final cachedImages = imgMaps.map((m) => _assetFromMap(m)).toList();
+          if (cachedImages.isNotEmpty && _images.isEmpty) {
+            _images = cachedImages;
+          }
+        }
+
+        if (map.containsKey('videos')) {
+          final vidMaps = List<Map<String, dynamic>>.from(
+            (map['videos'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+          );
+          final cachedVideos = vidMaps.map((m) => _assetFromMap(m)).toList();
+          if (cachedVideos.isNotEmpty && _videos.isEmpty) {
+            _videos = cachedVideos;
+          }
+        }
+
+        if (map.containsKey('screenshots')) {
+          final scMaps = List<Map<String, dynamic>>.from(
+            (map['screenshots'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+          );
+          final cachedScreenshots = scMaps.map((m) => _assetFromMap(m)).toList();
+          if (cachedScreenshots.isNotEmpty && _screenshots.isEmpty) {
+            _screenshots = cachedScreenshots;
+          }
+        }
+
+        if (map.containsKey('audios')) {
+          final audMaps = List<Map<String, dynamic>>.from(
+            (map['audios'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+          );
+          final cachedAudios = audMaps.map((m) => SongModel(m)).toList();
+          if (cachedAudios.isNotEmpty && _audios.isEmpty) {
+            _audios = cachedAudios;
+          }
+        }
+
+        if (map.containsKey('customImages')) {
+          final paths = List<String>.from(map['customImages'] ?? []);
+          final cachedCI = paths.map((p) => File(p)).toList();
+          if (cachedCI.isNotEmpty && _customImages.isEmpty) {
+            _customImages = cachedCI;
+          }
+        }
+
+        if (map.containsKey('customVideos')) {
+          final paths = List<String>.from(map['customVideos'] ?? []);
+          final cachedCV = paths.map((p) => File(p)).toList();
+          if (cachedCV.isNotEmpty && _customVideos.isEmpty) {
+            _customVideos = cachedCV;
+          }
+        }
+
+        if (map.containsKey('customScreenshots')) {
+          final paths = List<String>.from(map['customScreenshots'] ?? []);
+          final cachedCS = paths.map((p) => File(p)).toList();
+          if (cachedCS.isNotEmpty && _customScreenshots.isEmpty) {
+            _customScreenshots = cachedCS;
+          }
         }
 
         if (map.containsKey('documents')) {
@@ -604,6 +698,13 @@ class MediaProvider extends ChangeNotifier {
       final map = {
         'categoryOrder': _categoryOrder,
         'activeCategories': _activeCategories,
+        'images': _images.map((a) => _assetToMap(a)).toList(),
+        'videos': _videos.map((a) => _assetToMap(a)).toList(),
+        'screenshots': _screenshots.map((a) => _assetToMap(a)).toList(),
+        'audios': _audios.map((s) => s.getMap).toList(),
+        'customImages': _customImages.map((e) => e.path).toList(),
+        'customVideos': _customVideos.map((e) => e.path).toList(),
+        'customScreenshots': _customScreenshots.map((e) => e.path).toList(),
         'documents': _documents.map((e) => e.path).toList(),
         'archives': _archives.map((e) => e.path).toList(),
         'downloads': _downloads.map((e) => e.path).toList(),
@@ -676,6 +777,23 @@ class MediaProvider extends ChangeNotifier {
 
     // Fast initial load from disk cache
     await _loadFromDiskCache();
+
+    // If cache populated the lists, show them immediately to avoid skeleton loading!
+    final hasCachedData = _images.isNotEmpty ||
+        _videos.isNotEmpty ||
+        _audios.isNotEmpty ||
+        _documents.isNotEmpty ||
+        _archives.isNotEmpty ||
+        _downloads.isNotEmpty ||
+        _apks.isNotEmpty ||
+        _screenshots.isNotEmpty;
+
+    if (hasCachedData) {
+      _isLoading = false;
+      _isLoaded = true;
+      _applySort();
+      notifyListeners();
+    }
 
     bool isStorageGranted = false;
     try {
