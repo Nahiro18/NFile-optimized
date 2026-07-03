@@ -333,7 +333,10 @@ class NFileDrawer extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [const Color(0xFF0F172A), const Color(0xFF1E293B)]
+              ? [
+                  Color.alphaBlend(theme.colorScheme.primary.withOpacity(0.15), const Color(0xFF0F172A)),
+                  Color.alphaBlend(theme.colorScheme.primary.withOpacity(0.05), const Color(0xFF1E293B)),
+                ]
               : [theme.colorScheme.primary.withOpacity(0.85), theme.colorScheme.primary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -369,7 +372,7 @@ class NFileDrawer extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Premium Media Suite',
+                  'Beautiful Media Suite',
                   style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12.5, fontWeight: FontWeight.w500),
                 ),
               ],
