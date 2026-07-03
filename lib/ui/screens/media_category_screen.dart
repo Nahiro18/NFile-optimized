@@ -890,8 +890,8 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                   return GridView.builder(
                     padding: const EdgeInsets.all(12),
                     physics: const BouncingScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: (MediaQuery.of(context).size.width / 180).floor().clamp(2, 6),
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
                       childAspectRatio: 0.95,
@@ -1042,7 +1042,11 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
       builder: (context, child) {
         return GridView.builder(
           padding: const EdgeInsets.all(8),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 6, mainAxisSpacing: 6),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: (MediaQuery.of(context).size.width / 120).floor().clamp(3, 10),
+            crossAxisSpacing: 6,
+            mainAxisSpacing: 6,
+          ),
           itemCount: 24,
           itemBuilder: (context, index) {
             return ClipRRect(
@@ -1147,8 +1151,8 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 6),
               sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: (MediaQuery.of(context).size.width / 120).floor().clamp(3, 10),
                   crossAxisSpacing: 6,
                   mainAxisSpacing: 6,
                 ),
@@ -1333,7 +1337,11 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
     return GridView.builder(
       padding: const EdgeInsets.all(6),
       physics: const BouncingScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 6, mainAxisSpacing: 6),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: (MediaQuery.of(context).size.width / 120).floor().clamp(3, 10),
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 6,
+      ),
       itemCount: images.length,
       itemBuilder: (context, index) {
         final item = images[index];
@@ -1513,7 +1521,11 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
     return GridView.builder(
       padding: const EdgeInsets.all(6),
       physics: const BouncingScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 6, mainAxisSpacing: 6),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: (MediaQuery.of(context).size.width / 120).floor().clamp(3, 10),
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 6,
+      ),
       itemCount: videos.length,
       itemBuilder: (context, index) {
         final item = videos[index];

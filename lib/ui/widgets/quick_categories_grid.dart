@@ -210,8 +210,8 @@ class QuickCategoriesGrid extends StatelessWidget {
                 key: ValueKey(activeList.length),
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: (MediaQuery.of(context).size.width / 120).floor().clamp(4, 10),
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 20,
                   childAspectRatio: 0.82,
