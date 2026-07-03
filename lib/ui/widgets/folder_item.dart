@@ -170,9 +170,20 @@ class FolderItem extends StatelessWidget {
                             },
                           );
                         } else {
-                          if (provider.hideTimeAndDate && !provider.showFolderContentsCount && !provider.showFolderSizes) {
-                            return const SizedBox.shrink();
+                          if (!provider.showFolderContentsCount && !provider.showFolderSizes) {
+                            if (provider.hideTimeAndDate) {
+                              return const SizedBox.shrink();
+                            }
+                            return Text(
+                              FileUtils.formatDate(folder.modified, use24Hour: provider.use24HourFormat),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            );
                           }
+
                           return FutureBuilder<List<int>>(
                             future: Future.wait([
                               provider.showFolderContentsCount ? provider.getFolderItemCount(folder.path) : Future.value(-1),

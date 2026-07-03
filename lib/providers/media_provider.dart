@@ -182,6 +182,46 @@ class MediaProvider extends ChangeNotifier {
   List<AssetEntity> _images = [];
   List<AssetEntity> _videos = [];
   List<SongModel> _audios = [];
+
+  Map<String, SongModel>? _audioPathMap;
+  Map<String, AssetEntity>? _videoNameMap;
+
+  Map<String, SongModel> get audioPathMap {
+    if (_audioPathMap == null) {
+      _audioPathMap = {for (final s in _audios) s.data: s};
+    }
+    return _audioPathMap!;
+  }
+
+  Map<String, AssetEntity> get videoNameMap {
+    if (_videoNameMap == null) {
+      _videoNameMap = {};
+      for (final v in _videos) {
+        final titleLower = (v.title ?? '').toLowerCase();
+        _videoNameMap![titleLower] = v;
+        
+        final extIndex = titleLower.lastIndexOf('.');
+        if (extIndex != -1) {
+          final base = titleLower.substring(0, extIndex);
+          _videoNameMap![base] = v;
+        }
+        
+        final mimeExt = v.mimeType?.split("/").last.toLowerCase();
+        if (mimeExt != null) {
+          _videoNameMap!['$titleLower.$mimeExt'] = v;
+        }
+      }
+    }
+    return _videoNameMap!;
+  }
+
+  @override
+  void notifyListeners() {
+    _audioPathMap = null;
+    _videoNameMap = null;
+    super.notifyListeners();
+  }
+
   List<FileSystemEntity> _documents = [];
   List<FileSystemEntity> _archives = [];
   List<FileSystemEntity> _downloads = [];
