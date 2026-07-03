@@ -136,18 +136,17 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
 
   void _toggleSelection(String? filePath, String? assetId) {
     setState(() {
-      if (filePath != null && filePath.isNotEmpty) {
-        if (_selectedFilePaths.contains(filePath)) {
-          _selectedFilePaths.remove(filePath);
-        } else {
-          _selectedFilePaths.add(filePath);
-        }
-      }
       if (assetId != null && assetId.isNotEmpty) {
         if (_selectedAssetIds.contains(assetId)) {
           _selectedAssetIds.remove(assetId);
         } else {
           _selectedAssetIds.add(assetId);
+        }
+      } else if (filePath != null && filePath.isNotEmpty) {
+        if (_selectedFilePaths.contains(filePath)) {
+          _selectedFilePaths.remove(filePath);
+        } else {
+          _selectedFilePaths.add(filePath);
         }
       }
     });
@@ -744,7 +743,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                 title: const Text('Properties'),
                 onTap: () {
                   Navigator.pop(ctx);
-                  _showPropertiesDialog(singleFilePath: filePath, singleAssetId: assetId, explicitName: name);
+                  _showPropertiesDialog(singleFilePath: assetId == null ? filePath : null, singleAssetId: assetId, explicitName: name);
                 },
               ),
               ListTile(
