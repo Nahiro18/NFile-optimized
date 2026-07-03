@@ -775,10 +775,10 @@ class MediaProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Fast initial load from disk cache
+    // load cache
     await _loadFromDiskCache();
 
-    // If cache populated the lists, show them immediately to avoid skeleton loading!
+    // show cached data immediately if we have it
     final hasCachedData = _images.isNotEmpty ||
         _videos.isNotEmpty ||
         _audios.isNotEmpty ||
@@ -896,15 +896,21 @@ class MediaProvider extends ChangeNotifier {
     try {
       List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(onlyAll: false);
       List<AssetEntity> allScreenshots = [];
+      final seenScreenshotIds = <String>{};
       for (final album in albums) {
         if (album.name.toLowerCase().contains('screenshot')) {
-          allScreenshots = await album.getAssetListPaged(page: 0, size: 5000);
-          break;
+          final assets = await album.getAssetListPaged(page: 0, size: 5000);
+          for (final asset in assets) {
+            if (seenScreenshotIds.add(asset.id)) {
+              allScreenshots.add(asset);
+            }
+          }
         }
       }
 
       if (albums.isNotEmpty) {
-        List<AssetEntity> allMedia = await albums[0].getAssetListPaged(page: 0, size: 10000);
+        final allAlbum = albums.firstWhere((a) => a.isAll, orElse: () => albums.first);
+        List<AssetEntity> allMedia = await allAlbum.getAssetListPaged(page: 0, size: 10000);
         _images = allMedia.where((e) => e.type == AssetType.image).toList();
         _videos = allMedia.where((e) => e.type == AssetType.video).toList();
         if (allScreenshots.isEmpty) {
