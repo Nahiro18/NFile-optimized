@@ -788,16 +788,41 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
   );
 }
 
+  int _getTotalItemCount(MediaProvider mediaProvider) {
+    if (widget.album != null) {
+      return _albumAssets.length;
+    }
+    switch (widget.mediaType) {
+      case MediaType.images:
+        return mediaProvider.images.length;
+      case MediaType.videos:
+        return mediaProvider.videos.length;
+      case MediaType.audios:
+        return mediaProvider.audios.length;
+      case MediaType.documents:
+        return mediaProvider.documents.length;
+      case MediaType.archives:
+        return mediaProvider.archives.length;
+      case MediaType.downloads:
+        return mediaProvider.downloads.length;
+      case MediaType.apks:
+        return mediaProvider.apks.length;
+      case MediaType.screenshots:
+        return mediaProvider.screenshots.length;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final fm = context.watch<FileManagerProvider>();
+    final mediaProvider = context.watch<MediaProvider>();
     final canPaste = (widget.mediaType == MediaType.downloads || widget.mediaType == MediaType.documents || widget.mediaType == MediaType.archives || widget.mediaType == MediaType.apks) && fm.hasClipboard;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(_isSelectionMode ? '${_selectedFilePaths.length + _selectedAssetIds.length} Selected' : _title),
+        title: Text(_isSelectionMode ? '${_selectedFilePaths.length + _selectedAssetIds.length}/${_getTotalItemCount(mediaProvider)}' : _title),
         leading: _isSelectionMode
             ? IconButton(icon: const Icon(Broken.close_square), onPressed: _clearSelection)
             : null,
