@@ -131,6 +131,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
     final disableLeftBackVis = _shouldShow('Prevent Left Back Gesture for Drawer', 'Excludes the left edge of the screen from Android system back gestures, making it easier to swipe open the drawer. You can still swipe from the right edge to go back.');
     final rememberLastFolderVis = _shouldShow('Remember Last Opened Folder', 'Open the last folder you browsed when launching the app');
     final hideNavLabelsVis = _shouldShow('Hide Bottom Navigation Labels', 'Hide text labels of the bottom bar (Home/Browse) for a cleaner and compact look');
+    final exitOptionVis = _shouldShow('App Exit Behavior', 'Choose between exit confirmation dialog or double-pressing back button to exit');
 
     final generalStartupList = [
       defaultBrowseVis,
@@ -139,6 +140,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
       hideNavLabelsVis,
       hideNavBarVis,
       disableLeftBackVis,
+      exitOptionVis,
     ];
 
     final fileExplorerList = [
@@ -489,6 +491,15 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           ),
                         ),
                         onTap: () => fileManager.toggleDisableLeftBackGesture(),
+                      ),
+                    if (exitOptionVis)
+                      SettingsTile(
+                        icon: Icons.logout_rounded,
+                        title: 'App Exit Behavior',
+                        subtitle: fileManager.exitOption == 'confirm'
+                            ? 'Show confirmation dialog'
+                            : 'Double-press back button to exit',
+                        onTap: () => _showExitOptionPickerDialog(context, fileManager, theme),
                       ),
                     if (bottomActionBarVis)
                       SettingsTile(
@@ -1229,6 +1240,14 @@ class GeneralSettingsScreen extends StatelessWidget {
               ),
               onTap: () => fileManager.toggleDisableLeftBackGesture(),
             ),
+            SettingsTile(
+              icon: Icons.logout_rounded,
+              title: 'App Exit Behavior',
+              subtitle: fileManager.exitOption == 'confirm'
+                  ? 'Show confirmation dialog'
+                  : 'Double-press back button to exit',
+              onTap: () => _showExitOptionPickerDialog(context, fileManager, theme),
+            ),
           ],
         ),
       ),
@@ -1968,6 +1987,75 @@ void _showTrailingInfoTypePickerDialog(BuildContext context, FileManagerProvider
                             : Icon(Icons.radio_button_off_rounded, color: theme.colorScheme.onSurface.withOpacity(0.3)),
                         onTap: () {
                           fileManager.setTrailingInfoType(key);
+                          Navigator.pop(ctx);
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void _showExitOptionPickerDialog(BuildContext context, FileManagerProvider fileManager, ThemeData theme) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: theme.scaffoldBackgroundColor,
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+    builder: (ctx) {
+      final current = fileManager.exitOption;
+      final options = [
+        {'key': 'confirm', 'name': 'Confirmation Dialog', 'desc': 'Prompt for exit verification before closing'},
+        {'key': 'double_press', 'name': 'Double-Press to Exit', 'desc': 'Tap the back button twice within a short window to exit'},
+      ];
+
+      return SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text('Choose Exit Behavior', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(height: 16),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: options.length,
+                    itemBuilder: (_, i) {
+                      final opt = options[i];
+                      final key = opt['key'] as String;
+                      final name = opt['name'] as String;
+                      final desc = opt['desc'] as String;
+                      final isSelected = current == key;
+
+                      return ListTile(
+                        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(desc, style: const TextStyle(fontSize: 12)),
+                        trailing: isSelected 
+                            ? Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary) 
+                            : Icon(Icons.circle_outlined, color: theme.colorScheme.onSurface.withOpacity(0.4)),
+                        onTap: () {
+                          fileManager.setExitOption(key);
                           Navigator.pop(ctx);
                         },
                       );

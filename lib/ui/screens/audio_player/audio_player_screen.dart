@@ -12,6 +12,7 @@ import 'audio_waveform_widget.dart';
 import 'audio_controls_widget.dart';
 import 'audio_queue_sheet.dart';
 import 'audio_particles_widget.dart';
+import 'lyrics_dialog.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
   final String audioPath;
@@ -239,35 +240,27 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   }
 
   void _showLyricsDialog() {
-    showDialog(
+    showGeneralDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E2E),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Row(
-          children: [
-            Icon(Broken.document, color: Colors.deepPurpleAccent),
-            const SizedBox(width: 10),
-            Text('Synchronized Lyrics', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-          ],
-        ),
-        content: const SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Text(
-              "♪ Instrumental / Synchronized Audio ♪\n\n(Enjoying pristine lossless sound playback)",
-              style: TextStyle(color: Colors.white70, fontSize: 16, height: 1.6),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close', style: TextStyle(color: Colors.deepPurpleAccent, fontWeight: FontWeight.bold, fontSize: 16)),
-          ),
-        ],
-      ),
+      barrierDismissible: true,
+      barrierLabel: 'Lyrics',
+      barrierColor: Colors.black.withOpacity(0.4),
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, anim1, anim2) {
+        return LyricsDialog(
+          player: player,
+          audioPath: _currentPath,
+          title: _currentTitle,
+          artist: _currentArtist,
+          initialPosition: position,
+        );
+      },
+      transitionBuilder: (context, anim1, anim2, child) {
+        return FadeTransition(
+          opacity: anim1,
+          child: child,
+        );
+      },
     );
   }
 

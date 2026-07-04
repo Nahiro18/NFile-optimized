@@ -22,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   DateTime? _lastBrowseTapTime;
+  DateTime? _lastPressedAt;
   late AnimationController _refreshIconController;
   bool _isRefreshing = false;
 
@@ -169,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<FileManagerProvider>();
+    final theme = Theme.of(context);
     final canPopHomeScreen = _currentIndex == 1 && !provider.isSelectionMode && provider.canGoBack;
 
     return PopScope(
@@ -183,7 +185,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
             context.read<MediaProvider>().refreshMediaBackground();
           }
         } else {
-          _showExitConfirmationDialog(context);
+          if (provider.exitOption == 'double_press') {
+            final now = DateTime.now();
+            if (_lastPressedAt == null || now.difference(_lastPressedAt!) > const Duration(seconds: 2)) {
+              _lastPressedAt = now;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text(
+                    'Press back again to exit',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                  ),
+                  backgroundColor: theme.colorScheme.primary,
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 2),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              );
+            } else {
+              SystemNavigator.pop();
+            }
+          } else {
+            _showExitConfirmationDialog(context);
+          }
         }
       },
       child: Scaffold(

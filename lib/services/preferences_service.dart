@@ -27,6 +27,7 @@ class PreferencesService {
   static const String _keyRememberLastFolder = 'remember_last_folder';
   static const String _keyTrailingInfoType = 'trailing_info_type';
   static const String _keyUseMaterialIcons = 'use_material_icons';
+  static const String _keyExitOption = 'exit_option';
 
   static SharedPreferences? _prefs;
 
@@ -623,5 +624,13 @@ class PreferencesService {
 
   static Future<void> saveTrailingInfoType(String val) async {
     await _prefs?.setString(_keyTrailingInfoType, val);
+  }
+
+  static String getExitOption() {
+    return _prefs?.getString(_keyExitOption) ?? 'confirm';
+  }
+
+  static Future<void> saveExitOption(String val) async {
+    await _prefs?.setString(_keyExitOption, val);
   }
 }
