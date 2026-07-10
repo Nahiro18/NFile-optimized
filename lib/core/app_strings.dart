@@ -648,6 +648,22 @@ class AppStrings {
   String get days15 => _localizedStrings['days15'] ?? '15 Days';
   String get days30Recommended => _localizedStrings['days30Recommended'] ?? '30 Days (Recommended)';
   String get trashDeletionWarning => _localizedStrings['trashDeletionWarning'] ?? 'Items in the Recycle Bin will be permanently deleted after this duration.';
+  String get fileExplorerAndNavigation => _localizedStrings['fileExplorerAndNavigation'] ?? 'File Explorer & Navigation';
+  String get materialYouDynamic => _localizedStrings['materialYouDynamic'] ?? 'Material You (Dynamic Wallpaper Colors)';
+  String get originalDefaultBlue => _localizedStrings['originalDefaultBlue'] ?? 'Original Default (Signature Blue)';
+  String get classicSolid => _localizedStrings['classicSolid'] ?? 'Classic Solid (Material)';
+  String get modernRounded => _localizedStrings['modernRounded'] ?? 'Modern Rounded (Material)';
+  String get starredSpecial => _localizedStrings['starredSpecial'] ?? 'Starred Special (Material)';
+  String get snippetDocument => _localizedStrings['snippetDocument'] ?? 'Snippet Document (Material)';
+  String get minimalOutlined => _localizedStrings['minimalOutlined'] ?? 'Minimal Outlined (Material)';
+  String get nfileBrokenOutline => _localizedStrings['nfileBrokenOutline'] ?? 'NFile Broken Outline (Default)';
+  String get categoryGridVuesax => _localizedStrings['categoryGridVuesax'] ?? 'Category Grid / Vuesax Grid';
+  String get chooseTrailingInfoDesc => _localizedStrings['chooseTrailingInfoDesc'] ?? 'Choose what is displayed on the right side of files and folders when the 3-dot action buttons are hidden.';
+  String get chooseAppLauncherIconDesc => _localizedStrings['chooseAppLauncherIconDesc'] ?? 'Choose a custom logo for the application launcher icon. Note that some launchers may take a few seconds to update.';
+  String get nothingDotMatrix => _localizedStrings['nothingDotMatrix'] ?? 'Nothing Dot-Matrix & Sans';
+  String get nothingDotMatrixDesc => _localizedStrings['nothingDotMatrixDesc'] ?? 'High-tech retro dot matrix headings + clean body';
+  String get appTypographyTitle => _localizedStrings['appTypographyTitle'] ?? 'App Typography';
+  String get selectTypefaceDesc => _localizedStrings['selectTypefaceDesc'] ?? "Select a beautiful typeface to customize NFile's overall visual theme";
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

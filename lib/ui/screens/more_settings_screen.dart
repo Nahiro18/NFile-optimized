@@ -611,7 +611,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   ],
                   if (_shouldShowHeader(fileExplorerList)) ...[
                     const SizedBox(height: 24),
-                    _buildSectionHeader(theme, 'File Explorer & Navigation'),
+                    _buildSectionHeader(theme, AppStrings.current.fileExplorerAndNavigation),
                     if (showAddressBarVis)
                       SettingsTile(
                         icon: Broken.edit,
@@ -1875,7 +1875,7 @@ class _TrashSettingsScreenState extends State<TrashSettingsScreen> {
 
 String _getAccentColorLabel(String option) {
   switch (option) {
-    case 'dynamic': return 'Material You (Dynamic Wallpaper Colors)';
+    case 'dynamic': return AppStrings.current.materialYouDynamic;
     case 'orange': return AppStrings.current.vibrantOrange;
     case 'purple': return AppStrings.current.royalPurple;
     case 'green': return AppStrings.current.emeraldGreen;
@@ -1887,26 +1887,26 @@ String _getAccentColorLabel(String option) {
     case 'peach': return AppStrings.current.sunsetPeach;
     case 'blue':
     default:
-      return 'Original Default (Signature Blue)';
+      return AppStrings.current.originalDefaultBlue;
   }
 }
 
 String _getFolderIconLabel(String option) {
   switch (option) {
-    case 'solid': return 'Classic Solid (Material)';
-    case 'rounded': return 'Modern Rounded (Material)';
-    case 'special': return 'Starred Special (Material)';
-    case 'snippet': return 'Snippet Document (Material)';
-    case 'outlined': return 'Minimal Outlined (Material)';
+    case 'solid': return AppStrings.current.classicSolid;
+    case 'rounded': return AppStrings.current.modernRounded;
+    case 'special': return AppStrings.current.starredSpecial;
+    case 'snippet': return AppStrings.current.snippetDocument;
+    case 'outlined': return AppStrings.current.minimalOutlined;
     case 'broken':
     default:
-      return 'NFile Broken Outline (Default)';
+      return AppStrings.current.nfileBrokenOutline;
   }
 }
 
 String _getMenuIconStyleLabel(String option) {
   switch (option) {
-    case 'category': return 'Category Grid / Vuesax Grid';
+    case 'category': return AppStrings.current.categoryGridVuesax;
     case 'hamburger':
     default:
       return 'Hamburger / Classic Menu';
@@ -1993,7 +1993,7 @@ void _showTrailingInfoTypePickerDialog(BuildContext context, FileManagerProvider
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
-                      'Choose what is displayed on the right side of files and folders when the 3-dot action buttons are hidden.',
+                      AppStrings.current.chooseTrailingInfoDesc,
                       style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 13),
                     ),
                   ),
@@ -2129,8 +2129,8 @@ void _showThemePickerDialog(BuildContext context, FileManagerProvider fileManage
     builder: (ctx) {
       final current = fileManager.accentColorOption;
       final options = [
-        {'key': 'blue', 'name': 'Original Default (Signature Blue)', 'color': const Color(0xFF369FE7)},
-        {'key': 'dynamic', 'name': 'Material You (Dynamic Wallpaper Colors)', 'color': Colors.teal},
+        {'key': 'blue', 'name': AppStrings.current.originalDefaultBlue, 'color': const Color(0xFF369FE7)},
+        {'key': 'dynamic', 'name': AppStrings.current.materialYouDynamic, 'color': Colors.teal},
         {'key': 'orange', 'name': AppStrings.current.vibrantOrange, 'color': const Color(0xFFFF6D00)},
         {'key': 'purple', 'name': AppStrings.current.royalPurple, 'color': const Color(0xFF8E24AA)},
         {'key': 'green', 'name': AppStrings.current.emeraldGreen, 'color': const Color(0xFF00C853)},
@@ -2215,12 +2215,12 @@ void _showFolderIconPickerDialog(BuildContext context, FileManagerProvider fileM
     builder: (ctx) {
       final current = fileManager.folderIconOption;
       final options = [
-        {'key': 'broken', 'name': 'NFile Broken Outline (Default)', 'icon': Broken.folder},
-        {'key': 'rounded', 'name': 'Modern Rounded (Material)', 'icon': Icons.folder_rounded},
-        {'key': 'solid', 'name': 'Classic Solid (Material)', 'icon': Icons.folder},
-        {'key': 'special', 'name': 'Starred Special (Material)', 'icon': Icons.folder_special_rounded},
-        {'key': 'snippet', 'name': 'Snippet Document (Material)', 'icon': Icons.snippet_folder_rounded},
-        {'key': 'outlined', 'name': 'Minimal Outlined (Material)', 'icon': Icons.folder_outlined},
+        {'key': 'broken', 'name': AppStrings.current.nfileBrokenOutline, 'icon': Broken.folder},
+        {'key': 'rounded', 'name': AppStrings.current.modernRounded, 'icon': Icons.folder_rounded},
+        {'key': 'solid', 'name': AppStrings.current.classicSolid, 'icon': Icons.folder},
+        {'key': 'special', 'name': AppStrings.current.starredSpecial, 'icon': Icons.folder_special_rounded},
+        {'key': 'snippet', 'name': AppStrings.current.snippetDocument, 'icon': Icons.snippet_folder_rounded},
+        {'key': 'outlined', 'name': AppStrings.current.minimalOutlined, 'icon': Icons.folder_outlined},
       ];
 
       return SafeArea(
@@ -2295,7 +2295,7 @@ void _showMenuIconStylePickerDialog(BuildContext context, FileManagerProvider fi
       final current = fileManager.menuIconStyle;
       final options = [
         {'key': 'hamburger', 'name': 'Hamburger / Classic Menu', 'icon': Broken.menu},
-        {'key': 'category', 'name': 'Category Grid / Vuesax Grid', 'icon': Broken.category},
+        {'key': 'category', 'name': AppStrings.current.categoryGridVuesax, 'icon': Broken.category},
       ];
 
       return SafeArea(
@@ -2389,7 +2389,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Choose a custom logo for the application launcher icon. Note that some launchers may take a few seconds to update.',
+                    AppStrings.current.chooseAppLauncherIconDesc,
                     style: TextStyle(fontSize: 13, height: 1.3, color: Colors.grey),
                   ),
                   const SizedBox(height: 20),
@@ -2543,7 +2543,7 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
       final hasCustomFont = fileManager.customFontPath != null;
       final options = [
         {'key': 'default', 'name': AppStrings.current.signatureDefaultFont, 'desc': AppStrings.current.signatureDefaultFontDesc},
-        {'key': 'nothing', 'name': 'Nothing Dot-Matrix & Sans', 'desc': 'High-tech retro dot matrix headings + clean body'},
+        {'key': 'nothing', 'name': AppStrings.current.nothingDotMatrix, 'desc': AppStrings.current.nothingDotMatrixDesc},
         {'key': 'outfit', 'name': AppStrings.current.outfitModernSans, 'desc': AppStrings.current.outfitFontDesc},
         {'key': 'jetbrains', 'name': AppStrings.current.jetBrainsTechMono, 'desc': AppStrings.current.jetBrainsFontDesc},
         {'key': 'montserrat', 'name': AppStrings.current.montserratUrbanSans, 'desc': AppStrings.current.montserratFontDesc},
@@ -2569,12 +2569,12 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'App Typography',
+                    AppStrings.current.appTypographyTitle,
                     style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, fontFamily: 'LexendDeca'),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Select a beautiful typeface to customize NFile\'s overall visual theme',
+                    AppStrings.current.selectTypefaceDesc,
                     style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 13, fontFamily: 'LexendDeca'),
                   ),
                   const SizedBox(height: 16),

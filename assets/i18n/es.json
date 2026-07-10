@@ -584,5 +584,21 @@
   "days7": "7 Días",
   "days15": "15 Días",
   "days30Recommended": "30 Días (Recomendado)",
-  "trashDeletionWarning": "Los elementos se eliminarán permanentemente después de este tiempo."
+  "trashDeletionWarning": "Los elementos se eliminarán permanentemente después de este tiempo.",
+  "fileExplorerAndNavigation": "Explorador de Archivos y Navegación",
+  "materialYouDynamic": "Material You (Colores Dinámicos del Fondo)",
+  "originalDefaultBlue": "Original Predeterminado (Azul Firma)",
+  "classicSolid": "Sólido Clásico (Material)",
+  "modernRounded": "Redondeado Moderno (Material)",
+  "starredSpecial": "Estrella Especial (Material)",
+  "snippetDocument": "Documento Recortado (Material)",
+  "minimalOutlined": "Contorno Mínimo (Material)",
+  "nfileBrokenOutline": "NFile Contorno Roto (Predeterminado)",
+  "categoryGridVuesax": "Cuadrícula de Categorías / Vuesax",
+  "chooseTrailingInfoDesc": "Elige qué mostrar al lado de los archivos y carpetas cuando los botones de 3 puntos están ocultos.",
+  "chooseAppLauncherIconDesc": "Elige un logo personalizado para el icono del lanzador. Algunos lanzadores pueden tardar unos segundos en actualizarse.",
+  "nothingDotMatrix": "Nothing Dot-Matrix & Sans",
+  "nothingDotMatrixDesc": "Encabezados retro de alta tecnología + cuerpo limpio",
+  "appTypographyTitle": "Tipografía de la App",
+  "selectTypefaceDesc": "Selecciona una tipografía hermosa para personalizar el tema visual general de NFile"
 }
