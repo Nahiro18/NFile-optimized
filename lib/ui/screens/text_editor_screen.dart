@@ -536,7 +536,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             Text(
-              '$_selectedLanguage â€¢ $lineCount lines${_isModified ? ' (Modified)' : ''}',
+              '$_selectedLanguage • $lineCount lines${_isModified ? ' (Modified)' : ''}',
               style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
             ),
           ],

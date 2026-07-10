@@ -130,7 +130,7 @@ class _BackupListTabState extends State<BackupListTab> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            '${isApks ? "Split Bundle" : "Single APK"} â€¢ v${item['version']}',
+                            '${isApks ? "Split Bundle" : "Single APK"} • v${item['version']}',
                             style: TextStyle(
                               color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
                               fontSize: 12,
@@ -140,7 +140,7 @@ class _BackupListTabState extends State<BackupListTab> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Size: ${FileUtils.formatBytes(item['apkSize'] as int, 2)} â€¢ Backup Date: ${FileUtils.formatDate(item['installTime'] as DateTime, use24Hour: true).split('  ').first}',
+                            'Size: ${FileUtils.formatBytes(item['apkSize'] as int, 2)} • Backup Date: ${FileUtils.formatDate(item['installTime'] as DateTime, use24Hour: true).split('  ').first}',
                             style: TextStyle(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w600,
@@ -343,7 +343,7 @@ class _BackupListTabState extends State<BackupListTab> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${isApks ? "Split Bundle (APKS)" : "Single APK"} â€¢ v${item['version']}',
+                          '${isApks ? "Split Bundle (APKS)" : "Single APK"} • v${item['version']}',
                           style: TextStyle(
                             color: theme.textTheme.bodySmall?.color?.withOpacity(0.55),
                             fontSize: 11,

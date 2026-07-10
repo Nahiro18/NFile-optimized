@@ -783,5 +783,6 @@
   "uiRecentFiles": "Archivos Recientes",
   "uiViewAll": "Ver Todo",
   "uiRestrictedSystemFolder": "Carpeta de Sistema Restringida",
-  "uiAndroid11RestrictsStandardAccessTo": "Android 11+ restringe el acceso a Android/data y obb. NFile requiere permisos avanzados."
+  "uiAndroid11RestrictsStandardAccessTo": "Android 11+ restringe el acceso a Android/data y obb. NFile requiere permisos avanzados.",
+  "errorShizukuNotRunning": "Acceso denegado. Shizuku no está en ejecución o no está autorizado."
 }

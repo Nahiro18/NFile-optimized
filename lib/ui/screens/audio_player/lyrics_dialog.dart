@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/icon_fonts/broken_icons.dart';
 import '../../../core/app_strings.dart';
-import '../../../../providers/file_manager_provider.dart';
+import '../../../providers/file_manager_provider.dart';
 import '../../widgets/nfile_icon.dart';
 import '../internal_file_picker_screen.dart';
 

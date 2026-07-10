@@ -129,7 +129,7 @@ class AppListTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${app.packageName} â€¢ v${app.version}',
+                          '${app.packageName} • v${app.version}',
                           style: TextStyle(
                             color: theme.textTheme.bodySmall?.color?.withOpacity(0.55),
                             fontSize: 11,

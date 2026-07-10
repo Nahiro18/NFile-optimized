@@ -1258,7 +1258,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           ),
                         ),
                         subtitle: Text(
-                          '${conn.type} â€¢ ${conn.host}',
+                          '${conn.type} • ${conn.host}',
                           style: TextStyle(
                             fontSize: 12,
                             color: theme.colorScheme.onSurface.withOpacity(0.6),

@@ -557,6 +557,7 @@ class AppStrings {
   String typeLabel(String type) => (_localizedStrings['typeLabel'] ?? '{type}\'').replaceAll('{type}', type.toString());
   String defaultLabel(String val) => (_localizedStrings['defaultLabel'] ?? '{val}\'').replaceAll('{val}', val.toString());
   String errorCreatingFolder(String e) => (_localizedStrings['errorCreatingFolder'] ?? '{e}\'').replaceAll('{e}', e.toString());
+  String get errorShizukuNotRunning => _localizedStrings['errorShizukuNotRunning'] ?? 'Access denied. Shizuku is not running or authorized.';
   String get createFolder => _localizedStrings['createFolder'] ?? 'Create Folder';
   String get selectStorage => _localizedStrings['selectStorage'] ?? 'Select Storage';
   String get clearSelection => _localizedStrings['clearSelection'] ?? 'Clear Selection';

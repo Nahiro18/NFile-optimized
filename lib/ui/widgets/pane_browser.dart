@@ -809,7 +809,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                                   );
                                 } else {
                                   return Text(
-                                    '$countStr â€¢ ${FileUtils.formatDate(folder.modified, use24Hour: provider.use24HourFormat)}',
+                                    '$countStr • ${FileUtils.formatDate(folder.modified, use24Hour: provider.use24HourFormat)}',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.textTheme.bodySmall?.color?.withOpacity(0.55),
                                       fontSize: 10.5,

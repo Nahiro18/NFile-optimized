@@ -487,7 +487,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                 mimeType = match.mimeType ?? 'image/${f.path.split('.').last}';
               } else if (match.type == AssetType.video) {
                 final d = Duration(seconds: match.duration);
-                dimensionsOrDuration = '${match.width} x ${match.height} â€¢ ${d.inMinutes}:${(d.inSeconds % 60).toString().padLeft(2, "0")}';
+                dimensionsOrDuration = '${match.width} x ${match.height} • ${d.inMinutes}:${(d.inSeconds % 60).toString().padLeft(2, "0")}';
                 mimeType = match.mimeType ?? 'video/${f.path.split('.').last}';
               }
             }
@@ -1638,7 +1638,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
       title: Text(audio.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
       subtitle: Text(
         showDate
-            ? '${audio.artist ?? "Unknown Artist"} â€¢ $dateStr'
+            ? '${audio.artist ?? "Unknown Artist"} • $dateStr'
             : audio.artist ?? "Unknown Artist",
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -1737,7 +1737,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
       title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: Text(
         showDate
-            ? '${FileUtils.formatBytes(size, 1)} â€¢ ${FileUtils.formatDate(modified)}'
+            ? '${FileUtils.formatBytes(size, 1)} • ${FileUtils.formatDate(modified)}'
             : FileUtils.formatBytes(size, 1),
         style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 11),
       ),
@@ -1837,7 +1837,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
       title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: Text(
         showDate
-            ? '${FileUtils.formatBytes(size, 1)} â€¢ ${FileUtils.formatDate(modified)}'
+            ? '${FileUtils.formatBytes(size, 1)} • ${FileUtils.formatDate(modified)}'
             : FileUtils.formatBytes(size, 1),
         style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 11),
       ),

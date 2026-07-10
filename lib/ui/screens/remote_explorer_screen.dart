@@ -1166,7 +1166,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                                   subtitle: Text(
                                     item.isDirectory
                                         ? 'Directory'
-                                        : '${item.formattedSize} â€¢ ${item.modified.toLocal().toString().substring(0, 10)}',
+                                        : '${item.formattedSize} • ${item.modified.toLocal().toString().substring(0, 10)}',
                                     style: TextStyle(
                                       fontSize: 11.5,
                                       color: theme.colorScheme.onSurface

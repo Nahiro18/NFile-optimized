@@ -783,5 +783,6 @@
   "uiRecentFiles": "Recent Files",
   "uiViewAll": "View All",
   "uiRestrictedSystemFolder": "Restricted System Folder",
-  "uiAndroid11RestrictsStandardAccessTo": "Android 11+ restricts standard access to Android/data and Android/obb folders to protect app data. To view and modify these files, NFile requires advanced permissions."
+  "uiAndroid11RestrictsStandardAccessTo": "Android 11+ restricts standard access to Android/data and Android/obb folders to protect app data. To view and modify these files, NFile requires advanced permissions.",
+  "errorShizukuNotRunning": "Access denied. Shizuku is not running or authorized."
 }

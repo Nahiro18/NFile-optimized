@@ -380,7 +380,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
-                                          'Deleted: ${FileUtils.formatDate(item.deletedAt)} â€¢ ${FileUtils.formatBytes(item.size, 1)}',
+                                          'Deleted: ${FileUtils.formatDate(item.deletedAt)} • ${FileUtils.formatBytes(item.size, 1)}',
                                           style: theme.textTheme.bodySmall?.copyWith(
                                             color: theme.colorScheme.onSurface.withOpacity(0.6),
                                             fontSize: 11,
