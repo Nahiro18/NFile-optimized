@@ -50,6 +50,18 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
       _allSongs.isEmpty ? null : _allSongs[_currentIndex];
 
   String get _currentTitle => _currentSong?.title ?? widget.title;
+  
+  String _getQualityInfo(SongModel? song) {
+    if (song == null) return 'HQ Audio';
+    final ext = song.fileExtension.toUpperCase();
+    if (ext == 'FLAC' || ext == 'ALAC' || ext == 'WAV') {
+      return '$ext • Lossless';
+    } else if (ext == 'MP3' || ext == 'AAC' || ext == 'OGG' || ext == 'M4A' || ext == 'OPUS') {
+      return '$ext • HQ';
+    } else {
+      return ext.isNotEmpty ? '$ext • Audio' : 'HQ Audio';
+    }
+  }
   String get _currentArtist => _currentSong?.artist ?? widget.artist;
   int get _currentId => _currentSong?.id ?? 0;
   String get _currentPath => _currentSong?.data ?? widget.audioPath;
@@ -783,6 +795,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                           isPlaying: isPlaying,
                           position: position,
                           duration: duration,
+                          qualityInfo: _getQualityInfo(_currentSong),
                           onPlayPause: () => player.playOrPause(),
                           onPrevious: _allSongs.length > 1 ? _playPrevious : null,
                           onNext: _allSongs.length > 1 ? _playNext : null,

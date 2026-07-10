@@ -16,6 +16,7 @@ class AudioControlsWidget extends StatelessWidget {
   final int repeatMode; // 0=none, 1=one, 2=all
   final VoidCallback onToggleRepeat;
   final Color accentColor;
+  final String qualityInfo;
 
   const AudioControlsWidget({
     super.key,
@@ -32,6 +33,7 @@ class AudioControlsWidget extends StatelessWidget {
     required this.repeatMode,
     required this.onToggleRepeat,
     required this.accentColor,
+    this.qualityInfo = 'HQ Audio',
   });
 
   String _formatDuration(Duration d) {
@@ -159,7 +161,7 @@ class AudioControlsWidget extends StatelessWidget {
                       Icon(Icons.high_quality_rounded, color: accentColor, size: 16),
                       const SizedBox(width: 6),
                       Text(
-                        'FLAC • 24-bit',
+                        qualityInfo,
                         style: TextStyle(
                           color: accentColor,
                           fontSize: 12,
