@@ -499,7 +499,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                         title: AppStrings.current.appExitBehavior,
                         subtitle: fileManager.exitOption == 'confirm'
                             ? AppStrings.current.showConfirmationDialog
-                            : 'Double-press back button to exit',
+                            : AppStrings.current.doublePressBackToExit,
                         onTap: () => _showExitOptionPickerDialog(context, fileManager, theme),
                       ),
                     if (bottomActionBarVis)
@@ -854,7 +854,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   ],
                   if (_shouldShowHeader(mediaActionsList)) ...[
                     const SizedBox(height: 24),
-                    _buildSectionHeader(theme, 'Media & Default Actions'),
+                    _buildSectionHeader(theme, AppStrings.current.mediaAndDefaultActions),
                     if (preferFoldersVis)
                       SettingsTile(
                         icon: Broken.folder_2,
@@ -1294,7 +1294,7 @@ class GeneralSettingsScreen extends StatelessWidget {
               title: AppStrings.current.appExitBehavior,
               subtitle: fileManager.exitOption == 'confirm'
                   ? AppStrings.current.showConfirmationDialog
-                  : 'Double-press back button to exit',
+                  : AppStrings.current.doublePressBackToExit,
               onTap: () => _showExitOptionPickerDialog(context, fileManager, theme),
             ),
           ],
@@ -1909,7 +1909,7 @@ String _getMenuIconStyleLabel(String option) {
     case 'category': return AppStrings.current.categoryGridVuesax;
     case 'hamburger':
     default:
-      return 'Hamburger / Classic Menu';
+      return AppStrings.current.hamburgerClassicMenu;
   }
 }
 
@@ -1927,7 +1927,7 @@ String _getAppIconLabel(String option) {
 
 String _getFontFamilyLabel(String option) {
   switch (option) {
-    case 'nothing': return 'Dot-Matrix & Sans';
+    case 'nothing': return AppStrings.current.dotMatrixSans;
     case 'outfit': return AppStrings.current.outfitModernSans;
     case 'jetbrains': return AppStrings.current.jetBrainsTechMono;
     case 'montserrat': return AppStrings.current.montserratUrbanSans;
@@ -1939,9 +1939,9 @@ String _getFontFamilyLabel(String option) {
 }
 
 String _getAutoDeleteDaysLabel(int days) {
-  if (days <= 0) return 'Never (Auto-delete disabled)';
-  if (days == 1) return 'After 1 Day';
-  return 'After $days Days';
+  if (days <= 0) return AppStrings.current.neverAutoDeleteDisabled;
+  if (days == 1) return AppStrings.current.after1Day;
+  return AppStrings.current.afterNDays.replaceAll('{days}', days.toString());
 }
 
 String _getTrailingInfoTypeLabel(String option) {

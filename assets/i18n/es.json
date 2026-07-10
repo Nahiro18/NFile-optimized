@@ -600,5 +600,12 @@
   "nothingDotMatrix": "Nothing Dot-Matrix & Sans",
   "nothingDotMatrixDesc": "Encabezados retro de alta tecnología + cuerpo limpio",
   "appTypographyTitle": "Tipografía de la App",
-  "selectTypefaceDesc": "Selecciona una tipografía hermosa para personalizar el tema visual general de NFile"
+  "selectTypefaceDesc": "Selecciona una tipografía hermosa para personalizar el tema visual general de NFile",
+  "doublePressBackToExit": "Presiona atrás dos veces para salir",
+  "mediaAndDefaultActions": "Medios y Acciones Predeterminadas",
+  "hamburgerClassicMenu": "Menú Hamburguesa / Clásico",
+  "dotMatrixSans": "Dot-Matrix & Sans",
+  "neverAutoDeleteDisabled": "Nunca (Eliminación automática deshabilitada)",
+  "after1Day": "Después de 1 Día",
+  "afterNDays": "Después de {days} Días"
 }

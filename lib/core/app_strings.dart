@@ -664,6 +664,13 @@ class AppStrings {
   String get nothingDotMatrixDesc => _localizedStrings['nothingDotMatrixDesc'] ?? 'High-tech retro dot matrix headings + clean body';
   String get appTypographyTitle => _localizedStrings['appTypographyTitle'] ?? 'App Typography';
   String get selectTypefaceDesc => _localizedStrings['selectTypefaceDesc'] ?? "Select a beautiful typeface to customize NFile's overall visual theme";
+  String get doublePressBackToExit => _localizedStrings['doublePressBackToExit'] ?? 'Double-press back button to exit';
+  String get mediaAndDefaultActions => _localizedStrings['mediaAndDefaultActions'] ?? 'Media & Default Actions';
+  String get hamburgerClassicMenu => _localizedStrings['hamburgerClassicMenu'] ?? 'Hamburger / Classic Menu';
+  String get dotMatrixSans => _localizedStrings['dotMatrixSans'] ?? 'Dot-Matrix & Sans';
+  String get neverAutoDeleteDisabled => _localizedStrings['neverAutoDeleteDisabled'] ?? 'Never (Auto-delete disabled)';
+  String get after1Day => _localizedStrings['after1Day'] ?? 'After 1 Day';
+  String get afterNDays => _localizedStrings['afterNDays'] ?? 'After {days} Days';
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
