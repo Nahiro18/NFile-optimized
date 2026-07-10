@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +6,7 @@ import '../../../core/icon_fonts/broken_icons.dart';
 import '../../../providers/file_manager_provider.dart';
 import '../../../core/utils.dart';
 import '../../../services/app_manager_service.dart';
+import '../../../core/app_strings.dart';
 import '../media_category_screen.dart';
 import 'app_manager_screen.dart';
 
@@ -167,7 +168,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: _startStorageScan,
-            tooltip: 'Rescan Storage',
+            tooltip: AppStrings.current.rescanStorage,
           ),
         ],
       ),
@@ -266,7 +267,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
     final int freeSize = max(0, _totalStorageSize - _totalUsedSize);
 
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       child: Column(
         children: [
           // Circular progress card

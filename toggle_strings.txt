@@ -1,0 +1,65 @@
+﻿lib\services\settings_backup_service.dart	47	ToggleText: Set
+lib\services\settings_backup_service.dart	56	ToggleText: Failed to backup set
+lib\services\settings_backup_service.dart	112	ToggleText: Set
+lib\services\settings_backup_service.dart	121	ToggleText: Failed to restore set
+lib\ui\screens\audio_player\audio_player_screen.dart	288	ToggleText: Sleep timer set
+lib\ui\screens\audio_player\audio_player_screen.dart	360	ToggleText: Reset
+lib\ui\screens\audio_player\audio_player_screen.dart	502	ToggleText: Background playback enable
+lib\ui\screens\audio_player\audio_player_screen.dart	591	ToggleText: Set
+lib\ui\screens\storage_analyzer\widgets\app_batch_action_bar.dart	37	ToggleText: Are you sure you want to uninstall ${select
+lib\ui\screens\storage_analyzer\widgets\app_batch_action_bar.dart	83	ToggleText: Backing up select
+lib\ui\screens\all_recent_files_screen.dart	201	ToggleText: Copied ${_select
+lib\ui\screens\all_recent_files_screen.dart	210	ToggleText: Cut ${_select
+lib\ui\screens\archive_viewer_screen.dart	266	ToggleText: Delete Select
+lib\ui\screens\archive_viewer_screen.dart	267	ToggleText: Are you sure you want to delete precisely these ${_select
+lib\ui\screens\archive_viewer_screen.dart	402	ToggleText: ${_select
+lib\ui\screens\backup_settings_screen.dart	55	ToggleText: Please select
+lib\ui\screens\database_reader_screen.dart	612	ToggleText: SELECT
+lib\ui\screens\directory_screen.dart	1460	ToggleText: Copied select
+lib\ui\screens\directory_screen.dart	1468	ToggleText: Cut select
+lib\ui\screens\document_viewer_screen.dart	461	ToggleText: Enable
+lib\ui\screens\ftp_server_screen.dart	113	ToggleText: Change
+lib\ui\screens\ftp_server_screen.dart	173	ToggleText: Set Use
+lib\ui\screens\ftp_server_screen.dart	194	ToggleText: Use
+lib\ui\screens\ftp_server_screen.dart	249	ToggleText: Stop the server before editing set
+lib\ui\screens\ftp_server_screen.dart	276	ToggleText: Change
+lib\ui\screens\ftp_server_screen.dart	286	ToggleText: Change
+lib\ui\screens\ftp_server_screen.dart	296	ToggleText: Set use
+lib\ui\screens\ftp_server_screen.dart	440	ToggleText: Use
+lib\ui\screens\ftp_server_screen.dart	450	ToggleText: Show
+lib\ui\screens\global_search_screen.dart	299	ToggleText: Copied ${_select
+lib\ui\screens\global_search_screen.dart	308	ToggleText: Cut ${_select
+lib\ui\screens\global_search_screen.dart	540	ToggleText: Select
+lib\ui\screens\internal_file_picker_screen.dart	532	ToggleText: Pin Select
+lib\ui\screens\internal_file_picker_screen.dart	547	ToggleText: Add Select
+lib\ui\screens\media_category_screen.dart	220	ToggleText: Confirm
+lib\ui\screens\media_category_screen.dart	221	ToggleText: Are you sure you want to permanently delete $count select
+lib\ui\screens\media_category_screen.dart	661	ToggleText: Confirm
+lib\ui\screens\media_category_screen.dart	695	ToggleText: Show
+lib\ui\screens\more_settings_screen.dart	244	ToggleText: More Set
+lib\ui\screens\more_settings_screen.dart	923	ToggleText: All default viewer choices have been reset
+lib\ui\screens\more_settings_screen.dart	1000	ToggleText: Please select
+lib\ui\screens\more_settings_screen.dart	1745	ToggleText: All default viewer choices have been reset
+lib\ui\screens\more_settings_screen.dart	1941	ToggleText: Choose
+lib\ui\screens\more_settings_screen.dart	2037	ToggleText: Choose
+lib\ui\screens\more_settings_screen.dart	2115	ToggleText: Choose
+lib\ui\screens\more_settings_screen.dart	2196	ToggleText: Choose
+lib\ui\screens\more_settings_screen.dart	2271	ToggleText: Choose
+lib\ui\screens\more_settings_screen.dart	2442	ToggleText: App icon switch
+lib\ui\screens\more_settings_screen.dart	2598	ToggleText: Failed to load the select
+lib\ui\screens\more_settings_screen.dart	2608	ToggleText: Please select
+lib\ui\screens\network_connection_wizard_screen.dart	167	ToggleText: System App Disable
+lib\ui\screens\recycle_bin_screen.dart	232	ToggleText: ${_select
+lib\ui\screens\text_editor_screen.dart	471	ToggleText: Select
+lib\ui\screens\text_editor_screen.dart	642	ToggleText: Syntax ($_select
+lib\ui\screens\vault_explorer_screen.dart	885	ToggleText: Restore (Unhide
+lib\ui\widgets\file_item.dart	160	ToggleText: Show
+lib\ui\widgets\folder_item.dart	238	ToggleText: Show
+lib\ui\widgets\restricted_folder_banner.dart	78	ToggleText: Use
+lib\ui\widgets\restricted_folder_banner.dart	98	ToggleText: How to set
+lib\ui\widgets\selection_action_bar.dart	50	ToggleText: Copied $select
+lib\ui\widgets\selection_action_bar.dart	61	ToggleText: Cut $select
+lib\ui\widgets\selection_action_bar.dart	222	ToggleText: Select
+lib\ui\widgets\selection_action_bar.dart	430	ToggleText: Select
+lib\ui\widgets\selection_context_bottom_sheet.dart	152	ToggleText: Copied $select
+lib\ui\widgets\selection_context_bottom_sheet.dart	164	ToggleText: Cut $select

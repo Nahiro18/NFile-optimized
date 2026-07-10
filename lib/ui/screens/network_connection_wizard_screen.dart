@@ -9,6 +9,7 @@ import '../../services/remote/ftp_client.dart';
 import '../../services/remote/sftp_client.dart';
 import '../../services/remote/webdav_client.dart';
 import '../../services/remote/lan_client.dart';
+import '../../core/app_strings.dart';
 
 class NetworkConnectionWizardScreen extends StatefulWidget {
   const NetworkConnectionWizardScreen({super.key});
@@ -160,11 +161,11 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
             context: context,
             builder: (ctx) => AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              title: const Row(
+              title: Row(
                 children: [
                   Icon(Icons.warning_amber_rounded, color: Colors.orange),
                   SizedBox(width: 8),
-                  Text('System App Disabled', style: TextStyle(fontFamily: 'LexendDeca', fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(AppStrings.current.systemAppDisabled, style: TextStyle(fontFamily: 'LexendDeca', fontSize: 18, fontWeight: FontWeight.bold)),
                 ],
               ),
               content: const Text(
@@ -177,7 +178,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text('OK', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(AppStrings.current.ok, style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -185,7 +186,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to request SAF folder: $e'),
+              content: Text(AppStrings.current.failedToRequestSaf(e.toString())),
               backgroundColor: Colors.redAccent,
               behavior: SnackBarBehavior.floating,
             ),
@@ -203,14 +204,14 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
 
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a connection name')),
+        SnackBar(content: Text(AppStrings.current.enterConnectionName)),
       );
       return;
     }
 
     if (_hostController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter server address / hostname')),
+        SnackBar(content: Text(AppStrings.current.enterServerAddress)),
       );
       return;
     }
@@ -310,7 +311,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
         _prevStep(); // Go back to credentials input
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Connection failed: $e'),
+            content: Text(AppStrings.current.connectionFailed(e.toString())),
             backgroundColor: Colors.redAccent,
             behavior: SnackBarBehavior.floating,
           ),
@@ -614,7 +615,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   onPressed: _prevStep,
-                  child: const Text('Back'),
+                  child: Text(AppStrings.current.back),
                 ),
               ),
               const SizedBox(width: 14),
@@ -631,7 +632,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Connect'),
+                      Text(AppStrings.current.connect),
                       const SizedBox(width: 6),
                       Icon(Icons.arrow_forward_rounded, size: 16, color: Colors.white.withOpacity(0.9)),
                     ],
@@ -869,7 +870,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
         Expanded(
           child: _buildProtocolButton(
             theme: theme,
-            label: 'HTTP',
+            label: AppStrings.current.http,
             isSelected: _webdavProtocol == 'http',
             onTap: () {
               setState(() {
@@ -885,7 +886,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
         Expanded(
           child: _buildProtocolButton(
             theme: theme,
-            label: 'HTTPS (Secure)',
+            label: AppStrings.current.httpsSecure,
             isSelected: _webdavProtocol == 'https',
             onTap: () {
               setState(() {

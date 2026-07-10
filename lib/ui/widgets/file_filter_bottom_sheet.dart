@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/file_filter_type.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 
 class FileFilterBottomSheet extends StatelessWidget {
   const FileFilterBottomSheet({super.key});
@@ -29,42 +30,42 @@ class FileFilterBottomSheet extends StatelessWidget {
     final List<_FilterItem> items = [
       _FilterItem(
         type: FileFilterType.all,
-        label: 'All Files',
+        label: AppStrings.current.allFiles,
         subtitle: 'Show all files and folders in this directory',
         icon: Broken.category,
         color: theme.colorScheme.primary,
       ),
       _FilterItem(
         type: FileFilterType.documents,
-        label: 'Documents only',
+        label: AppStrings.current.documentsOnly,
         subtitle: 'PDFs, Word docs, spreadsheets, texts, and e-books',
         icon: Broken.document,
         color: Colors.blueAccent,
       ),
       _FilterItem(
         type: FileFilterType.images,
-        label: 'Images only',
+        label: AppStrings.current.imagesOnly,
         subtitle: 'JPEGs, PNGs, WebPs, and raw photo formats',
         icon: Broken.image,
         color: Colors.purpleAccent,
       ),
       _FilterItem(
         type: FileFilterType.audio,
-        label: 'Audio only',
+        label: AppStrings.current.audioOnly,
         subtitle: 'MP3s, WAVs, AACs, and high-fidelity audios',
         icon: Broken.music,
         color: Colors.greenAccent,
       ),
       _FilterItem(
         type: FileFilterType.videos,
-        label: 'Videos only',
+        label: AppStrings.current.videosOnly,
         subtitle: 'MP4s, MKVs, WebMs, and high-res video clips',
         icon: Broken.video,
         color: Colors.redAccent,
       ),
       _FilterItem(
         type: FileFilterType.archives,
-        label: 'Archives only',
+        label: AppStrings.current.archivesOnly,
         subtitle: 'ZIPs, 7Zs, RARs, and other compressed assets',
         icon: Broken.archive,
         color: Colors.brown,
@@ -110,7 +111,7 @@ class FileFilterBottomSheet extends StatelessWidget {
             Flexible(
               child: ListView.builder(
                 shrinkWrap: true,
-                physics: const BouncingScrollPhysics(),
+                physics: const ClampingScrollPhysics(),
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   final item = items[index];

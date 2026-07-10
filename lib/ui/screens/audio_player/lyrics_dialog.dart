@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
@@ -7,7 +7,8 @@ import 'package:media_kit/media_kit.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
-import '../../../../core/icon_fonts/broken_icons.dart';
+import '../../../core/icon_fonts/broken_icons.dart';
+import '../../../core/app_strings.dart';
 import '../../../../providers/file_manager_provider.dart';
 import '../../widgets/nfile_icon.dart';
 import '../internal_file_picker_screen.dart';
@@ -209,7 +210,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
             WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToActive(animate: false));
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Lyrics loaded successfully', style: TextStyle(color: Colors.white)),
+                content: Text(AppStrings.current.lyricsLoaded, style: const TextStyle(color: Colors.white)),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -370,7 +371,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
               elevation: 0,
             ),
             icon: const Icon(Broken.document_upload, size: 18),
-            label: const Text('Load LRC File', style: TextStyle(fontWeight: FontWeight.bold)),
+            label: Text(AppStrings.current.loadLrcFile, style: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: _pickLrcManually,
           ),
         ],
@@ -388,7 +389,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                physics: const BouncingScrollPhysics(),
+                physics: const ClampingScrollPhysics(),
                 padding: EdgeInsets.symmetric(vertical: _viewportHeight / 2 - 30.0),
                 itemCount: _lyrics!.length,
                 itemBuilder: (context, idx) {
@@ -406,7 +407,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                       child: Text(
-                        line.text.isEmpty ? "♪" : line.text,
+                        line.text.isEmpty ? "â™ª" : line.text,
                         style: TextStyle(
                           color: isSelected ? theme.colorScheme.primary : Colors.white.withOpacity(0.4),
                           fontSize: isSelected ? 18 : 15,

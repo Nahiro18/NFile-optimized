@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 import '../../providers/media_provider.dart';
 import '../../providers/file_manager_provider.dart';
 import '../screens/media_category_screen.dart';
@@ -309,8 +310,8 @@ class _CustomizeCategoriesSheet extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Customize Shortcuts', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Done', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                      Text(AppStrings.current.customizeShortcuts, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                      TextButton(onPressed: () => Navigator.pop(context), child: Text(AppStrings.current.done, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
                     ],
                   ),
                 ),
@@ -329,7 +330,7 @@ class _CustomizeCategoriesSheet extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: OutlinedButton.icon(
                     icon: const NfileIcon(Broken.add, size: 20),
-                    label: const Text('Add Folder / File Shortcut', style: TextStyle(fontWeight: FontWeight.bold)),
+                    label: Text(AppStrings.current.addFolderFileShortcut, style: const TextStyle(fontWeight: FontWeight.bold)),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(46),
                       foregroundColor: theme.colorScheme.primary,
@@ -352,7 +353,7 @@ class _CustomizeCategoriesSheet extends StatelessWidget {
                 Expanded(
                   child: ReorderableListView.builder(
                     scrollController: scrollController,
-                    physics: const BouncingScrollPhysics(),
+                    physics: const ClampingScrollPhysics(),
                     onReorder: (oldIndex, newIndex) => provider.reorderCategory(oldIndex, newIndex),
                     itemCount: order.length,
                     itemBuilder: (context, index) {
@@ -481,7 +482,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                     });
                   },
                   visualDensity: VisualDensity.compact,
-                  tooltip: 'Custom Paths',
+                  tooltip: AppStrings.current.customPathsTooltip,
                 ),
               ],
             ],
@@ -489,7 +490,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
           subtitle: isCustom
               ? Text(widget.cat['path'] as String, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withOpacity(0.5)), maxLines: 1, overflow: TextOverflow.ellipsis)
               : (isStandardCategory && customPaths.isNotEmpty
-                  ? Text('${customPaths.length} custom path(s)', style: TextStyle(fontSize: 11, color: theme.colorScheme.primary, fontWeight: FontWeight.w500))
+                  ? Text(AppStrings.current.customPaths(customPaths.length), style: TextStyle(fontSize: 11, color: theme.colorScheme.primary, fontWeight: FontWeight.w500))
                   : null),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -497,7 +498,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
               if (isCustom) ...[
                 IconButton(
                   icon: const NfileIcon(Broken.trash, color: Colors.redAccent, size: 20),
-                  tooltip: 'Delete Shortcut',
+                  tooltip: AppStrings.current.deleteShortcut,
                   onPressed: () => widget.provider.removeCustomShortcut(label),
                 ),
                 const SizedBox(width: 4),
@@ -574,7 +575,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                         if (isExcluded)
                           IconButton(
                             icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 18),
-                            tooltip: 'Restore Location',
+                            tooltip: AppStrings.current.restoreLocation,
                             onPressed: () {
                               widget.provider.includeDefaultCategoryPath(label, path);
                             },
@@ -585,7 +586,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                         else
                           IconButton(
                             icon: const NfileIcon(Broken.trash, color: Colors.redAccent, size: 18),
-                            tooltip: 'Exclude Location',
+                            tooltip: AppStrings.current.excludeLocation,
                             onPressed: () {
                               widget.provider.excludeDefaultCategoryPath(label, path);
                             },
@@ -664,7 +665,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                     }
                   },
                   icon: const NfileIcon(Broken.folder_add, size: 16),
-                  label: const Text('Add Custom Path', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  label: Text(AppStrings.current.addCustomPath, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                   style: TextButton.styleFrom(
                     foregroundColor: theme.colorScheme.primary,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

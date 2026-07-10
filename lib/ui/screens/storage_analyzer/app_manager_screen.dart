@@ -4,6 +4,7 @@ import '../../../core/icon_fonts/broken_icons.dart';
 import '../../../models/app_info_model.dart';
 import '../../../services/app_manager_service.dart';
 import '../../../core/utils.dart';
+import '../../../core/app_strings.dart';
 import 'widgets/app_list_tab.dart';
 import 'widgets/backup_list_tab.dart';
 import 'widgets/app_options_sheet.dart';
@@ -176,7 +177,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
             IconButton(
               icon: const Icon(Broken.task_square),
               onPressed: () => _selectAll(processedApps),
-              tooltip: 'Select All',
+              tooltip: AppStrings.current.selectAll,
             )
           else
             IconButton(
@@ -187,7 +188,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
                   _backupTabKey = UniqueKey();
                 });
               },
-              tooltip: 'Refresh List',
+              tooltip: AppStrings.current.refreshList,
             ),
         ],
         bottom: TabBar(
@@ -271,12 +272,12 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
                       CheckedPopupMenuItem(
                         value: 'size',
                         checked: _sortBy == 'size',
-                        child: const Text('Sort by Size'),
+                        child: Text(AppStrings.current.sortBySize),
                       ),
                       CheckedPopupMenuItem(
                         value: 'name',
                         checked: _sortBy == 'name',
-                        child: const Text('Sort Alphabetically'),
+                        child: Text(AppStrings.current.sortAlphabetically),
                       ),
                       CheckedPopupMenuItem(
                         value: 'date',

@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../services/web_sharing_service.dart';
@@ -59,8 +60,8 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
     if (_webService.isLocalActive) {
       await _webService.stopLocalServer();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Local HTTP Sharing Server stopped.'),
+        SnackBar(
+          content: Text(AppStrings.current.webSharingStopped),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -70,7 +71,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
         await _webService.startLocalServer(rootPath);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Local HTTP Sharing Server started! URL: ${_webService.localServerUrl}'),
+            content: Text(AppStrings.current.webSharingStarted(_webService.localServerUrl as String)),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
@@ -78,7 +79,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error starting HTTP Server: $e'),
+            content: Text(AppStrings.current.errorStartingWeb(e.toString())),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.redAccent,
           ),
@@ -91,8 +92,8 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
     if (_webService.isInternetActive) {
       _webService.stopInternetTunnel();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Internet Share Tunnel deactivated.'),
+        SnackBar(
+          content: Text(AppStrings.current.internetShareDeactivated),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -127,7 +128,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
           await _webService.startInternetTunnel(shareDir);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Internet cloud tunnel online! Temporary link active.'),
+              content: Text(AppStrings.current.internetCloudTunnel),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
@@ -135,7 +136,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to start Cloud Share: $e'),
+              content: Text(AppStrings.current.failedToStartCloud(e.toString())),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.redAccent,
             ),
@@ -148,8 +149,8 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Link copied to clipboard!'),
+      SnackBar(
+        content: Text(AppStrings.current.linkCopied),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -240,7 +241,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                       elevation: 0,
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Close', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(AppStrings.current.close, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -403,7 +404,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
   // --- TAB 1: Local HTTP Server Streaming ---
   Widget _buildLocalShareView(ThemeData theme, bool isDark, String shareDir) {
     return ListView(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20.0),
       children: [
         const Text(
@@ -475,7 +476,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                             padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                           icon: const Icon(Broken.copy, size: 16),
-                          label: const Text('Copy URL', style: TextStyle(fontSize: 12.5)),
+                          label: Text(AppStrings.current.copyUrl, style: const TextStyle(fontSize: 12.5)),
                           onPressed: () => _copyToClipboard(_webService.localServerUrl),
                         ),
                       ),
@@ -488,7 +489,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                             padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                           icon: const Icon(Icons.qr_code_2_rounded, size: 16),
-                          label: const Text('QR Code', style: TextStyle(fontSize: 12.5)),
+                          label: Text(AppStrings.current.qrCode, style: const TextStyle(fontSize: 12.5)),
                           onPressed: () => _showQrCodeDialog(_webService.localServerUrl, 'Local Share'),
                         ),
                       ),
@@ -573,7 +574,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
   Widget _buildInternetShareView(ThemeData theme, bool isDark) {
     final shareDir = context.read<FileManagerProvider>().rootPath;
     return ListView(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20.0),
       children: [
         const Text(
@@ -645,7 +646,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                             padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                           icon: const Icon(Broken.copy, size: 16),
-                          label: const Text('Copy Link', style: TextStyle(fontSize: 12.5)),
+                          label: Text(AppStrings.current.copyLink, style: const TextStyle(fontSize: 12.5)),
                           onPressed: () => _copyToClipboard(_webService.internetShareLink),
                         ),
                       ),
@@ -658,7 +659,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                             padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                           icon: const Icon(Icons.qr_code_2_rounded, size: 16),
-                          label: const Text('QR Code', style: TextStyle(fontSize: 12.5)),
+                          label: Text(AppStrings.current.qrCode, style: const TextStyle(fontSize: 12.5)),
                           onPressed: () => _showQrCodeDialog(_webService.internetShareLink, 'Cloud Share'),
                         ),
                       ),

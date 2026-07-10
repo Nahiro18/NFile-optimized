@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
@@ -226,7 +226,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
               });
             },
             child: PhotoViewGallery.builder(
-              scrollPhysics: _isZoomed ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics(),
+              scrollPhysics: _isZoomed ? const NeverScrollableScrollPhysics() : const ClampingScrollPhysics(),
               pageController: _pageController,
               itemCount: totalCount,
               onPageChanged: (index) {

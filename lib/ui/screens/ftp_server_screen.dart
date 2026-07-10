@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../services/ftp_server_service.dart';
 import 'internal_file_picker_screen.dart';
@@ -36,8 +37,8 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
     if (_ftpService.isActive) {
       _ftpService.stop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('FTP Server stopped successfully'),
+        SnackBar(
+          content: Text(AppStrings.current.ftpServerStopped),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -51,7 +52,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
         await _ftpService.start();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('FTP Server started at ftp://${_ftpService.ipAddress}:${_ftpService.port}'),
+            content: Text(AppStrings.current.ftpServerStarted(_ftpService.ipAddress as String, _ftpService.port as int)),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
@@ -59,7 +60,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error starting FTP Server: $e'),
+            content: Text(AppStrings.current.errorStartingFtp(e.toString())),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.redAccent,
           ),
@@ -71,8 +72,8 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
   Future<void> _pickHomeDirectory() async {
     if (_ftpService.isActive) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please stop the server before changing configuration'),
+        SnackBar(
+          content: Text(AppStrings.current.stopServerBeforeConfig),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -94,8 +95,8 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
   void _showPortDialog() {
     if (_ftpService.isActive) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please stop the server before changing configuration'),
+        SnackBar(
+          content: Text(AppStrings.current.stopServerBeforeConfig),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -110,20 +111,20 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
         return AlertDialog(
           backgroundColor: theme.scaffoldBackgroundColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Change Port', style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(AppStrings.current.changePort, style: const TextStyle(fontWeight: FontWeight.bold)),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'Port Number',
-              hintText: 'e.g., 9999',
+              labelText: AppStrings.current.portNumber,
+              hintText: AppStrings.current.portHint,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(AppStrings.current.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -134,7 +135,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                   setState(() {});
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Invalid port number')),
+                    SnackBar(content: Text(AppStrings.current.invalidPort)),
                   );
                 }
               },
@@ -143,7 +144,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('Save'),
+              child: Text(AppStrings.current.save),
             ),
           ],
         );
@@ -154,8 +155,8 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
   void _showUserDialog() {
     if (_ftpService.isActive) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please stop the server before changing configuration'),
+        SnackBar(
+          content: Text(AppStrings.current.stopServerBeforeConfig),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -170,18 +171,18 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
         return AlertDialog(
           backgroundColor: theme.scaffoldBackgroundColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Set Username', style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(AppStrings.current.setUsername, style: const TextStyle(fontWeight: FontWeight.bold)),
           content: TextField(
             controller: controller,
             decoration: InputDecoration(
-              labelText: 'Username',
+              labelText: AppStrings.current.username,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(AppStrings.current.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -191,7 +192,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                   setState(() {});
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Username cannot be empty')),
+                    SnackBar(content: Text(AppStrings.current.usernameCannotBeEmpty)),
                   );
                 }
               },
@@ -200,7 +201,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('Save'),
+              child: Text(AppStrings.current.save),
             ),
           ],
         );
@@ -246,7 +247,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                 case 'anon':
                   if (_ftpService.isActive) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Stop the server before editing settings')),
+                      SnackBar(content: Text(AppStrings.current.stopServerBeforeEditing)),
                     );
                     return;
                   }
@@ -258,8 +259,8 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                   break;
                 case 'shortcut':
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('FTP Server shortcut added to home screen!'),
+                    SnackBar(
+                      content: Text(AppStrings.current.ftpShortcutAdded),
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
@@ -267,33 +268,33 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'cwd',
                 child: Row(
                   children: [
                     Icon(Broken.folder, size: 18),
                     SizedBox(width: 10),
-                    Text('Change directory'),
+                    Text(AppStrings.current.changeDirectory),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'port',
                 child: Row(
                   children: [
                     Icon(Icons.numbers_rounded, size: 18),
                     SizedBox(width: 10),
-                    Text('Change port'),
+                    Text(AppStrings.current.changePortOption),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'user',
                 child: Row(
                   children: [
                     Icon(Icons.person_outline_rounded, size: 18),
                     SizedBox(width: 10),
-                    Text('Set user'),
+                    Text(AppStrings.current.setUser),
                   ],
                 ),
               ),
@@ -307,17 +308,17 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                       color: _ftpService.anonymous ? theme.colorScheme.primary : null,
                     ),
                     const SizedBox(width: 10),
-                    const Text('Anonymous access'),
+                    Text(AppStrings.current.anonymousAccess),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'shortcut',
                 child: Row(
                   children: [
                     Icon(Icons.add_to_home_screen_rounded, size: 18),
                     SizedBox(width: 10),
-                    Text('Create shortcut'),
+                    Text(AppStrings.current.createShortcut),
                   ],
                 ),
               ),
@@ -332,7 +333,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   child: Column(
                     children: [
                       // Active/Inactive Card
@@ -420,7 +421,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                                 borderRadius: BorderRadius.circular(16),
                                 child: InputDecorator(
                                   decoration: InputDecoration(
-                                    labelText: 'Home directory',
+                                    labelText: AppStrings.current.homeDirectory,
                                     labelStyle: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                                     suffixIcon: const Icon(Broken.folder),
@@ -437,7 +438,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
 
                             // User Name Row
                             ListTile(
-                              title: const Text('User name', style: TextStyle(fontWeight: FontWeight.w500)),
+                              title: Text(AppStrings.current.userName, style: const TextStyle(fontWeight: FontWeight.w500)),
                               trailing: Text(
                                 _ftpService.anonymous ? 'Anonymous' : _ftpService.username,
                                 style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontWeight: FontWeight.bold),
@@ -447,7 +448,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
 
                             // Show Hidden Files Row
                             SwitchListTile(
-                              title: const Text('Show hidden files', style: TextStyle(fontWeight: FontWeight.w500)),
+                              title: Text(AppStrings.current.showHiddenFilesFtp, style: const TextStyle(fontWeight: FontWeight.w500)),
                               value: _ftpService.showHidden,
                               activeColor: theme.colorScheme.primary,
                               onChanged: (val) {
@@ -462,9 +463,9 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                             ),
 
                              // FTPES Row
-                             SwitchListTile(
-                               title: const Text('FTPES', style: TextStyle(fontWeight: FontWeight.w500)),
-                               subtitle: const Text('Secure FTP connection over explicit TLS', style: TextStyle(fontSize: 11.5)),
+                              SwitchListTile(
+                                title: Text(AppStrings.current.ftpes, style: const TextStyle(fontWeight: FontWeight.w500)),
+                                subtitle: Text(AppStrings.current.ftpesDescription, style: const TextStyle(fontSize: 11.5)),
                                value: _ftpesEnabled,
                                activeColor: theme.colorScheme.primary,
                                onChanged: (val) {

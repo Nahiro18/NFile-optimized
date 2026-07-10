@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../core/utils.dart';
 
@@ -208,7 +209,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.redAccent,
                   ),
-                  child: const Text('Cancel Paste', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(AppStrings.current.cancelPaste, style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 OutlinedButton(
                   onPressed: () async {
@@ -227,7 +228,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Rename'),
+                  child: Text(AppStrings.current.rename),
                 ),
                 OutlinedButton(
                   onPressed: () => Navigator.pop(
@@ -237,7 +238,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Skip'),
+                  child: Text(AppStrings.current.skip),
                 ),
                 OutlinedButton(
                   onPressed: () => Navigator.pop(
@@ -247,7 +248,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Keep Both'),
+                  child: Text(AppStrings.current.keepBoth),
                 ),
                 FilledButton(
                   onPressed: () => Navigator.pop(
@@ -257,7 +258,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: FilledButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Replace'),
+                  child: Text(AppStrings.current.replace),
                 ),
               ],
             ),
@@ -341,24 +342,23 @@ class _ConflictDialogState extends State<ConflictDialog> {
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Rename File'),
+        title: Text(AppStrings.current.renameFile),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'New filename',
+          decoration: InputDecoration(labelText: AppStrings.current.newFilename,
             border: OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.current.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('Rename'),
+            child: Text(AppStrings.current.rename),
           ),
         ],
       ),

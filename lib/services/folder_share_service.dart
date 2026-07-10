@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 import 'archive_service.dart';
+import '../core/app_strings.dart';
 
 class FolderShareService {
   /// Compresses folders into temporary ZIP archives and shares files + compressed folders natively.
@@ -81,7 +82,7 @@ class FolderShareService {
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No shareable items found.')),
+            SnackBar(content: Text(AppStrings.current.noShareableItems)),
           );
         }
       }
@@ -90,7 +91,7 @@ class FolderShareService {
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error preparing files to share: $e')),
+          SnackBar(content: Text(AppStrings.current.errorPreparingFiles(e.toString()))),
         );
       }
     } finally {

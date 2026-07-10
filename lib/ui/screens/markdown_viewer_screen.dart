@@ -1,8 +1,9 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:path/path.dart' as p;
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 
 class MarkdownViewerScreen extends StatefulWidget {
   final String filePath;
@@ -58,13 +59,13 @@ class _MarkdownViewerScreenState extends State<MarkdownViewerScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(p.basename(widget.filePath), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            Text('Markdown Preview', style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
+            Text(AppStrings.current.markdownPreview, style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
           ],
         ),
         actions: [
           IconButton(
             icon: const Icon(Broken.refresh_2),
-            tooltip: 'Reload',
+            tooltip: AppStrings.current.reload,
             onPressed: () {
               setState(() => _isLoading = true);
               _loadMarkdown();
@@ -77,7 +78,7 @@ class _MarkdownViewerScreenState extends State<MarkdownViewerScreen> {
           : Markdown(
               data: _markdownContent,
               selectable: true,
-              physics: const BouncingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
                 p: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
                 h1: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),

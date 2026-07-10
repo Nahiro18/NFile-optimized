@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 import '../../services/vault_service.dart';
 import 'vault_explorer_screen.dart';
 
@@ -327,13 +328,13 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
               _buildActionKeyButton(
                 icon: Icons.clear_rounded,
                 onPressed: _onClear,
-                tooltip: 'Clear All',
+                tooltip: AppStrings.current.clearAll,
               ),
               _buildKeyButton('0'),
               _buildActionKeyButton(
                 icon: Icons.backspace_rounded,
                 onPressed: _onDelete,
-                tooltip: 'Backspace',
+                tooltip: AppStrings.current.backspace,
               ),
             ],
           ),

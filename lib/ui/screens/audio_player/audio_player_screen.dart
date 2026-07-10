@@ -5,6 +5,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../core/icon_fonts/broken_icons.dart';
+import '../../../core/app_strings.dart';
 import '../../../services/audio_background_handler.dart';
 import '../../../services/preferences_service.dart';
 import 'audio_artwork_widget.dart';
@@ -243,7 +244,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'Lyrics',
+          barrierLabel: AppStrings.current.lyrics,
       barrierColor: Colors.black.withOpacity(0.4),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
@@ -274,18 +275,18 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
           children: [
             Icon(Broken.timer, color: Colors.deepPurpleAccent),
             const SizedBox(width: 10),
-            Text('Sleep Timer', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+            Text(AppStrings.current.sleepTimer, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [15, 30, 45, 60].map((mins) => ListTile(
-            title: Text('$mins Minutes', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+            title: Text(AppStrings.current.mins(mins), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
             trailing: const Icon(Icons.chevron_right_rounded, color: Colors.white54),
             onTap: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Sleep timer set for $mins minutes.', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                content: Text(AppStrings.current.sleepTimerSet(mins), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                 backgroundColor: Colors.deepPurpleAccent,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -309,7 +310,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
               children: [
                 const Icon(Icons.tune_rounded, color: Colors.deepPurpleAccent),
                 const SizedBox(width: 10),
-                Text('Sound & Speed FX', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                Text(AppStrings.current.soundAndSpeedFX, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
               ],
             ),
             content: Column(
@@ -318,7 +319,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Playback Speed', style: TextStyle(color: Colors.white70, fontSize: 15)),
+                    Text(AppStrings.current.playbackSpeed, style: const TextStyle(color: Colors.white70, fontSize: 15)),
                     Text('${_playbackSpeed.toStringAsFixed(2)}x', style: const TextStyle(color: Colors.deepPurpleAccent, fontWeight: FontWeight.bold, fontSize: 15)),
                   ],
                 ),
@@ -338,7 +339,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Pitch Adjustment', style: TextStyle(color: Colors.white70, fontSize: 15)),
+                    Text(AppStrings.current.pitchAdjustment, style: const TextStyle(color: Colors.white70, fontSize: 15)),
                     Text('${_pitch.toStringAsFixed(2)}x', style: const TextStyle(color: Colors.deepPurpleAccent, fontWeight: FontWeight.bold, fontSize: 15)),
                   ],
                 ),
@@ -357,7 +358,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
                   icon: const Icon(Icons.restart_alt_rounded, color: Colors.white70, size: 18),
-                  label: const Text('Reset to Default', style: TextStyle(color: Colors.white70)),
+                  label: Text(AppStrings.current.resetToDefault, style: const TextStyle(color: Colors.white70)),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: Colors.white.withOpacity(0.2)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -377,7 +378,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Done', style: TextStyle(color: Colors.deepPurpleAccent, fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(AppStrings.current.done, style: const TextStyle(color: Colors.deepPurpleAccent, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ],
           );
@@ -467,7 +468,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Background playback stopped'),
+            content: Text(AppStrings.current.backgroundPlaybackStopped),
             backgroundColor: Colors.blueGrey,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -499,7 +500,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Background playback enabled'),
+            content: Text(AppStrings.current.backgroundPlaybackEnabled),
           backgroundColor: Colors.deepPurpleAccent,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -572,7 +573,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
               const Divider(color: Colors.white12, height: 1),
               ListTile(
                 leading: Icon(Broken.document, color: Colors.white),
-                title: const Text('View Synchronized Lyrics', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                title: Text(AppStrings.current.viewSynchronizedLyrics, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                 onTap: () {
                   Navigator.pop(ctx);
                   _showLyricsDialog();
@@ -580,7 +581,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
               ),
               ListTile(
                 leading: const Icon(Icons.tune_rounded, color: Colors.white),
-                title: const Text('Sound FX & Equalizer', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                title: Text(AppStrings.current.soundFXAndEqualizer, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                 onTap: () {
                   Navigator.pop(ctx);
                   _showEqualizerDialog();
@@ -588,7 +589,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
               ),
               ListTile(
                 leading: Icon(Broken.timer, color: Colors.white),
-                title: const Text('Set Sleep Timer', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                title: Text(AppStrings.current.setSleepTimer, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                 onTap: () {
                   Navigator.pop(ctx);
                   _showSleepTimerDialog();
@@ -596,7 +597,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
               ),
               ListTile(
                 leading: const Icon(Icons.info_outline_rounded, color: Colors.white),
-                title: const Text('Audio File Info', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                title: Text(AppStrings.current.audioFileInfo, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                 subtitle: Text(_currentPath, style: const TextStyle(color: Colors.white54, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
                 onTap: () => Navigator.pop(ctx),
               ),

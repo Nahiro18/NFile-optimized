@@ -4,6 +4,7 @@ import '../../../../core/icon_fonts/broken_icons.dart';
 import '../../../../models/app_info_model.dart';
 import '../../../../services/app_manager_service.dart';
 import '../../../../core/utils.dart';
+import '../../../../core/app_strings.dart';
 
 class AppOptionsSheet extends StatelessWidget {
   final AppInfoModel app;
@@ -99,7 +100,7 @@ class AppOptionsSheet extends StatelessWidget {
             _buildBottomSheetActionItem(
               theme: theme,
               icon: Broken.play,
-              label: 'Launch Application',
+              label: AppStrings.current.launchApplication,
               color: theme.colorScheme.primary,
               onTap: () {
                 Navigator.pop(context);
@@ -109,7 +110,7 @@ class AppOptionsSheet extends StatelessWidget {
             _buildBottomSheetActionItem(
               theme: theme,
               icon: Broken.setting_4,
-              label: 'System Settings / Details',
+              label: AppStrings.current.systemSettingsDetails,
               color: Colors.blueAccent,
               onTap: () {
                 Navigator.pop(context);
@@ -119,12 +120,12 @@ class AppOptionsSheet extends StatelessWidget {
             _buildBottomSheetActionItem(
               theme: theme,
               icon: Broken.document_download,
-              label: 'Back Up APK',
+              label: AppStrings.current.backUpApk,
               color: Colors.orangeAccent,
               onTap: () async {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Backing up APK...')),
+                  SnackBar(content: Text(AppStrings.current.backingUpApk)),
                 );
                 final success = await AppManagerService.backupApp(app);
                 if (context.mounted) {
@@ -144,7 +145,7 @@ class AppOptionsSheet extends StatelessWidget {
             _buildBottomSheetActionItem(
               theme: theme,
               icon: Broken.export_1,
-              label: 'Share APK File',
+              label: AppStrings.current.shareApkFile,
               color: Colors.teal,
               onTap: () {
                 Navigator.pop(context);
@@ -155,7 +156,7 @@ class AppOptionsSheet extends StatelessWidget {
               _buildBottomSheetActionItem(
                 theme: theme,
                 icon: Broken.trash,
-                label: 'Uninstall Application',
+                label: AppStrings.current.uninstallApplication,
                 color: Colors.redAccent,
                 onTap: () {
                   Navigator.pop(context);

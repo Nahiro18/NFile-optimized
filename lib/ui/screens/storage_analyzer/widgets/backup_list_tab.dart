@@ -1,10 +1,11 @@
-import 'dart:typed_data';
+﻿import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../../../core/icon_fonts/broken_icons.dart';
 import '../../../../models/app_info_model.dart';
 import '../../../../services/app_manager_service.dart';
 import '../../../../services/apk_installer_service.dart';
 import '../../../../core/utils.dart';
+import '../../../../core/app_strings.dart';
 
 class BackupListTab extends StatefulWidget {
   final String searchQuery;
@@ -129,7 +130,7 @@ class _BackupListTabState extends State<BackupListTab> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            '${isApks ? "Split Bundle" : "Single APK"} • v${item['version']}',
+                            '${isApks ? "Split Bundle" : "Single APK"} â€¢ v${item['version']}',
                             style: TextStyle(
                               color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
                               fontSize: 12,
@@ -139,7 +140,7 @@ class _BackupListTabState extends State<BackupListTab> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Size: ${FileUtils.formatBytes(item['apkSize'] as int, 2)} • Backup Date: ${FileUtils.formatDate(item['installTime'] as DateTime, use24Hour: true).split('  ').first}',
+                            'Size: ${FileUtils.formatBytes(item['apkSize'] as int, 2)} â€¢ Backup Date: ${FileUtils.formatDate(item['installTime'] as DateTime, use24Hour: true).split('  ').first}',
                             style: TextStyle(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w600,
@@ -159,7 +160,7 @@ class _BackupListTabState extends State<BackupListTab> {
                 _buildBottomSheetActionItem(
                   theme: theme,
                   icon: Broken.document_upload,
-                  label: 'Restore / Install App',
+                  label: AppStrings.current.restoreInstallApp,
                   color: theme.colorScheme.primary,
                   onTap: () async {
                     Navigator.pop(context);
@@ -169,7 +170,7 @@ class _BackupListTabState extends State<BackupListTab> {
                 _buildBottomSheetActionItem(
                   theme: theme,
                   icon: Broken.export_1,
-                  label: 'Share Backup File',
+                  label: AppStrings.current.shareBackupFile,
                   color: Colors.teal,
                   onTap: () {
                     Navigator.pop(context);
@@ -190,7 +191,7 @@ class _BackupListTabState extends State<BackupListTab> {
                 _buildBottomSheetActionItem(
                   theme: theme,
                   icon: Broken.trash,
-                  label: 'Delete Backup File',
+                  label: AppStrings.current.deleteBackupFile,
                   color: Colors.redAccent,
                   onTap: () async {
                     Navigator.pop(context);
@@ -284,7 +285,7 @@ class _BackupListTabState extends State<BackupListTab> {
     }
 
     return ListView.builder(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: _backups.length,
       itemBuilder: (context, index) {
@@ -342,7 +343,7 @@ class _BackupListTabState extends State<BackupListTab> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${isApks ? "Split Bundle (APKS)" : "Single APK"} • v${item['version']}',
+                          '${isApks ? "Split Bundle (APKS)" : "Single APK"} â€¢ v${item['version']}',
                           style: TextStyle(
                             color: theme.textTheme.bodySmall?.color?.withOpacity(0.55),
                             fontSize: 11,

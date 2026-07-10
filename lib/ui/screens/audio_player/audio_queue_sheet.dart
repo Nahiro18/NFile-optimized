@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class AudioQueueSheet extends StatelessWidget {
@@ -61,7 +61,7 @@ class AudioQueueSheet extends StatelessWidget {
           const Divider(),
           Expanded(
             child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               itemCount: songs.length,
               itemBuilder: (context, index) {
                 final song = songs[index];

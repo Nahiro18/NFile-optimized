@@ -710,11 +710,11 @@ class MainActivity : AudioServiceFragmentActivity() {
         notificationsChannel?.setMethodCallHandler { call, result ->
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = "nfile_archive_channel"
-            val channelName = "NFile Archive Operations"
+            val channelName = getString(R.string.archive_channel_name)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW).apply {
-                    description = "Shows progress of file compression and extraction"
+                    description = getString(R.string.archive_channel_desc)
                 }
                 notificationManager.createNotificationChannel(channel)
             }
@@ -762,8 +762,8 @@ class MainActivity : AudioServiceFragmentActivity() {
                         .setContentIntent(openPendingIntent)
 
                     if (progress < max) {
-                        builder.addAction(android.R.drawable.ic_menu_view, "Open", openPendingIntent)
-                        builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Cancel", cancelPendingIntent)
+                        builder.addAction(android.R.drawable.ic_menu_view, "Abrir", openPendingIntent)
+                        builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Cancelar", cancelPendingIntent)
                     }
 
                     if (indeterminate) {

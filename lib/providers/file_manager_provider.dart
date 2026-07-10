@@ -21,6 +21,7 @@ import '../services/archive_service.dart';
 import '../services/apk_installer_service.dart';
 import '../ui/widgets/extract_archive_dialog.dart';
 import '../core/utils.dart';
+import '../core/app_strings.dart';
 import '../services/preferences_service.dart';
 import '../services/app_manager_service.dart';
 import '../models/custom_shortcut_model.dart';
@@ -1912,7 +1913,7 @@ class FileManagerProvider extends ChangeNotifier {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(_isCut ? 'Moved items successfully' : 'Copied items successfully'),
+              content: Text(_isCut ? AppStrings.current.movedItemsSuccessfully : AppStrings.current.copiedItemsSuccessfully),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -1922,7 +1923,7 @@ class FileManagerProvider extends ChangeNotifier {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to transfer: $e'),
+              content: Text(AppStrings.current.failedToTransfer(e.toString())),
               backgroundColor: Colors.redAccent,
               behavior: SnackBarBehavior.floating,
             ),
@@ -2316,7 +2317,7 @@ class FileManagerProvider extends ChangeNotifier {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to connect to remote server: $e'),
+            content: Text(AppStrings.current.failedToConnectRemote(e.toString())),
             backgroundColor: Colors.redAccent,
             behavior: SnackBarBehavior.floating,
           ),
@@ -2390,7 +2391,7 @@ class FileManagerProvider extends ChangeNotifier {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isCut ? 'Moved items successfully' : 'Copied items successfully'),
+            content: Text(_isCut ? AppStrings.current.movedItemsSuccessfully : AppStrings.current.copiedItemsSuccessfully),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -2958,7 +2959,7 @@ class FileManagerProvider extends ChangeNotifier {
 
     if (sourcePath == destPath || destFolderPath.startsWith(sourcePath + p.separator)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cannot move a folder inside itself or same location')),
+        SnackBar(content: Text(AppStrings.current.cannotMoveIntoItself)),
       );
       return;
     }
@@ -3006,14 +3007,14 @@ class FileManagerProvider extends ChangeNotifier {
       
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Moved $name successfully')),
+          SnackBar(content: Text(AppStrings.current.movedSuccessfully(name))),
         );
       }
     } catch (e) {
       debugPrint('Error moving item: $e');
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to move item: $e')),
+          SnackBar(content: Text(AppStrings.current.failedToMove(e.toString()))),
         );
       }
     }
@@ -3039,7 +3040,7 @@ class FileManagerProvider extends ChangeNotifier {
 
     if (sourcePath == destPath || destFolderPath.startsWith(sourcePath + p.separator)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cannot copy a folder inside itself or same location')),
+        SnackBar(content: Text(AppStrings.current.cannotCopyIntoItself)),
       );
       return;
     }
@@ -3077,14 +3078,14 @@ class FileManagerProvider extends ChangeNotifier {
       
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Copied $name successfully')),
+          SnackBar(content: Text(AppStrings.current.copedSuccessfully(name))),
         );
       }
     } catch (e) {
       debugPrint('Error copying item: $e');
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to copy item: $e')),
+          SnackBar(content: Text(AppStrings.current.failedToCopy(e.toString()))),
         );
       }
     }

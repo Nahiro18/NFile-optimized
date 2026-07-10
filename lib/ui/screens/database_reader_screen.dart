@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 
 class DatabaseReaderScreen extends StatefulWidget {
   final String filePath;
@@ -156,7 +157,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
     try {
       if (columns.isEmpty || rows.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No data to export.')),
+          SnackBar(content: Text(AppStrings.current.noDataToExport)),
         );
         return;
       }
@@ -188,13 +189,13 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Successfully exported to ${p.basename(exportFile.path)}'),
+          content: Text(AppStrings.current.exportedTo(p.basename(exportFile.path))),
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Export failed: $e'), backgroundColor: Colors.redAccent),
+        SnackBar(content: Text(AppStrings.current.exportFailed(e.toString())), backgroundColor: Colors.redAccent),
       );
     }
   }
@@ -278,7 +279,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
   Widget _buildBrowseTab(ThemeData theme) {
     if (_tables.isEmpty) {
       return Center(
-        child: Text('No tables found in this database.', style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+        child: Text(AppStrings.current.noTablesFound, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
       );
     }
 
@@ -346,7 +347,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                     ),
                     icon: const Icon(Broken.import, size: 20),
                     onPressed: () => _exportToCsv(_tableColumns, _tableRows, _selectedTable ?? 'table'),
-                    tooltip: 'Export Table to CSV',
+                    tooltip: AppStrings.current.exportTableToCsv,
                   ),
                 ],
               ),
@@ -364,7 +365,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                         controller: _searchController,
                         style: const TextStyle(fontSize: 13.5),
                         decoration: InputDecoration(
-                          hintText: 'Search rows...',
+                          hintText: AppStrings.current.searchRows,
                           prefixIcon: const Icon(Broken.search_normal, size: 16),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -409,7 +410,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                         children: [
                           Icon(Broken.info_circle, size: 36, color: theme.colorScheme.onSurface.withOpacity(0.3)),
                           const SizedBox(height: 8),
-                          Text('No rows found', style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+                          Text(AppStrings.current.noRowsFound, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
                         ],
                       ),
                     )
@@ -507,7 +508,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
   Widget _buildSchemaTab(ThemeData theme) {
     if (_schemaColumns.isEmpty) {
       return Center(
-        child: Text('No schema details loaded.', style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+        child: Text(AppStrings.current.noSchemaLoaded, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
       );
     }
 
@@ -572,9 +573,9 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Type: $type', style: TextStyle(fontSize: 12.5, color: theme.colorScheme.onSurface.withOpacity(0.7))),
+                  Text(AppStrings.current.typeLabel(type), style: TextStyle(fontSize: 12.5, color: theme.colorScheme.onSurface.withOpacity(0.7))),
                   if (dfltValue != null)
-                    Text('Default: $dfltValue', style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withOpacity(0.5))),
+                    Text(AppStrings.current.defaultLabel(dfltValue), style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withOpacity(0.5))),
                 ],
               ),
             ),
@@ -604,12 +605,12 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('SQL Editor', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: theme.colorScheme.primary)),
+                      Text(AppStrings.current.sqlEditor, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: theme.colorScheme.primary)),
                       Row(
                         children: [
                           TextButton(
                             style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
-                            child: const Text('SELECT template', style: TextStyle(fontSize: 12)),
+                            child: Text(AppStrings.current.selectTemplate, style: const TextStyle(fontSize: 12)),
                             onPressed: () {
                               if (_selectedTable != null) {
                                 _sqlController.text = "SELECT * FROM '$_selectedTable' LIMIT 10;";
@@ -633,8 +634,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                       fontSize: 13.5,
                       fontWeight: FontWeight.w500,
                     ),
-                    decoration: const InputDecoration(
-                      hintText: 'Enter SELECT query here...',
+                    decoration: InputDecoration(hintText: AppStrings.current.enterSelectQuery,
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(vertical: 8),
                     ),
@@ -649,7 +649,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                         IconButton(
                           icon: const Icon(Broken.import, size: 20),
                           onPressed: () => _exportToCsv(_sqlResultColumns, _sqlResultRows, 'query'),
-                          tooltip: 'Export Results to CSV',
+                          tooltip: AppStrings.current.exportResultsToCsv,
                         ),
                         const SizedBox(width: 8),
                       ],
@@ -661,7 +661,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                         icon: _isSqlRunning
                             ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                             : const Icon(Broken.play, size: 16),
-                        label: const Text('Run Query', style: TextStyle(fontWeight: FontWeight.bold)),
+                        label: Text(AppStrings.current.runQuery, style: const TextStyle(fontWeight: FontWeight.bold)),
                         onPressed: _isSqlRunning ? null : _runCustomSql,
                       ),
                     ],

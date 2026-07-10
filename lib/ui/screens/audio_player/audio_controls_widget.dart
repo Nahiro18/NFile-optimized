@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/icon_fonts/broken_icons.dart';
+import '../../../core/app_strings.dart';
 
 class AudioControlsWidget extends StatelessWidget {
   final bool isPlaying;
@@ -196,7 +197,7 @@ class AudioControlsWidget extends StatelessWidget {
                       iconSize: 22,
                       constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                       padding: EdgeInsets.zero,
-                      tooltip: 'Sound FX',
+                      tooltip: AppStrings.current.soundFX,
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
                       onPressed: onShowEqualizer,
                     ),
@@ -206,7 +207,7 @@ class AudioControlsWidget extends StatelessWidget {
                       iconSize: 22,
                       constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                       padding: EdgeInsets.zero,
-                      tooltip: 'Lyrics',
+                      tooltip: AppStrings.current.lyrics,
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
                       onPressed: onShowLyrics,
                     ),
@@ -216,7 +217,7 @@ class AudioControlsWidget extends StatelessWidget {
                       iconSize: 22,
                       constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                       padding: EdgeInsets.zero,
-                      tooltip: 'Sleep Timer',
+                      tooltip: AppStrings.current.sleepTimer,
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
                       onPressed: onShowSleepTimer,
                     ),
@@ -226,7 +227,7 @@ class AudioControlsWidget extends StatelessWidget {
                       iconSize: 22,
                       constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                       padding: EdgeInsets.zero,
-                      tooltip: 'Playing Queue',
+                      tooltip: AppStrings.current.playingQueue,
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
                       onPressed: onShowQueue,
                     ),

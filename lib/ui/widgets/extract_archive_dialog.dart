@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 
 class ExtractArchiveResult {
@@ -98,7 +99,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
               TextField(
                 controller: _destController,
                 decoration: InputDecoration(
-                  labelText: 'Extract to Folder',
+                  labelText: AppStrings.current.extractToFolder,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   prefixIcon: const Icon(Broken.folder_open),
                 ),
@@ -110,7 +111,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
-                  labelText: 'Password (if encrypted)',
+                  labelText: AppStrings.current.passwordIfEncrypted,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   prefixIcon: const Icon(Broken.lock),
                   suffixIcon: IconButton(
@@ -126,7 +127,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(AppStrings.current.cancel),
                   ),
                   const SizedBox(width: 12),
                   FilledButton(
@@ -142,7 +143,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
                         ),
                       );
                     },
-                    child: const Text('Extract'),
+                    child: Text(AppStrings.current.extract),
                   ),
                 ],
               ),

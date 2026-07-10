@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import '../../providers/file_manager_provider.dart';
 import '../../services/archive_service.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 import '../../core/utils.dart';
 import 'create_archive_dialog.dart';
 import '../screens/internal_file_picker_screen.dart';
@@ -289,7 +290,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 _buildActionCard(
                   theme: theme,
                   action: 'archive',
-                  title: 'Archive here',
+                  title: AppStrings.current.archive,
                   subtitle: 'Compress item into a zip/tar archive here',
                   icon: Broken.box_add,
                   color: Colors.teal,
@@ -307,7 +308,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
                       child: Text(
-                        'Cancel',
+                          AppStrings.current.cancel,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.onSurface.withOpacity(0.55),
@@ -335,8 +336,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                         ),
                         onPressed: () => _executeAction(provider),
-                        child: const Text(
-                          'Apply',
+                        child: Text(AppStrings.current.ok,
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 14,
@@ -605,7 +605,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
       provider.clearSelection();
     } else if (_selectedAction == 'archive') {
       final isSingle = widget.sourcePaths.length == 1;
-      final initialName = isSingle ? p.basename(widget.sourcePaths.first) : 'Archive';
+      final initialName = isSingle ? p.basename(widget.sourcePaths.first) : AppStrings.current.archive;
       if (!stableContext.mounted) return;
       final res = await CreateArchiveDialog.show(stableContext, initialName: initialName, isMultiSelection: !isSingle);
 
@@ -629,7 +629,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
           if (stableContext.mounted) {
             ScaffoldMessenger.of(stableContext).showSnackBar(
               SnackBar(
-                content: Text('Archive "${res.archiveName}.${res.format}" created successfully!'),
+                content: Text(AppStrings.current.archiveCreatedSuccessfully(res.archiveName, res.format)),
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -639,7 +639,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
           if (stableContext.mounted) {
             ScaffoldMessenger.of(stableContext).showSnackBar(
               SnackBar(
-                content: Text('Failed to create archive: $e'),
+                content: Text(AppStrings.current.createArchiveFailed(e.toString())),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
               ),

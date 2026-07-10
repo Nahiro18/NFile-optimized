@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+﻿import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../../../core/icon_fonts/broken_icons.dart';
 import '../../../../models/app_info_model.dart';
@@ -58,7 +58,7 @@ class AppListTab extends StatelessWidget {
     }
 
     return ListView.builder(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: apps.length,
       itemBuilder: (context, index) {
@@ -128,7 +128,7 @@ class AppListTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${app.packageName} • v${app.version}',
+                          '${app.packageName} â€¢ v${app.version}',
                           style: TextStyle(
                             color: theme.textTheme.bodySmall?.color?.withOpacity(0.55),
                             fontSize: 11,
