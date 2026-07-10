@@ -263,8 +263,8 @@ class _BackupListTabState extends State<BackupListTab> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'No backups found',
+              Text(
+                AppStrings.current.uiNoBackupsFound,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 4),

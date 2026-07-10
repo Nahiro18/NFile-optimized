@@ -4,6 +4,7 @@ import '../../core/icon_fonts/broken_icons.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../core/utils.dart';
 
+import '../../core/app_strings.dart';
 class PremiumStorageOverview extends StatelessWidget {
   final VoidCallback onBrowseStorage;
 
@@ -93,7 +94,7 @@ class PremiumStorageOverview extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Internal Storage',
+                              AppStrings.current.uiInternalStorage,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -105,7 +106,7 @@ class PremiumStorageOverview extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Browse device files',
+                              AppStrings.current.uiBrowseDeviceFiles,
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.8),
                                 fontSize: 11.5,
@@ -129,7 +130,7 @@ class PremiumStorageOverview extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Browse',
+                              AppStrings.current.browse,
                               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 11.5),
                             ),
                             SizedBox(width: 4),

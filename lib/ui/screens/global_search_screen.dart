@@ -62,10 +62,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
 
   final List<String> _filters = [
     'All',
-    'Folders',
-    'Images',
-    'Videos',
-    'Audio',
+    AppStrings.current.uiFolders,
+    AppStrings.current.uiImages,
+    AppStrings.current.uiVideos,
+    AppStrings.current.uiAudio,
     'Docs',
   ];
 
@@ -169,7 +169,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       }
     }
 
-    if (_selectedFilter == 'All' || _selectedFilter == 'Audio') {
+    if (_selectedFilter == 'All' || _selectedFilter == AppStrings.current.uiAudio) {
       for (final song in mediaProvider.audios) {
         final path = song.data;
         if (!isGlobal && !path.startsWith(rootPath)) continue;
@@ -213,13 +213,13 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           bool matchFilter = false;
           if (_selectedFilter == 'All') {
             matchFilter = true;
-          } else if (_selectedFilter == 'Folders' && isDir) {
+          } else if (_selectedFilter == AppStrings.current.uiFolders && isDir) {
             matchFilter = true;
-          } else if (_selectedFilter == 'Images' && !isDir && _isImage(name)) {
+          } else if (_selectedFilter == AppStrings.current.uiImages && !isDir && _isImage(name)) {
             matchFilter = true;
-          } else if (_selectedFilter == 'Videos' && !isDir && _isVideo(name)) {
+          } else if (_selectedFilter == AppStrings.current.uiVideos && !isDir && _isVideo(name)) {
             matchFilter = true;
-          } else if (_selectedFilter == 'Audio' && !isDir && _isAudio(name)) {
+          } else if (_selectedFilter == AppStrings.current.uiAudio && !isDir && _isAudio(name)) {
             matchFilter = true;
           } else if (_selectedFilter == 'Docs' && !isDir && _isDoc(name)) {
             matchFilter = true;
@@ -336,7 +336,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     if (_selectedPaths.isEmpty) return;
     final confirm = await FileActionDialogs.showConfirmDialog(
       context,
-      title: 'Delete Selected',
+      title: AppStrings.current.deleteSelected,
       content: 'Are you sure you want to delete ${_selectedPaths.length} selected item(s)? This cannot be undone.',
     );
 
@@ -394,10 +394,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           final currentName = p.basename(path);
           final newName = await FileActionDialogs.showTextInputDialog(
             context,
-            title: 'Rename',
+            title: AppStrings.current.rename,
             hint: 'Enter new name',
             initialValue: currentName,
-            actionText: 'Rename',
+            actionText: AppStrings.current.rename,
           );
           if (newName != null && newName.isNotEmpty) {
             await provider.renameFile(path, newName);
@@ -412,7 +412,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         final isMulti = _selectedPaths.isNotEmpty && _selectedPaths.contains(path);
         final confirm = await FileActionDialogs.showConfirmDialog(
           context,
-          title: isMulti ? 'Delete Selected' : 'Delete File',
+          title: isMulti ? AppStrings.current.deleteSelected : AppStrings.current.uiDeleteFile,
           content: isMulti
               ? 'Are you sure you want to delete ${_selectedPaths.length} selected item(s)? This cannot be undone.'
               : 'Are you sure you want to delete this item? This cannot be undone.',
@@ -672,7 +672,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                     ? _buildEmptyState(
                         theme,
                         Broken.document_filter,
-                        'No results found',
+                        AppStrings.current.uiNoResultsFound,
                         'We could not find anything matching "$_query" under $_selectedFilter',
                       )
                     : ListView.builder(

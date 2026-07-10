@@ -100,9 +100,9 @@ class _ConflictDialogState extends State<ConflictDialog> {
         children: [
           Icon(Broken.warning_2, color: Colors.orange, size: 28),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Text(
-              'File Already Exists',
+              AppStrings.current.uiFileAlreadyExists,
               style: TextStyle(fontWeight: FontWeight.bold),
               overflow: TextOverflow.ellipsis,
             ),
@@ -133,7 +133,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   Expanded(
                     child: _buildFileComparisonCard(
                       theme: theme,
-                      title: 'Existing File',
+                      title: AppStrings.current.uiExistingFile,
                       size: _destStat.size,
                       modified: _destStat.modified,
                       isNewer: _destStat.modified.isAfter(_sourceStat.modified),
@@ -144,7 +144,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   Expanded(
                     child: _buildFileComparisonCard(
                       theme: theme,
-                      title: 'New File',
+                      title: AppStrings.current.uiNewFile,
                       size: _sourceStat.size,
                       modified: _sourceStat.modified,
                       isNewer: _sourceStat.modified.isAfter(_destStat.modified),
@@ -181,7 +181,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Apply to all remaining conflicts',
+                        AppStrings.current.uiApplyToAllRemainingConflicts,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: theme.colorScheme.onSurface.withOpacity(0.8),
@@ -309,7 +309,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    'Newer',
+                    AppStrings.current.uiNewer,
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,

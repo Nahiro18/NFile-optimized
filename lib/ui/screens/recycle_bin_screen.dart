@@ -516,7 +516,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Recycle Bin is Empty',
+              AppStrings.current.uiRecycleBinIsEmpty,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -524,7 +524,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Items you delete when Recycle Bin is enabled will appear here. You can restore them or permanently delete them.',
+              AppStrings.current.uiItemsYouDeleteWhenRecycleBin,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.5),
               ),

@@ -55,13 +55,13 @@ class RestrictedFolderBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Restricted System Folder',
+                  AppStrings.current.uiRestrictedSystemFolder,
                   style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Android 11+ restricts standard access to Android/data and Android/obb folders to protect app data. To view and modify these files, NFile requires advanced permissions.',
+                  AppStrings.current.uiAndroid11RestrictsStandardAccessTo,
                   style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface.withOpacity(0.8), height: 1.4),
                   textAlign: TextAlign.center,
                 ),

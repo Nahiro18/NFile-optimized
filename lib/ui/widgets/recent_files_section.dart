@@ -8,6 +8,7 @@ import '../../models/file_item_model.dart';
 import '../screens/all_recent_files_screen.dart';
 import 'file_item.dart';
 
+import '../../core/app_strings.dart';
 class RecentFilesSection extends StatelessWidget {
   final Function(int)? onNavigateTab;
   const RecentFilesSection({super.key, this.onNavigateTab});
@@ -52,7 +53,7 @@ class RecentFilesSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Recent Files',
+                  AppStrings.current.uiRecentFiles,
                   style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 InkWell(
@@ -66,7 +67,7 @@ class RecentFilesSection extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                     child: Text(
-                      'View All',
+                      AppStrings.current.uiViewAll,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,

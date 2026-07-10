@@ -11,6 +11,7 @@ import '../providers/file_manager_provider.dart';
 import 'package:provider/provider.dart';
 import '../ui/widgets/background_operation_progress_dialog.dart';
 
+import '../core/app_strings.dart';
 class BackgroundOperation {
   final String id;
   final String title;
@@ -65,7 +66,7 @@ class BackgroundArchiveService {
     final archiveName = p.basename(destinationPath);
     final operation = BackgroundOperation(
       id: 'compress_${DateTime.now().millisecondsSinceEpoch}',
-      title: 'Compressing Files',
+      title: AppStrings.current.uiCompressingFiles,
       archiveName: archiveName,
       isCompression: true,
     );
@@ -124,7 +125,7 @@ class BackgroundArchiveService {
     final archiveName = p.basename(archivePath);
     final operation = BackgroundOperation(
       id: 'extract_${DateTime.now().millisecondsSinceEpoch}',
-      title: 'Extracting Archive',
+      title: AppStrings.current.uiExtractingArchive,
       archiveName: archiveName,
       isCompression: false,
     );

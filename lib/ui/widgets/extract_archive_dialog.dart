@@ -79,7 +79,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Extract Archive',
+                          AppStrings.current.uiExtractArchive,
                           style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(

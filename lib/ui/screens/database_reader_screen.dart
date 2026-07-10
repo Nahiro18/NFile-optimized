@@ -224,7 +224,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             Text(
-              'SQLite Database Reader',
+              AppStrings.current.uiSqliteDatabaseReader,
               style: TextStyle(fontSize: 11.5, color: theme.colorScheme.onSurface.withOpacity(0.5)),
             ),
           ],
@@ -252,7 +252,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                         Icon(Broken.danger, size: 48, color: theme.colorScheme.error),
                         const SizedBox(height: 16),
                         Text(
-                          'Failed to open database',
+                          AppStrings.current.uiFailedToOpenDatabase,
                           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
@@ -547,7 +547,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      'PK',
+                      AppStrings.current.uiPk,
                       style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                     ),
                   ),
@@ -560,8 +560,8 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                       color: Colors.redAccent.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Text(
-                      'NOT NULL',
+                    child: Text(
+                      AppStrings.current.uiNotNull,
                       style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Colors.redAccent),
                     ),
                   ),

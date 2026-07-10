@@ -169,7 +169,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
                 style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               )
             : Text(
-                'App Manager',
+                AppStrings.current.uiAppManager,
                 style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
         actions: [
@@ -355,9 +355,9 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
             children: [
               Icon(Broken.info_circle, color: theme.colorScheme.primary, size: 20),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Exact Storage Calculation',
+                  AppStrings.current.uiExactStorageCalculation,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ),
@@ -365,7 +365,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
           ),
           const SizedBox(height: 6),
           Text(
-            'To see exact app storage sizes (APK + data + cache) instead of just the raw installer size, please enable the Usage Access permission for NFile in System Settings.',
+            AppStrings.current.uiToSeeExactAppStorageSizes,
             style: TextStyle(
               fontSize: 12.5,
               color: theme.textTheme.bodyMedium?.color?.withOpacity(0.8),
@@ -389,8 +389,8 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
                   _loadApplications();
                 });
               },
-              child: const Text(
-                'Grant Usage Access Permission',
+              child: Text(
+                AppStrings.current.uiGrantUsageAccessPermission,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               ),
             ),

@@ -14,7 +14,7 @@ class FolderShareService {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => const Center(
+      builder: (ctx) => Center(
         child: Card(
           child: Padding(
             padding: EdgeInsets.all(24.0),
@@ -24,12 +24,12 @@ class FolderShareService {
                 CircularProgressIndicator(),
                 SizedBox(height: 16),
                 Text(
-                  'Preparing folders for sharing...',
+                  AppStrings.current.uiPreparingFoldersForSharing,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Compressing contents, please wait',
+                  AppStrings.current.uiCompressingContentsPleaseWait,
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],

@@ -27,15 +27,15 @@ class BackupSettingsScreen extends StatelessWidget {
           children: [
             _BackupSettingsTile(
               icon: Broken.document_upload,
-              title: 'Backup Settings',
-              subtitle: 'Save all your current settings to NFile/Backups/Settings/',
+              title: AppStrings.current.backupSettings,
+              subtitle: AppStrings.current.backupSettingsSub,
               onTap: () => SettingsBackupService.backupSettings(context),
             ),
             const SizedBox(height: 8),
             _BackupSettingsTile(
               icon: Broken.document_download,
-              title: 'Restore Settings',
-              subtitle: 'Select and restore settings from a JSON backup file',
+              title: AppStrings.current.restoreSettings,
+              subtitle: AppStrings.current.restoreSettingsSub,
               onTap: () async {
                 final pickedPaths = await InternalFilePickerScreen.show(
                   context,

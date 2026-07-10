@@ -154,7 +154,7 @@ class FileManagerProvider extends ChangeNotifier {
     if (_totalStorageBytes > 0) {
       _storageVolumes = [
         StorageVolume(
-          name: 'Internal Storage',
+          name: AppStrings.current.uiInternalStorage,
           path: '/storage/emulated/0',
           isInternal: true,
           totalBytes: _totalStorageBytes,
@@ -1121,7 +1121,7 @@ class FileManagerProvider extends ChangeNotifier {
       }
     }
 
-    if (filter == 'All' || filter == 'Audio') {
+    if (filter == 'All' || filter == AppStrings.current.uiAudio) {
       for (final song in mediaProvider.audios) {
         final path = song.data;
         if (!isGlobal && !path.startsWith(rootPath)) continue;
@@ -1182,13 +1182,13 @@ class FileManagerProvider extends ChangeNotifier {
           bool matchFilter = false;
           if (filter == 'All') {
             matchFilter = true;
-          } else if (filter == 'Folders' && isDir) {
+          } else if (filter == AppStrings.current.uiFolders && isDir) {
             matchFilter = true;
-          } else if (filter == 'Images' && !isDir && isImage(name)) {
+          } else if (filter == AppStrings.current.uiImages && !isDir && isImage(name)) {
             matchFilter = true;
-          } else if (filter == 'Videos' && !isDir && isVideo(name)) {
+          } else if (filter == AppStrings.current.uiVideos && !isDir && isVideo(name)) {
             matchFilter = true;
-          } else if (filter == 'Audio' && !isDir && isAudio(name)) {
+          } else if (filter == AppStrings.current.uiAudio && !isDir && isAudio(name)) {
             matchFilter = true;
           } else if (filter == 'Docs' && !isDir && isDoc(name)) {
             matchFilter = true;
@@ -1454,7 +1454,7 @@ class FileManagerProvider extends ChangeNotifier {
   Future<void> _detectStorageVolumes() async {
     final volumes = <StorageVolume>[];
     if (Platform.isAndroid) {
-      volumes.add(StorageVolume(name: 'Internal Storage', path: '/storage/emulated/0', isInternal: true));
+      volumes.add(StorageVolume(name: AppStrings.current.uiInternalStorage, path: '/storage/emulated/0', isInternal: true));
 
       try {
         final extDirs = await getExternalStorageDirectories();
@@ -1493,7 +1493,7 @@ class FileManagerProvider extends ChangeNotifier {
       } catch (_) {}
     } else {
       final dir = await getApplicationDocumentsDirectory();
-      volumes.add(StorageVolume(name: 'Documents', path: dir.path, isInternal: true));
+      volumes.add(StorageVolume(name: AppStrings.current.uiDocuments, path: dir.path, isInternal: true));
     }
     _storageVolumes = volumes;
     await updateStorageSpace();
@@ -1952,7 +1952,7 @@ class FileManagerProvider extends ChangeNotifier {
           if (context.mounted) {
             await FileActionDialogs.showWarningDialog(
               context,
-              title: 'Operation Cancelled',
+              title: AppStrings.current.uiOperationCancelled,
               content: 'Cannot cut and paste a file into the same folder.',
             );
           }
@@ -2401,7 +2401,7 @@ class FileManagerProvider extends ChangeNotifier {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString().contains('Cancelled') ? 'Operation Cancelled' : 'Transfer failed: $e'),
+            content: Text(e.toString().contains('Cancelled') ? AppStrings.current.uiOperationCancelled : 'Transfer failed: $e'),
             backgroundColor: e.toString().contains('Cancelled') ? null : Colors.redAccent,
             behavior: SnackBarBehavior.floating,
           ),
@@ -2674,7 +2674,7 @@ class FileManagerProvider extends ChangeNotifier {
         if (context != null && context.mounted) {
           await FileActionDialogs.showWarningDialog(
             context,
-            title: 'Compression Limit Exceeded',
+            title: AppStrings.current.uiCompressionLimitExceeded,
             content: 'TAR.ZSTD and TAR.LZ4 formats are highly memory-intensive and optimized for files under 600MB. Please use the ZIP or TAR format for larger files.',
           );
         }

@@ -350,14 +350,14 @@ class _LyricsDialogState extends State<LyricsDialog> {
             child: Icon(Broken.music, size: 48, color: Colors.white.withOpacity(0.3)),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'No Synchronized Lyrics Found',
+          Text(
+            AppStrings.current.uiNoSynchronizedLyricsFound,
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
           Text(
-            'Keep a .lrc file with the exact same name next to your song, or select it manually below.',
+            AppStrings.current.uiKeepALrcFileWithThe,
             style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 13, height: 1.5),
             textAlign: TextAlign.center,
           ),
@@ -436,7 +436,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
               width: double.infinity,
               color: Colors.black26,
               child: Text(
-                'Tap a line to seek playback',
+                AppStrings.current.uiTapALineToSeekPlayback,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.35),
                   fontSize: 11,

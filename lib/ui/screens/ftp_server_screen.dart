@@ -226,7 +226,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'FTP Server',
+          AppStrings.current.ftpServerChannelName,
           style: TextStyle(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 20),
         ),
         actions: [
@@ -366,7 +366,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
-                                  isActive ? 'Active' : 'Inactive',
+                                  isActive ? AppStrings.current.uiActive : 'Inactive',
                                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
                               ],
@@ -376,11 +376,11 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Network status',
+                                  AppStrings.current.uiNetworkStatus,
                                   style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontWeight: FontWeight.w500),
                                 ),
-                                const Text(
-                                  'Connected',
+                                Text(
+                                  AppStrings.current.uiConnected,
                                   style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -390,7 +390,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Server address',
+                                  AppStrings.current.uiServerAddress,
                                   style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontWeight: FontWeight.w500),
                                 ),
                                 SelectableText(

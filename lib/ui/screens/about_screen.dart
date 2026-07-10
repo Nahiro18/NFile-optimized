@@ -52,7 +52,7 @@ class AboutNFileScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                'About NFile',
+                AppStrings.current.aboutNFile,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -203,7 +203,7 @@ class AboutNFileScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 4.0),
                       child: Text(
-                        'Core Highlights',
+                        AppStrings.current.uiCoreHighlights,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -226,26 +226,26 @@ class AboutNFileScreen extends StatelessWidget {
                       _buildFeatureTile(
                         context,
                         icon: Broken.flash,
-                        title: 'Extreme Speed',
-                        subtitle: 'Stateless caching & async scans',
+                        title: AppStrings.current.uiExtremeSpeed,
+                        subtitle: AppStrings.current.uiStatelessCachingAsyncScans,
                       ),
                       _buildFeatureTile(
                         context,
                         icon: Broken.lock,
-                        title: 'Vault Secure',
-                        subtitle: 'Encrypted safe workspace',
+                        title: AppStrings.current.uiVaultSecure,
+                        subtitle: AppStrings.current.uiEncryptedSafeWorkspace,
                       ),
                       _buildFeatureTile(
                         context,
                         icon: Broken.wifi_square,
-                        title: 'Servers Hub',
-                        subtitle: 'FTP, LAN, SFTP & WebDAV',
+                        title: AppStrings.current.uiServersHub,
+                        subtitle: AppStrings.current.uiFtpLanSftpWebdav,
                       ),
                       _buildFeatureTile(
                         context,
                         icon: Broken.magicpen,
-                        title: 'Rich UI',
-                        subtitle: 'AMOLED Black & beautiful seeds',
+                        title: AppStrings.current.uiRichUi,
+                        subtitle: AppStrings.current.uiAmoledBlackBeautifulSeeds,
                       ),
                     ],
                   ),
@@ -257,7 +257,7 @@ class AboutNFileScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 4.0),
                       child: Text(
-                        'Connect & Share',
+                        AppStrings.current.uiConnectShare,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

@@ -44,10 +44,10 @@ class _PaneBrowserState extends State<PaneBrowser> {
 
   final List<String> _filters = [
     'All',
-    'Folders',
-    'Images',
-    'Videos',
-    'Audio',
+    AppStrings.current.uiFolders,
+    AppStrings.current.uiImages,
+    AppStrings.current.uiVideos,
+    AppStrings.current.uiAudio,
     'Docs',
   ];
 
@@ -489,7 +489,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                                                             ),
                                                             const SizedBox(height: 16),
                                                             Text(
-                                                              'Search in tab',
+                                                              AppStrings.current.uiSearchInTab,
                                                               style: theme.textTheme.titleMedium?.copyWith(
                                                                 fontWeight: FontWeight.bold,
                                                                 color: theme.colorScheme.onSurface,

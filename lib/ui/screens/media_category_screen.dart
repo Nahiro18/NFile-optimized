@@ -96,13 +96,13 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
     }
     switch (widget.mediaType) {
       case MediaType.images:
-        return 'Images';
+        return AppStrings.current.uiImages;
       case MediaType.videos:
-        return 'Videos';
+        return AppStrings.current.uiVideos;
       case MediaType.audios:
         return 'Audios';
       case MediaType.documents:
-        return 'Documents';
+        return AppStrings.current.uiDocuments;
       case MediaType.archives:
         return 'Archives';
       case MediaType.downloads:
@@ -541,9 +541,9 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (count == 1) ...[
-                _buildCopyableRow('Name', nameDisplay, ctx),
-                _buildCopyableRow('Path', fullPath, ctx),
-                _buildCopyableRow('Size', '${FileUtils.formatBytes(totalBytes, 2)} ($totalBytes bytes)', ctx),
+                _buildCopyableRow(AppStrings.current.uiName, nameDisplay, ctx),
+                _buildCopyableRow(AppStrings.current.uiPath, fullPath, ctx),
+                _buildCopyableRow(AppStrings.current.uiSize, '${FileUtils.formatBytes(totalBytes, 2)} ($totalBytes bytes)', ctx),
                 if (lastMod != null) _buildCopyableRow('Modified', FileUtils.formatDate(lastMod), ctx),
                 if (mimeType.isNotEmpty && mimeType != 'file/') _buildCopyableRow('Type', mimeType, ctx),
                 if (dimensionsOrDuration.isNotEmpty) _buildCopyableRow('Media Info', dimensionsOrDuration, ctx),
@@ -600,7 +600,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                       if (filePath != null) ...[
                         const SizedBox(height: 4),
                         Text(
-                          'Long press to Open with...',
+                          AppStrings.current.uiLongPressToOpenWith,
                           style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withOpacity(0.4)),
                         ),
                       ],
@@ -1957,7 +1957,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'All Items',
+                    AppStrings.current.uiAllItems,
                     style: TextStyle(
                       color: !_showFoldersMode ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
                       fontSize: 13,
@@ -1981,7 +1981,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'Folders',
+                    AppStrings.current.uiFolders,
                     style: TextStyle(
                       color: _showFoldersMode ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
                       fontSize: 13,

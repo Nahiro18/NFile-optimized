@@ -107,7 +107,7 @@ class _OpenWithSheetState extends State<OpenWithSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Built-in NFile Viewer',
+                              AppStrings.current.uiBuiltinNfileViewer,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: _selectedType == 'native'
@@ -179,7 +179,7 @@ class _OpenWithSheetState extends State<OpenWithSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'System External App',
+                              AppStrings.current.uiSystemExternalApp,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: _selectedType == 'external'
@@ -189,7 +189,7 @@ class _OpenWithSheetState extends State<OpenWithSheet> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              "Open with third party apps on device",
+                              AppStrings.current.uiOpenWithThirdPartyAppsOn,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: theme.colorScheme.onSurface.withOpacity(0.6),

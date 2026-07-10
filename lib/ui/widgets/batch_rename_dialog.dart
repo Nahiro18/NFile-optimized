@@ -252,14 +252,14 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Renaming files...',
+            AppStrings.current.uiRenamingFiles,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Please wait, updating folder content',
+            AppStrings.current.uiPleaseWaitUpdatingFolderContent,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.6),
             ),
@@ -298,7 +298,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Batch Rename',
+                        AppStrings.current.uiBatchRename,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           letterSpacing: -0.5,
@@ -465,7 +465,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                     controller: _patternController,
                     decoration: InputDecoration(
                       labelText: AppStrings.current.namePattern,
-                      hintText: 'e.g. Image_#',
+                      hintText: AppStrings.current.uiEgImage,
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -517,7 +517,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               labelText: AppStrings.current.padding,
-                              hintText: 'e.g. 3',
+                              hintText: AppStrings.current.uiEg3,
                               floatingLabelBehavior: FloatingLabelBehavior.always,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -531,7 +531,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               labelText: AppStrings.current.startNumber,
-                              hintText: 'e.g. 1',
+                              hintText: AppStrings.current.uiEg1,
                               floatingLabelBehavior: FloatingLabelBehavior.always,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -684,7 +684,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Rename Preview',
+                            AppStrings.current.uiRenamePreview,
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -800,8 +800,8 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                             ),
                           ),
                           onPressed: () => Navigator.pop(ctx),
-                          child: const Text(
-                            'Back to Edit',
+                          child: Text(
+                            AppStrings.current.uiBackToEdit,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -822,8 +822,8 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                             Navigator.pop(ctx); // Close sheet
                             _executeRename(); // Execute
                           },
-                          child: const Text(
-                            'Apply Changes',
+                          child: Text(
+                            AppStrings.current.uiApplyChanges,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),

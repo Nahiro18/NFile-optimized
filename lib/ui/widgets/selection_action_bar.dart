@@ -43,7 +43,7 @@ class SelectionActionBar extends StatelessWidget {
           children: [
             _ActionButton(
               icon: Broken.document_copy,
-              label: 'Copy',
+              label: AppStrings.current.copy,
               hideLabel: provider.hideActionText,
               onTap: () {
                 provider.copySelected();
@@ -54,7 +54,7 @@ class SelectionActionBar extends StatelessWidget {
             ),
             _ActionButton(
               icon: Broken.scissor,
-              label: 'Cut',
+              label: AppStrings.current.cut,
               hideLabel: provider.hideActionText,
               onTap: () {
                 provider.cutSelected();
@@ -65,13 +65,13 @@ class SelectionActionBar extends StatelessWidget {
             ),
             _ActionButton(
               icon: Broken.trash,
-              label: 'Delete',
+              label: AppStrings.current.deleteQuestion,
               color: Colors.redAccent,
               hideLabel: provider.hideActionText,
               onTap: () async {
                 final confirm = await FileActionDialogs.showConfirmDialog(
                   context,
-                  title: 'Delete Selected',
+                  title: AppStrings.current.deleteSelected,
                   content: 'Are you sure you want to delete $selectedCount item(s)? This cannot be undone.',
                 );
                 if (confirm) {
@@ -81,7 +81,7 @@ class SelectionActionBar extends StatelessWidget {
             ),
             _ActionButton(
               icon: Broken.edit,
-              label: 'Rename',
+              label: AppStrings.current.rename,
               hideLabel: provider.hideActionText,
               onTap: () async {
                 if (selectedCount == 1) {
@@ -89,10 +89,10 @@ class SelectionActionBar extends StatelessWidget {
                   final currentName = p.basename(path);
                   final newName = await FileActionDialogs.showTextInputDialog(
                     context,
-                    title: 'Rename',
+                    title: AppStrings.current.rename,
                     hint: 'Enter new name',
                     initialValue: currentName,
-                    actionText: 'Rename',
+                    actionText: AppStrings.current.rename,
                   );
                   if (newName != null && newName.isNotEmpty) {
                     await provider.renameFile(path, newName);
@@ -105,7 +105,7 @@ class SelectionActionBar extends StatelessWidget {
             ),
             _ActionButton(
               icon: Broken.info_circle,
-              label: 'Properties',
+              label: AppStrings.current.properties,
               hideLabel: provider.hideActionText,
               onTap: () => _showPropertiesModal(context, provider),
             ),
@@ -403,10 +403,10 @@ class PropertiesModalDialogState extends State<PropertiesModalDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (isSingle) ...[
-                    _CopyablePropertyRow(label: 'Name', value: nameDisplay),
-                    _CopyablePropertyRow(label: 'Path', value: widget.selectedPaths.first),
+                    _CopyablePropertyRow(label: AppStrings.current.uiName, value: nameDisplay),
+                    _CopyablePropertyRow(label: AppStrings.current.uiPath, value: widget.selectedPaths.first),
                     _CopyablePropertyRow(
-                      label: 'Size',
+                      label: AppStrings.current.uiSize,
                       value: '${FileUtils.formatBytes(_totalBytes, 2)} ($_totalBytes bytes)',
                     ),
                     if (_mimeType == 'Folder / Directory')

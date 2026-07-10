@@ -5,6 +5,7 @@ import '../../../../models/app_info_model.dart';
 import '../../../../services/app_manager_service.dart';
 import '../../../../core/utils.dart';
 
+import '../../../../core/app_strings.dart';
 class AppListTab extends StatelessWidget {
   final List<AppInfoModel> apps;
   final Set<String> selectedPackages;
@@ -47,8 +48,8 @@ class AppListTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'No applications found',
+              Text(
+                AppStrings.current.uiNoApplicationsFound,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ],

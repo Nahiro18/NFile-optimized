@@ -171,7 +171,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
               content: const Text(
                 'Your device does not have a default System Files/Documents app (DocumentsUI) enabled, '
                 'which is required by Android to select and mount directories.\n\n'
-                'Please check if the "Files" or "Documents" system app is disabled in your device Settings, '
+                'Please check if the AppStrings.current.uiFiles or AppStrings.current.uiDocuments system app is disabled in your device Settings, '
                 'or enable it to use SAF directory features.',
                 style: TextStyle(fontSize: 14),
               ),
@@ -331,8 +331,8 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: _prevStep,
         ),
-        title: const Text(
-          'Remote Connections',
+        title: Text(
+          AppStrings.current.uiRemoteConnections,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
@@ -414,13 +414,13 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
       child: ListView(
         padding: const EdgeInsets.all(20.0),
         children: [
-          const Text(
-            'Select Network Service',
+          Text(
+            AppStrings.current.uiSelectNetworkService,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, fontFamily: 'LexendDeca'),
           ),
           const SizedBox(height: 6),
           Text(
-            'Mount a remote server or NAS share as a dynamic drive within your NFile storage lists.',
+            AppStrings.current.uiMountARemoteServerOrNas,
             style: TextStyle(fontSize: 13, color: theme.colorScheme.onSurface.withOpacity(0.6)),
           ),
           const SizedBox(height: 24),
@@ -529,7 +529,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
                       ),
                     ),
                     Text(
-                      'Enter connection details to link this network volume.',
+                      AppStrings.current.uiEnterConnectionDetailsToLinkThis,
                       style: TextStyle(
                         fontSize: 12.5,
                         color: theme.colorScheme.onSurface.withOpacity(0.5),
@@ -577,7 +577,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
           const SizedBox(height: 18),
 
           if (_selectedType == 'WebDav') ...[
-            _buildInputLabel('Path'),
+            _buildInputLabel(AppStrings.current.uiPath),
             _buildTextField(
               controller: _pathController,
               hint: 'e.g., /dav or /',
@@ -685,7 +685,7 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
           const SizedBox(height: 32),
 
           Text(
-            'Creating Mount Point...',
+            AppStrings.current.uiCreatingMountPoint,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

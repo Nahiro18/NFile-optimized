@@ -100,8 +100,8 @@ class VideoControlsOverlay extends StatelessWidget {
                 children: [
                   Icon(Broken.lock, color: accentColor, size: 22),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Slide / Tap to Unlock',
+                  Text(
+                    AppStrings.current.uiSlideTapToUnlock,
                     style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -164,8 +164,8 @@ class VideoControlsOverlay extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: accentColor, width: 0.8),
                               ),
-                              child: const Text(
-                                'HW Dec',
+                              child: Text(
+                                AppStrings.current.uiHwDec,
                                 style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                               ),
                             ),

@@ -142,7 +142,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Drag & Drop Options',
+                            AppStrings.current.uiDragDropOptions,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w900,
                               fontSize: 20,
@@ -187,7 +187,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 const SizedBox(height: 20),
 
                 Text(
-                  'Destination Location'.toUpperCase(),
+                  AppStrings.current.uiDestinationLocation.toUpperCase(),
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                     fontSize: 11,
@@ -200,14 +200,14 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 if (showSelectedFolderOption)
                   _buildDestinationCard(
                     theme: theme,
-                    title: 'Dropped Folder',
+                    title: AppStrings.current.uiDroppedFolder,
                     subtitle: targetDirName.isEmpty ? 'Root' : targetDirName,
                     pathValue: widget.initialTargetPath,
                     icon: Broken.folder_connection,
                   ),
                 _buildDestinationCard(
                   theme: theme,
-                  title: 'Current Folder',
+                  title: AppStrings.current.uiCurrentFolder,
                   subtitle: currentDirName.isEmpty ? 'Root' : currentDirName,
                   pathValue: provider.currentPath,
                   icon: Broken.folder,
@@ -260,7 +260,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
 
                 const SizedBox(height: 24),
                 Text(
-                  'Choose Action'.toUpperCase(),
+                  AppStrings.current.uiChooseAction.toUpperCase(),
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                     fontSize: 11,
@@ -273,8 +273,8 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 _buildActionCard(
                   theme: theme,
                   action: 'move',
-                  title: 'Move here',
-                  subtitle: 'Cut & paste item into destination folder',
+                  title: AppStrings.current.uiMoveHere,
+                  subtitle: AppStrings.current.uiCutPasteItemIntoDestinationFolder,
                   icon: Broken.scissor,
                   color: Colors.orange,
                   isDisabled: widget.sourcePaths.every((path) => p.dirname(path) == _selectedDestPath),
@@ -282,8 +282,8 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 _buildActionCard(
                   theme: theme,
                   action: 'copy',
-                  title: 'Copy here',
-                  subtitle: 'Leaves original file intact and duplicates here',
+                  title: AppStrings.current.uiCopyHere,
+                  subtitle: AppStrings.current.uiLeavesOriginalFileIntactAndDuplicatesHere,
                   icon: Broken.document_copy,
                   color: Colors.blue,
                 ),
@@ -291,7 +291,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                   theme: theme,
                   action: 'archive',
                   title: AppStrings.current.archive,
-                  subtitle: 'Compress item into a zip/tar archive here',
+                  subtitle: AppStrings.current.uiCompressItemIntoAZiptarArchiveHere,
                   icon: Broken.box_add,
                   color: Colors.teal,
                 ),

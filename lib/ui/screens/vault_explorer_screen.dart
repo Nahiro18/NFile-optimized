@@ -138,13 +138,13 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Choose Protection Mode',
+                    AppStrings.current.uiChooseProtectionMode,
                     style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-              content: const Text(
-                'Choose how you want to protect your selected files. Secured files are XOR scrambled instantly.',
+              content: Text(
+                AppStrings.current.uiChooseHowYouWantToProtect,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14.5, height: 1.4),
               ),
@@ -450,7 +450,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                 _buildInfoTile('Original Name', record.originalName, theme),
                 _buildInfoTile('Original Path', record.originalPath, theme),
                 _buildInfoTile('Scrambled Path', record.scrambledPath, theme),
-                _buildInfoTile('Size', FileUtils.formatBytes(record.size, 2), theme),
+                _buildInfoTile(AppStrings.current.uiSize, FileUtils.formatBytes(record.size, 2), theme),
                 _buildInfoTile('Locked At', record.lockedAt, theme),
                 _buildInfoTile(
                   'Protection Mode',
@@ -533,7 +533,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Private Wallet',
+                      AppStrings.current.privateWallet,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5,
@@ -546,13 +546,13 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                         color: Colors.green.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Broken.security_card, color: Colors.green, size: 16),
                           SizedBox(width: 6),
                           Text(
-                            'Active',
+                            AppStrings.current.uiActive,
                             style: TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.bold,
@@ -623,8 +623,8 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
         foregroundColor: Colors.white,
         elevation: 4,
         icon: const Icon(Broken.add_square),
-        label: const Text(
-          'Hide Files',
+        label: Text(
+          AppStrings.current.uiHideFiles,
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.3),
         ),
       ),
@@ -669,7 +669,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'SECURITY STORAGE',
+                AppStrings.current.uiSecurityStorage,
                 style: TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.bold,
@@ -687,7 +687,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Total Space Secured',
+                AppStrings.current.uiTotalSpaceSecured,
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w500,
@@ -714,7 +714,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Hidden Files',
+                  AppStrings.current.uiHiddenFiles,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -759,7 +759,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
             Text(
               _searchQuery.isNotEmpty
                   ? 'Try modifying your search text to locate hidden items.'
-                  : 'XOR scrambled signature obfuscation keeps files completely unopenable and hidden from system scanner database. Tap "Hide Files" below to protect them.',
+                  : 'XOR scrambled signature obfuscation keeps files completely unopenable and hidden from system scanner database. Tap AppStrings.current.uiHideFiles below to protect them.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -905,7 +905,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                       Icon(Broken.trash, size: 18, color: theme.colorScheme.error),
                       const SizedBox(width: 10),
                       Text(
-                        'Delete Permanently',
+                        AppStrings.current.deletePermanently,
                         style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w600,

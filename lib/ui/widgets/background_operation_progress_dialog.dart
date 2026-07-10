@@ -147,7 +147,7 @@ class BackgroundOperationProgressDialog extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Overall Progress',
+                                  AppStrings.current.uiOverallProgress,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: theme.colorScheme.onSurface.withOpacity(0.55),

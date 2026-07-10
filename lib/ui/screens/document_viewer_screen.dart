@@ -274,7 +274,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                'PDF Display Settings',
+                                AppStrings.current.uiPdfDisplaySettings,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -290,7 +290,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Optimize rendering performance for large, design-heavy, or scanned documents.',
+                        AppStrings.current.uiOptimizeRenderingPerformanceForLargeDesignheavy,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface.withOpacity(0.6),
                         ),
@@ -312,7 +312,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Quick Performance Presets',
+                              AppStrings.current.uiQuickPerformancePresets,
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary,
@@ -326,7 +326,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                   child: _buildPresetButton(
                                     context: context,
                                     label: AppStrings.current.standardMode,
-                                    subtitle: 'Best for text documents',
+                                    subtitle: AppStrings.current.uiBestForTextDocuments,
                                     isActive: _pdfLayoutMode == PdfPageLayoutMode.continuous && _pdfEnableTextSelection,
                                     onTap: () {
                                       setModalState(() {
@@ -343,7 +343,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                   child: _buildPresetButton(
                                     context: context,
                                     label: AppStrings.current.lagFreeMode,
-                                    subtitle: 'Best for brochures & photos',
+                                    subtitle: AppStrings.current.uiBestForBrochuresPhotos,
                                     isActive: _pdfLayoutMode == PdfPageLayoutMode.single && !_pdfEnableTextSelection,
                                     onTap: () {
                                       setModalState(() {
@@ -364,7 +364,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
 
                       // Detail Tuning header
                       Text(
-                        'Detailed Tuning Options',
+                        AppStrings.current.uiDetailedTuningOptions,
                         style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
@@ -372,7 +372,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       // Page Layout Option
                       _buildTuningOption(
                         context: context,
-                        title: 'Page Layout',
+                        title: AppStrings.current.uiPageLayout,
                         subtitle: _pdfLayoutMode == PdfPageLayoutMode.continuous
                             ? 'Continuous (Vertical scrolling list)'
                             : 'Single Page (Instant page-by-page swipe)',
@@ -413,7 +413,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       // Scroll Direction Option
                       _buildTuningOption(
                         context: context,
-                        title: 'Scroll Direction',
+                        title: AppStrings.current.uiScrollDirection,
                         subtitle: _pdfScrollDirection == PdfScrollDirection.vertical
                             ? 'Vertical (Top to bottom scroll)'
                             : 'Horizontal (Left to right swipe)',
@@ -460,8 +460,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             color: theme.colorScheme.primary,
                           ),
                           title: Text(AppStrings.current.enableTextSelection, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                          subtitle: const Text(
-                            'Disable to significantly boost page rendering speed and eliminate scroll stutter.',
+                          subtitle: Text(
+                            AppStrings.current.uiDisableToSignificantlyBoostPageRendering,
                             style: TextStyle(fontSize: 12),
                           ),
                           value: _pdfEnableTextSelection,

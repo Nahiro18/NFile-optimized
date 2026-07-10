@@ -170,16 +170,16 @@ class SelectionContextBottomSheet extends StatelessWidget {
               _buildMenuItem(
                 context: context,
                 icon: Broken.edit,
-                label: 'Rename',
+                label: AppStrings.current.rename,
                 onTap: () async {
                   Navigator.pop(context);
                   final currentName = p.basename(targetPath);
                   final newName = await FileActionDialogs.showTextInputDialog(
                     context,
-                    title: 'Rename',
+                    title: AppStrings.current.rename,
                     hint: 'Enter new name',
                     initialValue: currentName,
-                    actionText: 'Rename',
+                    actionText: AppStrings.current.rename,
                   );
                   if (newName != null && newName.isNotEmpty) {
                     await provider.renameFile(targetPath, newName);
@@ -191,7 +191,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
               _buildMenuItem(
                 context: context,
                 icon: Broken.edit,
-                label: 'Rename',
+                label: AppStrings.current.rename,
                 onTap: () async {
                   Navigator.pop(context);
                   await BatchRenameDialog.show(context, provider);
@@ -237,7 +237,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
             _buildMenuItem(
               context: context,
               icon: Icons.share_outlined,
-              label: 'Share',
+              label: AppStrings.current.share,
               onTap: () async {
                 Navigator.pop(context);
                 final selectedPaths = provider.selectedPaths.toList();

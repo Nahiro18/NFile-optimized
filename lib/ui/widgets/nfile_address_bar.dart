@@ -272,7 +272,7 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
                           ? Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                               child: Text(
-                                'No matching directories or files found',
+                                AppStrings.current.uiNoMatchingDirectoriesOrFilesFound,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.colorScheme.onSurface.withOpacity(0.6),
                                   fontStyle: FontStyle.italic,

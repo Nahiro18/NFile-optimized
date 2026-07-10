@@ -414,7 +414,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Text('Delete "${item.name}" permanently from the server?'),
+          content: Text(AppStrings.current.deletePermanentlyFromServer(item.name)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
@@ -460,8 +460,8 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-            'New Remote Folder',
+          title: Text(
+            AppStrings.current.uiNewRemoteFolder,
             style: TextStyle(
               fontFamily: 'LexendDeca',
               fontSize: 18,
@@ -622,7 +622,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
               _buildActionTile(
                 ctx,
                 icon: Broken.copy,
-                label: 'Copy',
+                label: AppStrings.current.copy,
                 color: theme.colorScheme.primary,
                 onTap: () {
                   Navigator.pop(ctx);
@@ -634,7 +634,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
               _buildActionTile(
                 ctx,
                 icon: Broken.scissor,
-                label: 'Cut',
+                label: AppStrings.current.cut,
                 color: Colors.orange,
                 onTap: () {
                   Navigator.pop(ctx);
@@ -662,7 +662,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                   ctx,
                   icon: Icons.drive_file_move_rtl_rounded,
                   label: AppStrings.current.moveToLocalDevice,
-                  subtitle: 'Downloads and deletes from server',
+                  subtitle: AppStrings.current.uiDownloadsAndDeletesFromServer,
                   color: const Color(0xFF7C3AED),
                   onTap: () {
                     Navigator.pop(ctx);
@@ -911,7 +911,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                         ],
                       ),
                       tooltip: provider.isCut
-                          ? 'Move here'
+                          ? AppStrings.current.uiMoveHere
                           : 'Paste remote clipboard',
                       onPressed: _pasteRemoteClipboard,
                     ),
@@ -942,7 +942,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Connection Lost',
+                        AppStrings.current.uiConnectionLost,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -1074,7 +1074,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                                 ),
                                 const SizedBox(height: 14),
                                 Text(
-                                  'Empty Directory',
+                                  AppStrings.current.uiEmptyDirectory,
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -1212,13 +1212,13 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                                       _popItem(
                                         'copy',
                                         Broken.copy,
-                                        'Copy',
+                                        AppStrings.current.copy,
                                         theme.colorScheme.primary,
                                       ),
                                       _popItem(
                                         'cut',
                                         Broken.scissor,
-                                        'Cut',
+                                        AppStrings.current.cut,
                                         Colors.orange,
                                       ),
                                       if (hasRemoteClipboard)

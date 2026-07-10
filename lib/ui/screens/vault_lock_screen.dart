@@ -219,7 +219,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Private Wallet',
+                    AppStrings.current.privateWallet,
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,

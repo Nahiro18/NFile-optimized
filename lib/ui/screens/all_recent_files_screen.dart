@@ -239,7 +239,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
     if (_selectedPaths.isEmpty) return;
     final confirm = await FileActionDialogs.showConfirmDialog(
       context,
-      title: 'Delete Selected',
+      title: AppStrings.current.deleteSelected,
       content: 'Are you sure you want to delete ${_selectedPaths.length} selected item(s)? This cannot be undone.',
     );
 
@@ -288,10 +288,10 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
         final currentName = p.basename(path);
         final newName = await FileActionDialogs.showTextInputDialog(
           context,
-          title: 'Rename',
+          title: AppStrings.current.rename,
           hint: 'Enter new name',
           initialValue: currentName,
-          actionText: 'Rename',
+          actionText: AppStrings.current.rename,
         );
         if (newName != null && newName.isNotEmpty) {
           await provider.renameFile(path, newName);
@@ -301,7 +301,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
       case 'delete':
         final confirm = await FileActionDialogs.showConfirmDialog(
           context,
-          title: 'Delete File',
+          title: AppStrings.current.uiDeleteFile,
           content: 'Are you sure you want to delete this item? This cannot be undone.',
         );
         if (confirm) {
@@ -389,7 +389,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
                         Text(AppStrings.current.noRecentFiles, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 8),
                         Text(
-                          'Newly created or downloaded files will show up here.',
+                          AppStrings.current.uiNewlyCreatedOrDownloadedFilesWill,
                           textAlign: TextAlign.center,
                           style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(127), fontSize: 15),
                         ),

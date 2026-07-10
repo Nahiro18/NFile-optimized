@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'remote_client.dart';
 
+import '../../core/app_strings.dart';
 class SafRemoteClient implements RemoteClient {
   final String rootUri;
   static const _channel = MethodChannel('com.rubex.nfile/saf');
@@ -41,7 +42,7 @@ class SafRemoteClient implements RemoteClient {
   Future<void> createDirectory(String path) async {
     final int lastSlash = path.lastIndexOf('/');
     final String parentUri = lastSlash != -1 ? path.substring(0, lastSlash) : '';
-    final String folderName = lastSlash != -1 ? path.substring(lastSlash + 1) : 'New Folder';
+    final String folderName = lastSlash != -1 ? path.substring(lastSlash + 1) : AppStrings.current.newFolder;
 
     await _channel.invokeMethod('createDirectory', {
       'rootUri': rootUri,

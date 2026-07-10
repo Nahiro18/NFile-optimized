@@ -252,7 +252,7 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
                       child: Text(
-                        'Select Storage Drive',
+                        AppStrings.current.uiSelectStorageDrive,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -346,7 +346,7 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
                           ),
                         ),
                         title: Text(
-                          'System Root',
+                          AppStrings.current.systemRoot,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,

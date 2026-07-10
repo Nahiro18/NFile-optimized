@@ -19,35 +19,35 @@ class QuickCategoriesGrid extends StatelessWidget {
   static Map<String, Map<String, dynamic>> getAllCategoriesMap(BuildContext context, bool isDark, Function(int) onNavigateTab) {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
     final map = <String, Map<String, dynamic>>{
-      'Images': {
-        'label': 'Images',
+      AppStrings.current.uiImages: {
+        'label': AppStrings.current.uiImages,
         'icon': Broken.image,
         'color': isDark ? Colors.purpleAccent : Colors.purple,
-        'count': '${mediaProvider.getCategoryItemCount("Images")}',
+        'count': '${mediaProvider.getCategoryItemCount(AppStrings.current.uiImages)}',
         'isCustom': false,
         'action': () => Navigator.push(context, MaterialPageRoute(builder: (_) => MediaCategoryScreen(mediaType: MediaType.images, onNavigateTab: onNavigateTab))),
       },
-      'Videos': {
-        'label': 'Videos',
+      AppStrings.current.uiVideos: {
+        'label': AppStrings.current.uiVideos,
         'icon': Broken.video,
         'color': isDark ? Colors.redAccent : const Color(0xFFD32F2F),
-        'count': '${mediaProvider.getCategoryItemCount("Videos")}',
+        'count': '${mediaProvider.getCategoryItemCount(AppStrings.current.uiVideos)}',
         'isCustom': false,
         'action': () => Navigator.push(context, MaterialPageRoute(builder: (_) => MediaCategoryScreen(mediaType: MediaType.videos, onNavigateTab: onNavigateTab))),
       },
-      'Audio': {
-        'label': 'Audio',
+      AppStrings.current.uiAudio: {
+        'label': AppStrings.current.uiAudio,
         'icon': Broken.music,
         'color': isDark ? Colors.orangeAccent : const Color(0xFFE65100),
-        'count': '${mediaProvider.getCategoryItemCount("Audio")}',
+        'count': '${mediaProvider.getCategoryItemCount(AppStrings.current.uiAudio)}',
         'isCustom': false,
         'action': () => Navigator.push(context, MaterialPageRoute(builder: (_) => MediaCategoryScreen(mediaType: MediaType.audios, onNavigateTab: onNavigateTab))),
       },
-      'Documents': {
-        'label': 'Documents',
+      AppStrings.current.uiDocuments: {
+        'label': AppStrings.current.uiDocuments,
         'icon': Broken.document,
         'color': isDark ? Colors.blueAccent : const Color(0xFF1976D2),
-        'count': '${mediaProvider.getCategoryItemCount("Documents")}',
+        'count': '${mediaProvider.getCategoryItemCount(AppStrings.current.uiDocuments)}',
         'isCustom': false,
         'action': () => Navigator.push(context, MaterialPageRoute(builder: (_) => MediaCategoryScreen(mediaType: MediaType.documents, onNavigateTab: onNavigateTab))),
       },
@@ -170,7 +170,7 @@ class QuickCategoriesGrid extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Quick Categories',
+                AppStrings.current.quickCategories,
                 style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               InkWell(
@@ -184,7 +184,7 @@ class QuickCategoriesGrid extends StatelessWidget {
                       Icon(Broken.setting_2, size: 16, color: theme.colorScheme.primary),
                       const SizedBox(width: 4),
                       Text(
-                        'Customize',
+                        AppStrings.current.uiCustomize,
                         style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
                       ),
                     ],
@@ -199,7 +199,7 @@ class QuickCategoriesGrid extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24.0),
                 child: Text(
-                  'No shortcuts pinned. Tap Customize to add.',
+                  AppStrings.current.uiNoShortcutsPinnedTapCustomizeTo,
                   style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5)),
                 ),
               ),
@@ -320,7 +320,7 @@ class _CustomizeCategoriesSheet extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Drag items by the handle (=) to reorder icons on the Home Screen.',
+                      AppStrings.current.uiDragItemsByTheHandleTo,
                       style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 13),
                     ),
                   ),
@@ -410,24 +410,29 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
   bool _isExpanded = false;
 
   List<String> _getDefaultPaths(String category) {
-    switch (category) {
-      case 'Images':
+    if (category == AppStrings.current.uiImages) {
         return ['Device Gallery (Auto)', '/storage/emulated/0/DCIM', '/storage/emulated/0/Pictures'];
-      case 'Videos':
+    } else if (category == AppStrings.current.uiVideos) {
         return ['Device Gallery (Auto)', '/storage/emulated/0/DCIM', '/storage/emulated/0/Movies'];
-      case 'Audio':
+    } else if (category == AppStrings.current.uiAudio) {
         return ['Device Audio Library (Auto)', '/storage/emulated/0/Music'];
-      case 'Documents':
+    } else if (category == AppStrings.current.uiDocuments) {
         return ['/storage/emulated/0/Documents', 'Internal Storage (All Folders Scanned)'];
-      case 'Archives':
+    } else if (category == 'Archives') {
         return ['/storage/emulated/0/Download', 'Internal Storage (All Folders Scanned)'];
-      case 'Downloads':
+    } else if (category == 'Downloads') {
         return ['/storage/emulated/0/Download', '/storage/emulated/0/Downloads'];
-      case 'APKs':
-        return ['/storage/emulated/0/Download', 'Internal Storage (All Folders Scanned)'];
-      case 'Screenshots':
-        return ['Device Gallery (Screenshots)', '/storage/emulated/0/DCIM/Screenshots', '/storage/emulated/0/Pictures/Screenshots'];
-      default:
+    } else if (category == 'APKs') {
+        return ['Internal Storage (All Folders Scanned)'];
+    } else if (category == 'Bluetooth') {
+        return ['/storage/emulated/0/bluetooth'];
+    } else if (category == 'Large Files') {
+        return ['Internal Storage (Scanned by Size)'];
+    } else if (category == 'Recent Files') {
+        return ['Internal Storage (Scanned by Date Modified)'];
+    } else if (category == 'Vault Secure') {
+        return ['/storage/emulated/0/.nfile_vault'];
+    } else {
         return [];
     }
   }
@@ -436,15 +441,16 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isCustom = widget.cat['isCustom'] == true;
+
     final label = widget.label;
     final color = widget.cat['color'] as Color;
     final icon = widget.cat['icon'] as IconData;
 
-    final isStandardCategory = const [
-      'Images',
-      'Videos',
-      'Audio',
-      'Documents',
+    final isStandardCategory = [
+      AppStrings.current.uiImages,
+      AppStrings.current.uiVideos,
+      AppStrings.current.uiAudio,
+      AppStrings.current.uiDocuments,
       'Archives',
       'Downloads',
       'APKs',
@@ -523,7 +529,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Default Scan Locations:',
+                  AppStrings.current.uiDefaultScanLocations,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -600,7 +606,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                 }),
                 const SizedBox(height: 12),
                 Text(
-                  'Custom Scan Locations:',
+                  AppStrings.current.uiCustomScanLocations,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -613,7 +619,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Text(
-                      'No custom paths added.',
+                      AppStrings.current.uiNoCustomPathsAdded,
                       style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.4), fontSize: 12, fontStyle: FontStyle.italic),
                     ),
                   )
