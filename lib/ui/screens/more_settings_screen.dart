@@ -2388,9 +2388,9 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
+                  Text(
                     AppStrings.current.chooseAppLauncherIconDesc,
-                    style: TextStyle(fontSize: 13, height: 1.3, color: Colors.grey),
+                    style: const TextStyle(fontSize: 13, height: 1.3, color: Colors.grey),
                   ),
                   const SizedBox(height: 20),
                   Flexible(
