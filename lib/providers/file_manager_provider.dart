@@ -91,7 +91,25 @@ int _calculateDirectorySizeSync(String path) {
 }
 
 class FileManagerProvider extends ChangeNotifier {
+  bool _isPickerMode = false;
+  bool get isPickerMode => _isPickerMode;
+  static const _pickerChannel = MethodChannel("com.rubex.nfile/picker");
+
+  Future<void> checkPickerMode() async {
+    try {
+      _isPickerMode = await _pickerChannel.invokeMethod("isPickerMode") ?? false;
+      if (_isPickerMode) notifyListeners();
+    } catch (e) {}
+  }
+
+  Future<void> returnPickerResult(String path) async {
+    try {
+      await _pickerChannel.invokeMethod("finishWithResult", {"path": path});
+    } catch (e) {}
+  }
+
   FileManagerProvider() {
+    checkPickerMode();
     _sortType = PreferencesService.getSortType();
     _isGridView = PreferencesService.getIsGridView();
     _iconScale = PreferencesService.getIconScale();
@@ -2773,6 +2791,11 @@ class FileManagerProvider extends ChangeNotifier {
   }
 
   Future<void> openFileNatively(BuildContext context, String path) async {
+    if (isPickerMode) {
+      await returnPickerResult(path);
+      return;
+    }
+
     final mimeType = lookupMimeType(path) ?? '';
     final ext = p.extension(path).toLowerCase();
     const docExts = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.epub', '.odt'];

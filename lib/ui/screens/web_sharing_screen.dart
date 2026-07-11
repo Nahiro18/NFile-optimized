@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -562,7 +562,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
           onPressed: () => _toggleLocalServer(shareDir),
           icon: Icon(_webService.isLocalActive ? Icons.stop_rounded : Icons.play_arrow_rounded),
           label: Text(
-            _webService.isLocalActive ? 'Stop Web Server' : 'Start Web Server',
+            _webService.isLocalActive ? AppStrings.current.stopWebServer : AppStrings.current.startWebServer,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
         ),

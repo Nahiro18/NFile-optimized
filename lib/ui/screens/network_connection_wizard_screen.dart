@@ -402,11 +402,11 @@ class _NetworkConnectionWizardScreenState extends State<NetworkConnectionWizardS
   // --- Step 1: Protocol Grid Selection ---
   Widget _buildProtocolSelectionStep(ThemeData theme) {
     final protocols = [
-      {'name': 'LAN/SMB', 'desc': 'Local Area Network & SMB NAS Share', 'color': const Color(0xFF5B21B6)},
-      {'name': 'FTP', 'desc': 'Standard File Transfer Protocol', 'color': const Color(0xFFF97316)},
-      {'name': 'SFTP', 'desc': 'SSH Secure File Transfer Server', 'color': const Color(0xFF0D9488)},
-      {'name': 'WebDav', 'desc': 'HTTP Web Distributed Authoring', 'color': const Color(0xFFE11D48)},
-      {'name': 'SAF Folder', 'desc': 'Android Storage Access Framework (SD Card / External)', 'color': const Color(0xFF0284C7)},
+      {'name': 'LAN/SMB', 'desc': AppStrings.current.protocolDescSmb, 'color': const Color(0xFF5B21B6)},
+      {'name': 'FTP', 'desc': AppStrings.current.protocolDescFtp, 'color': const Color(0xFFF97316)},
+      {'name': 'SFTP', 'desc': AppStrings.current.protocolDescSftp, 'color': const Color(0xFF0D9488)},
+      {'name': 'WebDav', 'desc': AppStrings.current.protocolDescWebDav, 'color': const Color(0xFFE11D48)},
+      {'name': 'SAF Folder', 'desc': AppStrings.current.protocolDescSaf, 'color': const Color(0xFF0284C7)},
     ];
 
     return ScrollConfiguration(

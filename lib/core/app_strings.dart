@@ -849,7 +849,82 @@ class AppStrings {
   String get uiAndroid11RestrictsStandardAccessTo => _localizedStrings['uiAndroid11RestrictsStandardAccessTo'] ?? 'Android 11+ restricts standard access to Android/data and Android/obb folders to protect app data. To view and modify these files, NFile requires advanced permissions.';
 
   String deletePermanentlyFromServer(String name) => (_localizedStrings['deletePermanentlyFromServer'] ?? 'Delete "{name}" permanently from the server?').replaceAll('{name}', name.toString());
+
+  String get vaultEnterPin => _localizedStrings['vaultEnterPin'] ?? 'Enter PIN to Unlock Wallet';
+  String get vaultSetPin => _localizedStrings['vaultSetPin'] ?? 'Set your 4-digit Wallet PIN';
+  String get vaultConfirmPin => _localizedStrings['vaultConfirmPin'] ?? 'Confirm your 4-digit PIN';
+  String get vaultPinSuccess => _localizedStrings['vaultPinSuccess'] ?? 'PIN Set Successfully!';
+  String get vaultPinMismatch => _localizedStrings['vaultPinMismatch'] ?? 'PINs do not match. Try again!';
+  String get vaultPinIncorrect => _localizedStrings['vaultPinIncorrect'] ?? 'Incorrect PIN. Try again!';
+  String get actionStop => _localizedStrings['actionStop'] ?? 'Stop';
+  String get actionStart => _localizedStrings['actionStart'] ?? 'Start';
+  String get actionAnonymous => _localizedStrings['actionAnonymous'] ?? 'Anonymous';
+  String sharingDirectory(String dir) => (_localizedStrings['sharingDirectory'] ?? 'Sharing Directory: {dir}').replaceAll('{dir}', dir.toString());
+  String get stopWebServer => _localizedStrings['stopWebServer'] ?? 'Stop Web Server';
+  String get startWebServer => _localizedStrings['startWebServer'] ?? 'Start Web Server';
+  String get protocolDescSmb => _localizedStrings['protocolDescSmb'] ?? 'Local Area Network & SMB NAS Share';
+  String get protocolDescFtp => _localizedStrings['protocolDescFtp'] ?? 'Standard File Transfer Protocol';
+  String get protocolDescSftp => _localizedStrings['protocolDescSftp'] ?? 'SSH Secure File Transfer Server';
+  String get protocolDescWebDav => _localizedStrings['protocolDescWebDav'] ?? 'HTTP Web Distributed Authoring';
+  String get protocolDescSaf => _localizedStrings['protocolDescSaf'] ?? 'Android Storage Access Framework (SD Card / External)';
+
+  String get sortNameAsc => _localizedStrings['sortNameAsc'] ?? 'Name (A-Z)';
+  String get sortNameDesc => _localizedStrings['sortNameDesc'] ?? 'Name (Z-A)';
+  String get sortNewest => _localizedStrings['sortNewest'] ?? 'Newest';
+  String get sortOldest => _localizedStrings['sortOldest'] ?? 'Oldest';
+  String get sortSizeLarge => _localizedStrings['sortSizeLarge'] ?? 'Size (Large)';
+  String get sortSizeSmall => _localizedStrings['sortSizeSmall'] ?? 'Size (Small)';
+  String get sortType => _localizedStrings['sortType'] ?? 'Type';
+
+  String get aboutCopyright => _localizedStrings['aboutCopyright'] ?? 'Copyright 2026 NFile. All rights reserved.';
+  String get aboutDescription => _localizedStrings['aboutDescription'] ?? 'NFile is a beautiful file manager.';
+  String get aboutMadeWith => _localizedStrings['aboutMadeWith'] ?? 'Made with love by Rubex';
+  String get aboutVersion => _localizedStrings['aboutVersion'] ?? 'v1.0.42 (Stable)';
+  String get noMatchesFound => _localizedStrings['noMatchesFound'] ?? 'We could not find anything matching ';
+  String get videoCodecInfo => _localizedStrings['videoCodecInfo'] ?? 'AVC / AAC - 1080p';
+  String get conflictFileExists => _localizedStrings['conflictFileExists'] ?? 'A file named ';
+  String copiedItems(int count) => (_localizedStrings['copiedItems'] ?? 'Copied {count} item(s)').replaceAll('{count}', count.toString());
+  String cutItems(int count) => (_localizedStrings['cutItems'] ?? 'Cut {count} item(s)').replaceAll('{count}', count.toString());
+  String playingQueueCount(int count) => (_localizedStrings['playingQueueCount'] ?? 'Playing Queue ({count})').replaceAll('{count}', count.toString());
+  String configuringItems(int count) => (_localizedStrings['configuringItems'] ?? 'Configuring {count} items').replaceAll('{count}', count.toString());
+  String reviewingItems(int count) => (_localizedStrings['reviewingItems'] ?? 'Reviewing {count} items').replaceAll('{count}', count.toString());
+  String filesCount(int count) => (_localizedStrings['filesCount'] ?? 'files: {count}').replaceAll('{count}', count.toString());
+  String foldersCount(int count) => (_localizedStrings['foldersCount'] ?? 'folders: {count}').replaceAll('{count}', count.toString());
+  String queryReturned(int count) => (_localizedStrings['queryReturned'] ?? 'Query returned {count} rows').replaceAll('{count}', count.toString());
+  String processingItem(int current, int total) => (_localizedStrings['processingItem'] ?? 'Processing item {current} of {total}').replaceAll('{current}', current.toString()).replaceAll('{total}', total.toString());
+  String stepXofY(int step, int total) => (_localizedStrings['stepXofY'] ?? 'Step {step} of {total}').replaceAll('{step}', step.toString()).replaceAll('{total}', total.toString());
+  String get webSearchPlaceholder => _localizedStrings['webSearchPlaceholder'] ?? 'Search files & folders...';
+  String get webUploadBtn => _localizedStrings['webUploadBtn'] ?? 'Upload';
+  String get webUploadTooltip => _localizedStrings['webUploadTooltip'] ?? 'Upload Files to this Folder';
+  String get webParentDir => _localizedStrings['webParentDir'] ?? '.. (Parent Directory)';
+  String get webGoUpLevel => _localizedStrings['webGoUpLevel'] ?? 'Go up one level';
+  String get webNoResults => _localizedStrings['webNoResults'] ?? 'No items match your search';
+  String get webCheckSpelling => _localizedStrings['webCheckSpelling'] ?? 'Check the spelling or try a different search term.';
+  String get webFileName => _localizedStrings['webFileName'] ?? 'File Name';
+  String get webCopyLink => _localizedStrings['webCopyLink'] ?? 'Copy Link';
+  String get webDownload => _localizedStrings['webDownload'] ?? 'Download';
+  String get webCloseModal => _localizedStrings['webCloseModal'] ?? 'Close Modal';
+  String get webDownloadFile => _localizedStrings['webDownloadFile'] ?? 'Download File';
+  String get webDropFiles => _localizedStrings['webDropFiles'] ?? 'Drop files here to upload';
+  String get webUploadInstantly => _localizedStrings['webUploadInstantly'] ?? 'Your files will be uploaded instantly to this shared folder';
+  String get webUploadingFile => _localizedStrings['webUploadingFile'] ?? 'Uploading file...';
+  String get webSecurelySharing => _localizedStrings['webSecurelySharing'] ?? 'Securely sharing and streaming files via NFile';
+  String get webUploadSuccess => _localizedStrings['webUploadSuccess'] ?? 'Upload completed successfully!';
+  String get webLinkCopied => _localizedStrings['webLinkCopied'] ?? 'Link copied to clipboard!';
+  String get webLinkCopyFailed => _localizedStrings['webLinkCopyFailed'] ?? 'Failed to copy link.';
+  String get webUploadingName => _localizedStrings['webUploadingName'] ?? 'Uploading \${file.name}...';
+  String get webUploadFailedName => _localizedStrings['webUploadFailedName'] ?? 'Failed to upload \${file.name}';
+  String get webLoadingPreview => _localizedStrings['webLoadingPreview'] ?? 'Loading preview...';
+  String get webStreamFailed => _localizedStrings['webStreamFailed'] ?? 'Failed to stream document. You can still download it directly.';
+  String get webPreviewNotSupported => _localizedStrings['webPreviewNotSupported'] ?? 'Preview is not supported for this file type';
+  String get webClickDownload => _localizedStrings['webClickDownload'] ?? 'Click Download below to save it on your system.';
+  String get webVideoNotSupported => _localizedStrings['webVideoNotSupported'] ?? 'Your browser does not support the video streaming tag.';
+  String get webAudioNotSupported => _localizedStrings['webAudioNotSupported'] ?? 'Your browser does not support the audio element.';
+  String get webUploadFailed => _localizedStrings['webUploadFailed'] ?? 'Upload failed';
+  String get webNetworkError => _localizedStrings['webNetworkError'] ?? 'Network error';
+
 }
+
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
   const _AppStringsDelegate();
@@ -865,7 +940,4 @@ class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
 
   @override
   bool shouldReload(_AppStringsDelegate old) => false;
-
-
-
 }

@@ -1,5 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:nfile/core/app_strings.dart';
 
 class AudioQueueSheet extends StatelessWidget {
   final List<SongModel> songs;
@@ -45,7 +46,7 @@ class AudioQueueSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Playing Queue (${songs.length})',
+                  AppStrings.current.playingQueueCount(songs.length),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
@@ -253,7 +253,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                   }
                   _ftpService.configure(
                     anonymous: !_ftpService.anonymous,
-                    username: !_ftpService.anonymous ? 'Anonymous' : 'admin',
+                    username: !_ftpService.anonymous ? AppStrings.current.actionAnonymous : 'admin',
                   );
                   setState(() {});
                   break;
@@ -440,7 +440,7 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                             ListTile(
                               title: Text(AppStrings.current.userName, style: const TextStyle(fontWeight: FontWeight.w500)),
                               trailing: Text(
-                                _ftpService.anonymous ? 'Anonymous' : _ftpService.username,
+                                _ftpService.anonymous ? AppStrings.current.actionAnonymous : _ftpService.username,
                                 style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontWeight: FontWeight.bold),
                               ),
                               onTap: _showUserDialog,
@@ -496,8 +496,8 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
                     elevation: 2,
                   ),
                   child: Text(
-                    isActive ? 'Stop' : 'Start',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
+                      isActive ? AppStrings.current.actionStop : AppStrings.current.actionStart,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
                   ),
                 ),
               ),

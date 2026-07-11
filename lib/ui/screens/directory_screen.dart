@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as p;
@@ -677,49 +677,49 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                             context,
                             provider,
                             setStateModal,
-                            'Name (A-Z)',
+                            AppStrings.current.sortNameAsc,
                             FileSortType.nameAsc,
                           ),
                           _buildSortChip(
                             context,
                             provider,
                             setStateModal,
-                            'Name (Z-A)',
+                            AppStrings.current.sortNameDesc,
                             FileSortType.nameDesc,
                           ),
                           _buildSortChip(
                             context,
                             provider,
                             setStateModal,
-                            'Newest',
+                            AppStrings.current.sortNewest,
                             FileSortType.dateNewest,
                           ),
                           _buildSortChip(
                             context,
                             provider,
                             setStateModal,
-                            'Oldest',
+                            AppStrings.current.sortOldest,
                             FileSortType.dateOldest,
                           ),
                           _buildSortChip(
                             context,
                             provider,
                             setStateModal,
-                            'Size (Large)',
+                            AppStrings.current.sortSizeLarge,
                             FileSortType.sizeLargest,
                           ),
                           _buildSortChip(
                             context,
                             provider,
                             setStateModal,
-                            'Size (Small)',
+                            AppStrings.current.sortSizeSmall,
                             FileSortType.sizeSmallest,
                           ),
                           _buildSortChip(
                             context,
                             provider,
                             setStateModal,
-                            'Type',
+                            AppStrings.current.sortType,
                             FileSortType.type,
                           ),
                         ],
