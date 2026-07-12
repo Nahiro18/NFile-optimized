@@ -1,8 +1,9 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 import '../../core/utils.dart';
 import '../../models/file_item_model.dart';
 import 'package:provider/provider.dart';
@@ -157,7 +158,7 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
   Future<void> _createFolder() async {
     final newFolderName = await FileActionDialogs.showTextInputDialog(
       context,
-      title: 'Create Folder',
+      title: AppStrings.current.createFolder,
       hint: 'Enter folder name',
       actionText: 'Create',
     );
@@ -183,7 +184,7 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
         debugPrint('Error creating folder in picker: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error creating folder: $e')),
+            SnackBar(content: Text(AppStrings.current.errorCreatingFolder(e.toString()))),
           );
         }
       } finally {
@@ -251,7 +252,7 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
                       child: Text(
-                        'Select Storage Drive',
+                        AppStrings.current.uiSelectStorageDrive,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -345,7 +346,7 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
                           ),
                         ),
                         title: Text(
-                          'System Root',
+                          AppStrings.current.systemRoot,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
@@ -413,18 +414,18 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
           actions: [
             IconButton(
               icon: const Icon(Broken.folder_add),
-              tooltip: 'Create Folder',
+              tooltip: AppStrings.current.createFolder,
               onPressed: _createFolder,
             ),
             IconButton(
               icon: const Icon(Icons.sd_storage_rounded),
-              tooltip: 'Select Storage',
+              tooltip: AppStrings.current.selectStorage,
               onPressed: () => _showStorageVolumeModal(context),
             ),
             if (_selectedPaths.isNotEmpty)
               IconButton(
                 icon: const Icon(Broken.close_square),
-                tooltip: 'Clear Selection',
+                tooltip: AppStrings.current.clearSelection,
                 onPressed: () => setState(() => _selectedPaths.clear()),
               ),
           ],
@@ -432,10 +433,10 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : _items.isEmpty
-                ? const Center(child: Text('Folder is empty'))
+                ? Center(child: Text(AppStrings.current.folderIsEmpty))
                 : ListView.builder(
                     controller: _scrollController,
-                    physics: const BouncingScrollPhysics(),
+                    physics: const ClampingScrollPhysics(),
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                     itemCount: _items.length,
                     itemBuilder: (context, index) {
@@ -529,14 +530,14 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
                     icon: const Icon(Broken.folder_add),
-                    label: Text('Pin Selected (${_selectedPaths.length})'),
+                    label: Text(AppStrings.current.pinSelected(_selectedPaths.length)),
                   )
                 : FloatingActionButton.extended(
                     onPressed: () => Navigator.pop(context, [_currentPath]),
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
                     icon: const Icon(Broken.folder_add),
-                    label: const Text('Pin This Folder'),
+                    label: Text(AppStrings.current.pinThisFolder),
                   )
             : _selectedPaths.isNotEmpty
                 ? FloatingActionButton.extended(
@@ -544,7 +545,7 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
                     icon: const Icon(Broken.add),
-                    label: Text('Add Selected (${_selectedPaths.length})'),
+                    label: Text(AppStrings.current.addSelected(_selectedPaths.length)),
                   )
                 : null,
       ),

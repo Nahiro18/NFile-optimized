@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:dartssh2/dartssh2.dart';
 
+import '../core/app_strings.dart';
 class WebSharingService extends ChangeNotifier {
   static final WebSharingService instance = WebSharingService._();
   WebSharingService._();
@@ -332,8 +333,8 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
         <div class="explorer-item parent-dir" onclick="window.location.href='$parentUrl'">
           <div class="item-icon-wrapper dir-icon">$backSvg</div>
           <div class="item-details">
-            <div class="item-name">.. (Parent Directory)</div>
-            <div class="item-meta">Go up one level</div>
+            <div class="item-name">${AppStrings.current.webParentDir}</div>
+            <div class="item-meta">${AppStrings.current.webGoUpLevel}</div>
           </div>
         </div>
       ''';
@@ -406,7 +407,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
         // Files render with clean hover download actions and explicit item metadata details
         final actionsHtml = '''
           <div class="item-actions">
-            <button class="action-btn download-btn" onclick="downloadFile('$relativeUrl', '${name.replaceAll("'", "\\'")}', event)" title="Download File">
+            <button class="action-btn download-btn" onclick="downloadFile('$relativeUrl', '${name.replaceAll("'", "\\'")}', event)" title="${AppStrings.current.webDownloadFile}">
               $downloadSvg
             </button>
           </div>
@@ -431,10 +432,10 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 
     final badgeHtml = '''
       <div class="header-actions">
-        <span class="status-indicator ${isInternet ? 'cloud' : 'local'}" title="${isInternet ? 'Secure Internet Share' : 'Local High-Speed Wi-Fi Share'}"></span>
-        <button class="header-upload-btn" onclick="triggerFileInput()" title="Upload Files to this Folder">
+        <span class="status-indicator ${isInternet ? 'cloud' : 'local'}" title="${isInternet ? 'Compartir vía Internet' : 'Compartir por Wi-Fi Local'}"></span>
+        <button class="header-upload-btn" onclick="triggerFileInput()" title="${AppStrings.current.webUploadTooltip}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-          <span>Upload</span>
+          <span>${AppStrings.current.webUploadBtn}</span>
         </button>
       </div>
     ''';
@@ -446,18 +447,18 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NFile Shared Portal - $title</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --primary: #3B82F6;
+      --primary: #6366F1;
       --primary-rgb: 59, 130, 246;
-      --primary-hover: #60A5FA;
-      --bg: #090d16;
-      --card: rgba(17, 24, 39, 0.45);
-      --card-hover: rgba(30, 41, 59, 0.7);
+      --primary-hover: #818CF8;
+      --bg: #0B1120;
+      --card: rgba(30, 41, 59, 0.6);
+      --card-hover: rgba(51, 65, 85, 0.8);
       --text: #F3F4F6;
       --text-muted: #9CA3AF;
-      --border: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.08);
       --border-hover: rgba(59, 130, 246, 0.35);
       --hover-row: rgba(255, 255, 255, 0.03);
 
@@ -476,7 +477,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
         radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
       background-attachment: fixed;
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
       margin: 0;
       padding: 0;
       min-height: 100vh;
@@ -484,8 +485,8 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     }
     header {
       background: rgba(9, 13, 22, 0.75);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       padding: 16px 24px;
       border-bottom: 1px solid var(--border);
       position: sticky;
@@ -506,14 +507,14 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       gap: 12px;
     }
     .logo-container {
-      background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      background: linear-gradient(135deg, #6366F1, #3B82F6);
       width: 36px;
       height: 36px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
       font-weight: 800;
       font-size: 18px;
       color: #fff;
@@ -644,7 +645,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       width: 100%;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 12px 16px 12px 42px;
       color: var(--text);
       font-family: inherit;
@@ -678,7 +679,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       background: var(--card);
       border: 1px solid var(--border);
       padding: 4px;
-      border-radius: 12px;
+      border-radius: 14px;
       gap: 4px;
     }
     .toggle-btn {
@@ -717,7 +718,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     .explorer-item {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 20px;
       cursor: pointer;
       display: flex;
       position: relative;
@@ -729,13 +730,13 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       background: var(--card-hover);
       border-color: var(--border-hover);
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
     }
     .item-icon-wrapper {
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 12px;
+      border-radius: 14px;
       transition: all 0.2s ease;
     }
     .item-icon-wrapper svg {
@@ -803,10 +804,10 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       margin-top: 4px;
     }
     .item-size {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: ui-monospace, 'Cascadia Code', 'Courier New', monospace;
     }
     .item-date {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: ui-monospace, 'Cascadia Code', 'Courier New', monospace;
     }
     .item-sep {
       opacity: 0.4;
@@ -1047,7 +1048,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     .modal-icon-wrapper {
       width: 44px;
       height: 44px;
-      border-radius: 12px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1136,7 +1137,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     .audio-container {
       width: 100%;
       padding: 40px 24px;
-      border-radius: 16px;
+      border-radius: 20px;
       background: radial-gradient(circle at center, rgba(139, 92, 246, 0.12) 0%, rgba(9, 13, 22, 0.4) 100%);
       border: 1px solid rgba(139, 92, 246, 0.2);
       box-sizing: border-box;
@@ -1188,7 +1189,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       text-align: left;
     }
     .preview-text code {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: ui-monospace, 'Cascadia Code', 'Courier New', monospace;
       font-size: 13px;
       color: #E5E7EB;
       line-height: 1.5;
@@ -1307,7 +1308,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       padding: 16px 20px;
-      border-radius: 16px;
+      border-radius: 20px;
       width: 320px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
@@ -1410,7 +1411,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       padding: 12px 24px;
-      border-radius: 12px;
+      border-radius: 14px;
       font-weight: 600;
       font-size: 13.5px;
       color: #fff;
@@ -1508,14 +1509,14 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     <div class="toolbar">
       <div class="search-wrapper">
         <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search files & folders...">
+        <input type="text" id="searchInput" class="search-input" placeholder="${AppStrings.current.webSearchPlaceholder}">
       </div>
       
       <div class="view-toggles">
-        <button class="toggle-btn" id="viewToggleList" onclick="setViewMode('list')" title="List View">
+        <button class="toggle-btn" id="viewToggleList" onclick="setViewMode('list')" title="${AppStrings.current.uiListView}">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
         </button>
-        <button class="toggle-btn" id="viewToggleGrid" onclick="setViewMode('grid')" title="Grid View">
+        <button class="toggle-btn" id="viewToggleGrid" onclick="setViewMode('grid')" title="${AppStrings.current.uiGridView}">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         </button>
       </div>
@@ -1527,22 +1528,22 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 
     <div class="empty-state" id="emptyState" style="display: none;">
       <div class="empty-icon">🔍</div>
-      <h3>No items match your search</h3>
-      <p>Check the spelling or try a different search term.</p>
+      <h3>${AppStrings.current.webNoResults}</h3>
+      <p>${AppStrings.current.webCheckSpelling}</p>
     </div>
   </div>
 
   <!-- Floating Preview Drawer Modal -->
   <div class="modal-overlay" id="previewModal" onclick="closeModal(event)">
     <div class="modal-card" onclick="event.stopPropagation()">
-      <button class="modal-close" onclick="closeModal(event)" title="Close Modal">
+      <button class="modal-close" onclick="closeModal(event)" title="${AppStrings.current.webCloseModal}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
       
       <div class="modal-header">
         <div class="modal-icon-wrapper" id="modalIcon"></div>
         <div class="modal-title-wrapper">
-          <h3 id="modalTitle">File Name</h3>
+          <h3 id="modalTitle">${AppStrings.current.webFileName}</h3>
           <p id="modalMeta">Size • Modified Date</p>
         </div>
       </div>
@@ -1554,11 +1555,11 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       <div class="modal-footer">
         <button class="btn btn-secondary" id="modalCopyBtn" onclick="copyModalLink()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; margin-right:8px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          Copy Link
+          ${AppStrings.current.webCopyLink}
         </button>
         <a class="btn btn-primary" id="modalDownloadBtn" href="" download>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; margin-right:8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          Download
+          ${AppStrings.current.webDownload}
         </a>
       </div>
     </div>
@@ -1572,15 +1573,15 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     <div class="drag-overlay-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
     </div>
-    <h2>Drop files here to upload</h2>
-    <p>Your files will be uploaded instantly to this shared folder</p>
+    <h2>${AppStrings.current.webDropFiles}</h2>
+    <p>${AppStrings.current.webUploadInstantly}</p>
   </div>
 
   <!-- Floating Progress indicator card -->
   <div class="upload-progress-overlay" id="uploadOverlay">
     <div class="upload-progress-card">
       <div class="upload-progress-header">
-        <span class="upload-title" id="uploadTitle">Uploading file...</span>
+        <span class="upload-title" id="uploadTitle">${AppStrings.current.webUploadingFile}</span>
         <span class="upload-percent" id="uploadPercent">0%</span>
       </div>
       <div class="progress-bar-container">
@@ -1590,7 +1591,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
   </div>
 
   <footer>
-    Securely sharing and streaming files via NFile Server
+    ${AppStrings.current.webSecurelySharing}
   </footer>
 
   <script>
@@ -1661,7 +1662,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        title.textContent = `Uploading \${file.name}...`;
+        title.textContent = `${AppStrings.current.webUploadingName}`;
         percent.textContent = '0%';
         bar.style.width = '0%';
         
@@ -1671,13 +1672,13 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
             bar.style.width = `\${p}%`;
           });
         } catch (err) {
-          showToast(`Failed to upload \${file.name}`);
+          showToast(`${AppStrings.current.webUploadFailedName}`);
           console.error(err);
         }
       }
       
       overlay.classList.remove('active');
-      showToast("Upload completed successfully!");
+      showToast(`${AppStrings.current.webUploadSuccess}`);
       setTimeout(() => {
         window.location.reload();
       }, 800);
@@ -1700,11 +1701,11 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve();
           } else {
-            reject(new Error(xhr.responseText || 'Upload failed'));
+            reject(new Error(xhr.responseText || `${AppStrings.current.webUploadFailed}`));
           }
         };
         
-        xhr.onerror = () => reject(new Error('Network error'));
+        xhr.onerror = () => reject(new Error(`${AppStrings.current.webNetworkError}`));
         xhr.send(file);
       });
     }
@@ -1784,7 +1785,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
           <div class="video-container">
             <video controls autoplay class="preview-video">
               <source src="\${url}" type="\${mime}">
-              Your browser does not support the video streaming tag.
+              ${AppStrings.current.webVideoNotSupported}
             </video>
           </div>
         `;
@@ -1794,7 +1795,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
             <div class="audio-art-disc">🎵</div>
             <audio controls autoplay class="preview-audio">
               <source src="\${url}" type="\${mime}">
-              Your browser does not support the audio element.
+              ${AppStrings.current.webAudioNotSupported}
             </audio>
           </div>
         `;
@@ -1809,7 +1810,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
           <iframe src="\${url}" class="preview-pdf"></iframe>
         `;
       } else if (['txt', 'log', 'json', 'md', 'xml', 'js', 'css', 'html'].includes(ext)) {
-        body.innerHTML = `<div class="preview-text-loading">Loading preview...</div>`;
+        body.innerHTML = `<div class="preview-text-loading">${AppStrings.current.webLoadingPreview}</div>`;
         fetch(url)
           .then(res => res.text())
           .then(text => {
@@ -1817,14 +1818,14 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
             body.innerHTML = `<pre class="preview-text"><code>\${escaped}</code></pre>`;
           })
           .catch(() => {
-            body.innerHTML = `<div class="preview-text-error">Failed to stream document. You can still download it directly.</div>`;
+            body.innerHTML = `<div class="preview-text-error">${AppStrings.current.webStreamFailed}</div>`;
           });
       } else {
         body.innerHTML = `
           <div class="generic-container">
             <div class="generic-preview-icon">\${iconWrapper.innerHTML}</div>
-            <p class="generic-preview-text">Preview is not supported for this file type</p>
-            <p class="generic-preview-subtext">Click Download below to save it on your system.</p>
+            <p class="generic-preview-text">${AppStrings.current.webPreviewNotSupported}</p>
+            <p class="generic-preview-subtext">${AppStrings.current.webClickDownload}</p>
           </div>
         `;
       }
@@ -1863,12 +1864,12 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     function copyFileLink(url, event) {
       if (event) event.stopPropagation();
       const absoluteUrl = new URL(url, window.location.href).href;
-      copyToClipboard(absoluteUrl, "Link copied to clipboard!");
+      copyToClipboard(absoluteUrl, `${AppStrings.current.webLinkCopied}`);
     }
 
     function copyModalLink() {
       const absoluteUrl = new URL(currentModalUrl, window.location.href).href;
-      copyToClipboard(absoluteUrl, "Link copied to clipboard!");
+      copyToClipboard(absoluteUrl, `${AppStrings.current.webLinkCopied}`);
     }
 
     function copyToClipboard(text, successMsg) {
@@ -1885,7 +1886,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
           document.execCommand('copy');
           showToast(successMsg);
         } catch (e) {
-          showToast("Failed to copy link.");
+          showToast(`${AppStrings.current.webLinkCopyFailed}`);
         }
         document.body.removeChild(textarea);
       });

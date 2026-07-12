@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import '../../providers/file_manager_provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 import 'tab_options_sheet.dart';
 
 class DirectoryTabBar extends StatelessWidget implements PreferredSizeWidget {
@@ -33,14 +34,14 @@ class DirectoryTabBar extends StatelessWidget implements PreferredSizeWidget {
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               itemCount: tabs.length,
               itemBuilder: (context, index) {
                 final tab = tabs[index];
                 final isSelected = index == activeIndex;
                 final isRoot = tab.currentPath == provider.rootPath;
-                final title = isRoot ? 'Home' : p.basename(tab.currentPath);
+                final title = isRoot ? AppStrings.current.home : p.basename(tab.currentPath);
 
                 return Container(
                   margin: const EdgeInsets.only(right: 8),
@@ -119,7 +120,7 @@ class DirectoryTabBar extends StatelessWidget implements PreferredSizeWidget {
             constraints: const BoxConstraints(),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             icon: const Icon(Broken.add, size: 20),
-            tooltip: 'New Tab',
+            tooltip: AppStrings.current.newTab,
             onPressed: () {
               provider.addTab(provider.rootPath);
             },
@@ -138,23 +139,23 @@ class DirectoryTabBar extends StatelessWidget implements PreferredSizeWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'duplicate',
                 child: Row(
                   children: [
                     Icon(Broken.copy, size: 18),
                     SizedBox(width: 10),
-                    Text('Duplicate Tab', style: TextStyle(fontWeight: FontWeight.w500)),
+                    Text(AppStrings.current.duplicateTab, style: TextStyle(fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'close_others',
                 child: Row(
                   children: [
                     Icon(Broken.close_circle, size: 18),
                     SizedBox(width: 10),
-                    Text('Close Other Tabs', style: TextStyle(fontWeight: FontWeight.w500)),
+                    Text(AppStrings.current.closeOtherTabs, style: TextStyle(fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),

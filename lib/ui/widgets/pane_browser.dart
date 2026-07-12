@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +12,7 @@ import '../../models/folder_tab_model.dart';
 import '../../models/drag_payload.dart';
 import '../../models/file_filter_type.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 import 'drag_drop_action_dialog.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../../services/app_manager_service.dart';
@@ -43,10 +44,10 @@ class _PaneBrowserState extends State<PaneBrowser> {
 
   final List<String> _filters = [
     'All',
-    'Folders',
-    'Images',
-    'Videos',
-    'Audio',
+    AppStrings.current.uiFolders,
+    AppStrings.current.uiImages,
+    AppStrings.current.uiVideos,
+    AppStrings.current.uiAudio,
     'Docs',
   ];
 
@@ -138,10 +139,10 @@ class _PaneBrowserState extends State<PaneBrowser> {
           final currentName = p.basename(path);
           final newName = await FileActionDialogs.showTextInputDialog(
             context,
-            title: 'Rename',
-            hint: 'Enter new name',
+            title: AppStrings.current.rename,
+            hint: AppStrings.current.newFilename,
             initialValue: currentName,
-            actionText: 'Rename',
+            actionText: AppStrings.current.rename,
           );
           if (newName != null && newName.isNotEmpty) {
             await provider.renameFile(path, newName);
@@ -155,10 +156,10 @@ class _PaneBrowserState extends State<PaneBrowser> {
         final isMulti = provider.selectedPaths.isNotEmpty && provider.selectedPaths.contains(path);
         final confirm = await FileActionDialogs.showConfirmDialog(
           context,
-          title: isMulti ? 'Delete Selected' : 'Delete Item',
+          title: isMulti ? AppStrings.current.deleteSelected : AppStrings.current.delete,
           content: isMulti
-              ? 'Are you sure you want to delete ${provider.selectedPaths.length} items? This cannot be undone.'
-              : 'Are you sure you want to delete this item? This cannot be undone.',
+              ? AppStrings.current.deletePermanentlyRecycleMessage(provider.selectedPaths.length)
+              : AppStrings.current.permanentlyDeleteItems(1),
         );
         if (confirm) {
           if (isMulti) {
@@ -256,7 +257,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           constraints: const BoxConstraints(),
                           onPressed: () => provider.toggleSearchForTab(widget.tabIndex),
-                          tooltip: tab.isSearchActive ? 'Close Search' : 'Search in Pane',
+                          tooltip: tab.isSearchActive ? AppStrings.current.close : AppStrings.current.searchEllipsis,
                         ),
                         // UP button for parent directory
                         if (tab.currentPath != '/' && tab.currentPath != provider.rootPath)
@@ -265,7 +266,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
                             onPressed: () => _goBack(provider),
-                            tooltip: 'Go to Parent Directory',
+                            tooltip: AppStrings.current.goToParentDirectory,
                           ),
                       ],
                     ),
@@ -284,7 +285,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                     color: theme.colorScheme.surfaceVariant.withOpacity(0.15),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
+                      physics: const ClampingScrollPhysics(),
                       child: Row(
                         children: [
                           Icon(Broken.folder, size: 14, color: theme.colorScheme.primary.withOpacity(0.7)),
@@ -318,7 +319,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                               autofocus: true,
                               style: theme.textTheme.bodyMedium,
                               decoration: InputDecoration(
-                                hintText: 'Search...',
+                                hintText: AppStrings.current.searchEllipsis,
                                 hintStyle: TextStyle(color: theme.colorScheme.onSurface.withAlpha(102), fontSize: 13),
                                 border: InputBorder.none,
                                 isDense: true,
@@ -458,7 +459,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                                   )
                                 : CustomScrollView(
                                       controller: _scrollController,
-                                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                                      physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                                       slivers: [
                                       CupertinoSliverRefreshControl(
                                         onRefresh: () => provider.loadDirectoryForTab(widget.tabIndex, tab.currentPath, showLoading: false, clearCache: true),
@@ -488,7 +489,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                                                             ),
                                                             const SizedBox(height: 16),
                                                             Text(
-                                                              'Search in tab',
+                                                              AppStrings.current.uiSearchInTab,
                                                               style: theme.textTheme.titleMedium?.copyWith(
                                                                 fontWeight: FontWeight.bold,
                                                                 color: theme.colorScheme.onSurface,
@@ -513,7 +514,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                                                             ),
                                                             const SizedBox(height: 16),
                                                             Text(
-                                                              'No results',
+                                                               AppStrings.current.noRowsFound,
                                                               style: theme.textTheme.titleMedium?.copyWith(
                                                                 fontWeight: FontWeight.bold,
                                                                 color: theme.colorScheme.onSurface,
@@ -538,7 +539,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                                                         ),
                                                         const SizedBox(height: 16),
                                                         Text(
-                                                          'Empty Folder',
+                                                           AppStrings.current.folderIsEmpty,
                                                           style: theme.textTheme.titleMedium?.copyWith(
                                                             fontWeight: FontWeight.bold,
                                                             color: theme.colorScheme.onSurface,
@@ -963,27 +964,27 @@ class _PaneBrowserState extends State<PaneBrowser> {
       case FileFilterType.all:
         break;
       case FileFilterType.documents:
-        label = 'Documents only';
+        label = AppStrings.current.documentsOnly;
         icon = Broken.document;
         color = Colors.blueAccent;
         break;
       case FileFilterType.images:
-        label = 'Images only';
+        label = AppStrings.current.imagesOnly;
         icon = Broken.image;
         color = Colors.purpleAccent;
         break;
       case FileFilterType.audio:
-        label = 'Audio only';
+        label = AppStrings.current.audioOnly;
         icon = Broken.music;
         color = Colors.greenAccent;
         break;
       case FileFilterType.videos:
-        label = 'Videos only';
+        label = AppStrings.current.videosOnly;
         icon = Broken.video;
         color = Colors.redAccent;
         break;
       case FileFilterType.archives:
-        label = 'Archives only';
+        label = AppStrings.current.archivesOnly;
         icon = Broken.archive;
         color = Colors.brown;
         break;

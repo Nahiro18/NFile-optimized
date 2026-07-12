@@ -7,8 +7,9 @@ import 'package:media_kit/media_kit.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
-import '../../../../core/icon_fonts/broken_icons.dart';
-import '../../../../providers/file_manager_provider.dart';
+import '../../../core/icon_fonts/broken_icons.dart';
+import '../../../core/app_strings.dart';
+import '../../../providers/file_manager_provider.dart';
 import '../../widgets/nfile_icon.dart';
 import '../internal_file_picker_screen.dart';
 
@@ -209,7 +210,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
             WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToActive(animate: false));
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Lyrics loaded successfully', style: TextStyle(color: Colors.white)),
+                content: Text(AppStrings.current.lyricsLoaded, style: const TextStyle(color: Colors.white)),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -349,14 +350,14 @@ class _LyricsDialogState extends State<LyricsDialog> {
             child: Icon(Broken.music, size: 48, color: Colors.white.withOpacity(0.3)),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'No Synchronized Lyrics Found',
+          Text(
+            AppStrings.current.uiNoSynchronizedLyricsFound,
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
           Text(
-            'Keep a .lrc file with the exact same name next to your song, or select it manually below.',
+            AppStrings.current.uiKeepALrcFileWithThe,
             style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 13, height: 1.5),
             textAlign: TextAlign.center,
           ),
@@ -370,7 +371,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
               elevation: 0,
             ),
             icon: const Icon(Broken.document_upload, size: 18),
-            label: const Text('Load LRC File', style: TextStyle(fontWeight: FontWeight.bold)),
+            label: Text(AppStrings.current.loadLrcFile, style: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: _pickLrcManually,
           ),
         ],
@@ -388,7 +389,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                physics: const BouncingScrollPhysics(),
+                physics: const ClampingScrollPhysics(),
                 padding: EdgeInsets.symmetric(vertical: _viewportHeight / 2 - 30.0),
                 itemCount: _lyrics!.length,
                 itemBuilder: (context, idx) {
@@ -406,7 +407,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                       child: Text(
-                        line.text.isEmpty ? "♪" : line.text,
+                        line.text.isEmpty ? "â™ª" : line.text,
                         style: TextStyle(
                           color: isSelected ? theme.colorScheme.primary : Colors.white.withOpacity(0.4),
                           fontSize: isSelected ? 18 : 15,
@@ -435,7 +436,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
               width: double.infinity,
               color: Colors.black26,
               child: Text(
-                'Tap a line to seek playback',
+                AppStrings.current.uiTapALineToSeekPlayback,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.35),
                   fontSize: 11,

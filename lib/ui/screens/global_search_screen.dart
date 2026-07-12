@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +16,7 @@ import '../../services/folder_share_service.dart';
 import '../widgets/directory_tab_bar.dart';
 import '../../core/utils.dart';
 import '../widgets/selection_action_bar.dart';
+import '../../core/app_strings.dart';
 
 class GlobalSearchScreen extends StatefulWidget {
   final String? searchFolderPath;
@@ -61,10 +62,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
 
   final List<String> _filters = [
     'All',
-    'Folders',
-    'Images',
-    'Videos',
-    'Audio',
+    AppStrings.current.uiFolders,
+    AppStrings.current.uiImages,
+    AppStrings.current.uiVideos,
+    AppStrings.current.uiAudio,
     'Docs',
   ];
 
@@ -168,7 +169,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       }
     }
 
-    if (_selectedFilter == 'All' || _selectedFilter == 'Audio') {
+    if (_selectedFilter == 'All' || _selectedFilter == AppStrings.current.uiAudio) {
       for (final song in mediaProvider.audios) {
         final path = song.data;
         if (!isGlobal && !path.startsWith(rootPath)) continue;
@@ -212,13 +213,13 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           bool matchFilter = false;
           if (_selectedFilter == 'All') {
             matchFilter = true;
-          } else if (_selectedFilter == 'Folders' && isDir) {
+          } else if (_selectedFilter == AppStrings.current.uiFolders && isDir) {
             matchFilter = true;
-          } else if (_selectedFilter == 'Images' && !isDir && _isImage(name)) {
+          } else if (_selectedFilter == AppStrings.current.uiImages && !isDir && _isImage(name)) {
             matchFilter = true;
-          } else if (_selectedFilter == 'Videos' && !isDir && _isVideo(name)) {
+          } else if (_selectedFilter == AppStrings.current.uiVideos && !isDir && _isVideo(name)) {
             matchFilter = true;
-          } else if (_selectedFilter == 'Audio' && !isDir && _isAudio(name)) {
+          } else if (_selectedFilter == AppStrings.current.uiAudio && !isDir && _isAudio(name)) {
             matchFilter = true;
           } else if (_selectedFilter == 'Docs' && !isDir && _isDoc(name)) {
             matchFilter = true;
@@ -296,7 +297,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     if (_selectedPaths.isEmpty) return;
     context.read<FileManagerProvider>().setClipboard(_selectedPaths.toList(), isCut: false);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Copied ${_selectedPaths.length} items to clipboard')),
+      SnackBar(content: Text(AppStrings.current.copedToClipboardN(_selectedPaths.length))),
     );
     _clearSelection();
   }
@@ -305,7 +306,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     if (_selectedPaths.isEmpty) return;
     context.read<FileManagerProvider>().setClipboard(_selectedPaths.toList(), isCut: true);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Cut ${_selectedPaths.length} items to clipboard')),
+      SnackBar(content: Text(AppStrings.current.cutToClipboardN(_selectedPaths.length))),
     );
     _clearSelection();
   }
@@ -335,7 +336,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     if (_selectedPaths.isEmpty) return;
     final confirm = await FileActionDialogs.showConfirmDialog(
       context,
-      title: 'Delete Selected',
+      title: AppStrings.current.deleteSelected,
       content: 'Are you sure you want to delete ${_selectedPaths.length} selected item(s)? This cannot be undone.',
     );
 
@@ -349,7 +350,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         });
       }
       _clearSelection();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully deleted items')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.successfullyDeleted)));
     }
   }
 
@@ -370,11 +371,11 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         break;
       case 'copy':
         provider.copyFile(path);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.copedToClipboard)));
         break;
       case 'cut':
         provider.cutFile(path);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cut to clipboard')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.cutToClipboard)));
         break;
       case 'rename':
         final isMulti = _selectedPaths.isNotEmpty && _selectedPaths.contains(path);
@@ -393,10 +394,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           final currentName = p.basename(path);
           final newName = await FileActionDialogs.showTextInputDialog(
             context,
-            title: 'Rename',
+            title: AppStrings.current.rename,
             hint: 'Enter new name',
             initialValue: currentName,
-            actionText: 'Rename',
+            actionText: AppStrings.current.rename,
           );
           if (newName != null && newName.isNotEmpty) {
             await provider.renameFile(path, newName);
@@ -411,7 +412,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         final isMulti = _selectedPaths.isNotEmpty && _selectedPaths.contains(path);
         final confirm = await FileActionDialogs.showConfirmDialog(
           context,
-          title: isMulti ? 'Delete Selected' : 'Delete File',
+          title: isMulti ? AppStrings.current.deleteSelected : AppStrings.current.uiDeleteFile,
           content: isMulti
               ? 'Are you sure you want to delete ${_selectedPaths.length} selected item(s)? This cannot be undone.'
               : 'Are you sure you want to delete this item? This cannot be undone.',
@@ -491,27 +492,27 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
             ? [
                 IconButton(
                   icon: const Icon(Broken.document_copy),
-                  tooltip: 'Copy',
+                  tooltip: AppStrings.current.copy,
                   onPressed: _handleCopySelected,
                 ),
                 IconButton(
                   icon: const Icon(Broken.scissor),
-                  tooltip: 'Cut',
+                  tooltip: AppStrings.current.cut,
                   onPressed: _handleCutSelected,
                 ),
                 IconButton(
                   icon: const Icon(Broken.edit),
-                  tooltip: 'Rename',
+                  tooltip: AppStrings.current.rename,
                   onPressed: _handleRenameSelected,
                 ),
                 IconButton(
                   icon: const Icon(Broken.trash, color: Colors.red),
-                  tooltip: 'Delete',
+                  tooltip: AppStrings.current.delete,
                   onPressed: _handleDeleteSelected,
                 ),
                 PopupMenuButton<String>(
                   icon: const Icon(Broken.more),
-                  tooltip: 'More Actions',
+                  tooltip: AppStrings.current.moreOptions,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   position: PopupMenuPosition.under,
                   elevation: 8,
@@ -531,33 +532,33 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                     }
                   },
                   itemBuilder: (context) => [
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'select_all',
                       child: Row(
                         children: [
-                          Icon(Broken.tick_square, size: 20),
-                          SizedBox(width: 12),
-                          Text('Select All', style: TextStyle(fontWeight: FontWeight.w500)),
+                          const Icon(Broken.tick_square, size: 20),
+                          const SizedBox(width: 12),
+                          Text(AppStrings.current.selectAll, style: const TextStyle(fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'share',
                       child: Row(
                         children: [
-                          Icon(Icons.share_outlined, size: 20),
-                          SizedBox(width: 12),
-                          Text('Share', style: TextStyle(fontWeight: FontWeight.w500)),
+                          const Icon(Icons.share_outlined, size: 20),
+                          const SizedBox(width: 12),
+                          Text(AppStrings.current.share, style: const TextStyle(fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'properties',
                       child: Row(
                         children: [
-                          Icon(Broken.info_circle, size: 20),
-                          SizedBox(width: 12),
-                          Text('Properties', style: TextStyle(fontWeight: FontWeight.w500)),
+                          const Icon(Broken.info_circle, size: 20),
+                          const SizedBox(width: 12),
+                          Text(AppStrings.current.properties, style: const TextStyle(fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
@@ -671,11 +672,11 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                     ? _buildEmptyState(
                         theme,
                         Broken.document_filter,
-                        'No results found',
+                        AppStrings.current.uiNoResultsFound,
                         'We could not find anything matching "$_query" under $_selectedFilter',
                       )
                     : ListView.builder(
-                        physics: const BouncingScrollPhysics(),
+                        physics: const ClampingScrollPhysics(),
                         itemCount: _results.length,
                         itemBuilder: (context, index) {
                           final item = _results[index];

@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import '../providers/file_manager_provider.dart';
 import '../providers/media_provider.dart';
+import '../core/app_strings.dart';
 
 class SettingsBackupService {
   static const String _backupDir = '/storage/emulated/0/NFile/Backups/Settings';
@@ -43,8 +44,8 @@ class SettingsBackupService {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Settings backed up to NFile/Backups/Settings/nfile_settings_backup.json'),
+          SnackBar(
+            content: Text(AppStrings.current.settingsBackedUp),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -53,7 +54,7 @@ class SettingsBackupService {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to backup settings: $e'),
+            content: Text(AppStrings.current.failedToBackup(e.toString())),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
@@ -108,8 +109,8 @@ class SettingsBackupService {
         Provider.of<FileManagerProvider>(context, listen: false).reloadPreferences();
         Provider.of<MediaProvider>(context, listen: false).reloadPreferences();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Settings restored successfully!'),
+          SnackBar(
+            content: Text(AppStrings.current.settingsRestored),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -118,7 +119,7 @@ class SettingsBackupService {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to restore settings: $e'),
+            content: Text(AppStrings.current.failedToRestore(e.toString())),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Theme.of(context).colorScheme.error,
           ),

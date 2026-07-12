@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/file_manager_provider.dart';
+import '../core/app_strings.dart';
 
 class IntentHandlerService {
   static const MethodChannel _channel = MethodChannel('com.rubex.nfile/root_shizuku');
@@ -38,7 +39,7 @@ class IntentHandlerService {
         debugPrint('Error resolving content URI: $e');
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error reading shared file: $e')),
+            SnackBar(content: Text(AppStrings.current.errorReadingSharedFile(e.toString()))),
           );
         }
         return;

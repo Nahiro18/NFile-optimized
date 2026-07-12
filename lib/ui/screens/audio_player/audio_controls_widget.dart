@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/icon_fonts/broken_icons.dart';
+import '../../../core/app_strings.dart';
 
 class AudioControlsWidget extends StatelessWidget {
   final bool isPlaying;
@@ -15,6 +16,7 @@ class AudioControlsWidget extends StatelessWidget {
   final int repeatMode; // 0=none, 1=one, 2=all
   final VoidCallback onToggleRepeat;
   final Color accentColor;
+  final String qualityInfo;
 
   const AudioControlsWidget({
     super.key,
@@ -31,6 +33,7 @@ class AudioControlsWidget extends StatelessWidget {
     required this.repeatMode,
     required this.onToggleRepeat,
     required this.accentColor,
+    this.qualityInfo = 'HQ Audio',
   });
 
   String _formatDuration(Duration d) {
@@ -158,7 +161,7 @@ class AudioControlsWidget extends StatelessWidget {
                       Icon(Icons.high_quality_rounded, color: accentColor, size: 16),
                       const SizedBox(width: 6),
                       Text(
-                        'FLAC • 24-bit',
+                        qualityInfo,
                         style: TextStyle(
                           color: accentColor,
                           fontSize: 12,
@@ -196,7 +199,7 @@ class AudioControlsWidget extends StatelessWidget {
                       iconSize: 22,
                       constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                       padding: EdgeInsets.zero,
-                      tooltip: 'Sound FX',
+                      tooltip: AppStrings.current.soundFX,
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
                       onPressed: onShowEqualizer,
                     ),
@@ -206,7 +209,7 @@ class AudioControlsWidget extends StatelessWidget {
                       iconSize: 22,
                       constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                       padding: EdgeInsets.zero,
-                      tooltip: 'Lyrics',
+                      tooltip: AppStrings.current.lyrics,
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
                       onPressed: onShowLyrics,
                     ),
@@ -216,7 +219,7 @@ class AudioControlsWidget extends StatelessWidget {
                       iconSize: 22,
                       constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                       padding: EdgeInsets.zero,
-                      tooltip: 'Sleep Timer',
+                      tooltip: AppStrings.current.sleepTimer,
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
                       onPressed: onShowSleepTimer,
                     ),
@@ -226,7 +229,7 @@ class AudioControlsWidget extends StatelessWidget {
                       iconSize: 22,
                       constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                       padding: EdgeInsets.zero,
-                      tooltip: 'Playing Queue',
+                      tooltip: AppStrings.current.playingQueue,
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
                       onPressed: onShowQueue,
                     ),

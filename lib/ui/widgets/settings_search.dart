@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 
 class SettingsSearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -38,7 +39,7 @@ class SettingsSearchBar extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
         decoration: InputDecoration(
-          hintText: 'Search settings...',
+          hintText: AppStrings.current.searchSettings,
           hintStyle: TextStyle(
             color: theme.colorScheme.onSurface.withOpacity(0.4),
             fontSize: 15,

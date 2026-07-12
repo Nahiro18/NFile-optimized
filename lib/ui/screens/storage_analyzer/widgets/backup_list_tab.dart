@@ -1,10 +1,11 @@
-import 'dart:typed_data';
+﻿import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../../../core/icon_fonts/broken_icons.dart';
 import '../../../../models/app_info_model.dart';
 import '../../../../services/app_manager_service.dart';
 import '../../../../services/apk_installer_service.dart';
 import '../../../../core/utils.dart';
+import '../../../../core/app_strings.dart';
 
 class BackupListTab extends StatefulWidget {
   final String searchQuery;
@@ -159,7 +160,7 @@ class _BackupListTabState extends State<BackupListTab> {
                 _buildBottomSheetActionItem(
                   theme: theme,
                   icon: Broken.document_upload,
-                  label: 'Restore / Install App',
+                  label: AppStrings.current.restoreInstallApp,
                   color: theme.colorScheme.primary,
                   onTap: () async {
                     Navigator.pop(context);
@@ -169,7 +170,7 @@ class _BackupListTabState extends State<BackupListTab> {
                 _buildBottomSheetActionItem(
                   theme: theme,
                   icon: Broken.export_1,
-                  label: 'Share Backup File',
+                  label: AppStrings.current.shareBackupFile,
                   color: Colors.teal,
                   onTap: () {
                     Navigator.pop(context);
@@ -190,7 +191,7 @@ class _BackupListTabState extends State<BackupListTab> {
                 _buildBottomSheetActionItem(
                   theme: theme,
                   icon: Broken.trash,
-                  label: 'Delete Backup File',
+                  label: AppStrings.current.deleteBackupFile,
                   color: Colors.redAccent,
                   onTap: () async {
                     Navigator.pop(context);
@@ -262,8 +263,8 @@ class _BackupListTabState extends State<BackupListTab> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'No backups found',
+              Text(
+                AppStrings.current.uiNoBackupsFound,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 4),
@@ -284,7 +285,7 @@ class _BackupListTabState extends State<BackupListTab> {
     }
 
     return ListView.builder(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: _backups.length,
       itemBuilder: (context, index) {

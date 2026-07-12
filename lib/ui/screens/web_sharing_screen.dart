@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../services/web_sharing_service.dart';
@@ -59,8 +60,8 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
     if (_webService.isLocalActive) {
       await _webService.stopLocalServer();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Local HTTP Sharing Server stopped.'),
+        SnackBar(
+          content: Text(AppStrings.current.webSharingStopped),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -70,7 +71,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
         await _webService.startLocalServer(rootPath);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Local HTTP Sharing Server started! URL: ${_webService.localServerUrl}'),
+            content: Text(AppStrings.current.webSharingStarted(_webService.localServerUrl as String)),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
@@ -78,7 +79,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error starting HTTP Server: $e'),
+            content: Text(AppStrings.current.errorStartingWeb(e.toString())),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.redAccent,
           ),
@@ -91,8 +92,8 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
     if (_webService.isInternetActive) {
       _webService.stopInternetTunnel();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Internet Share Tunnel deactivated.'),
+        SnackBar(
+          content: Text(AppStrings.current.internetShareDeactivated),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -102,14 +103,14 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
         context: context,
         barrierDismissible: false,
         builder: (context) {
-          return const AlertDialog(
+          return AlertDialog(
             content: Row(
               children: [
                 CircularProgressIndicator(),
                 SizedBox(width: 20),
                 Expanded(
                   child: Text(
-                    'Establishing secure proxy relay...',
+                    AppStrings.current.uiEstablishingSecureProxyRelay,
                     style: TextStyle(fontFamily: 'LexendDeca', fontSize: 14),
                   ),
                 ),
@@ -127,7 +128,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
           await _webService.startInternetTunnel(shareDir);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Internet cloud tunnel online! Temporary link active.'),
+              content: Text(AppStrings.current.internetCloudTunnel),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
@@ -135,7 +136,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to start Cloud Share: $e'),
+              content: Text(AppStrings.current.failedToStartCloud(e.toString())),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.redAccent,
             ),
@@ -148,8 +149,8 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Link copied to clipboard!'),
+      SnackBar(
+        content: Text(AppStrings.current.linkCopied),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -172,7 +173,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Scan QR Code',
+                  AppStrings.current.uiScanQrCode,
                   style: TextStyle(
                     fontFamily: 'LexendDeca',
                     fontSize: 20,
@@ -240,7 +241,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                       elevation: 0,
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Close', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(AppStrings.current.close, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -266,8 +267,8 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Web Sharing Hub',
+        title: Text(
+          AppStrings.current.uiWebSharingHub,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
@@ -347,7 +348,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                               )
                             : null,
                         child: Text(
-                          'Local Web Share',
+                          AppStrings.current.uiLocalWebShare,
                           style: TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.bold,
@@ -370,7 +371,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                               )
                             : null,
                         child: Text(
-                          'Internet Share Link',
+                          AppStrings.current.uiInternetShareLink,
                           style: TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.bold,
@@ -403,16 +404,16 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
   // --- TAB 1: Local HTTP Server Streaming ---
   Widget _buildLocalShareView(ThemeData theme, bool isDark, String shareDir) {
     return ListView(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20.0),
       children: [
-        const Text(
-          'HTTP Local Share Server',
+        Text(
+          AppStrings.current.uiHttpLocalShareServer,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'LexendDeca'),
         ),
         const SizedBox(height: 4),
         Text(
-          'Allows other devices on the same Wi-Fi to access, view, and stream your files in their web browser.',
+          AppStrings.current.uiAllowsOtherDevicesOnTheSame,
           style: TextStyle(fontSize: 12.5, color: theme.colorScheme.onSurface.withOpacity(0.5)),
         ),
         const SizedBox(height: 20),
@@ -443,15 +444,15 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                         child: const Icon(Icons.circle, color: Colors.green, size: 10),
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Server Online & Streaming',
+                      Text(
+                        AppStrings.current.uiServerOnlineStreaming,
                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Direct Browser URL:',
+                    AppStrings.current.uiDirectBrowserUrl,
                     style: TextStyle(fontSize: 11.5, color: theme.colorScheme.onSurface.withOpacity(0.4), fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
@@ -475,7 +476,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                             padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                           icon: const Icon(Broken.copy, size: 16),
-                          label: const Text('Copy URL', style: TextStyle(fontSize: 12.5)),
+                          label: Text(AppStrings.current.copyUrl, style: const TextStyle(fontSize: 12.5)),
                           onPressed: () => _copyToClipboard(_webService.localServerUrl),
                         ),
                       ),
@@ -488,7 +489,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                             padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                           icon: const Icon(Icons.qr_code_2_rounded, size: 16),
-                          label: const Text('QR Code', style: TextStyle(fontSize: 12.5)),
+                          label: Text(AppStrings.current.qrCode, style: const TextStyle(fontSize: 12.5)),
                           onPressed: () => _showQrCodeDialog(_webService.localServerUrl, 'Local Share'),
                         ),
                       ),
@@ -531,13 +532,13 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                     color: theme.colorScheme.onSurface.withOpacity(0.2),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Server is Idle',
+                  Text(
+                    AppStrings.current.uiServerIsIdle,
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Make sure other devices are on the same Wi-Fi network as this device, then start the server.',
+                    AppStrings.current.uiMakeSureOtherDevicesAreOn,
                     style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withOpacity(0.5), height: 1.3),
                     textAlign: TextAlign.center,
                   ),
@@ -561,7 +562,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
           onPressed: () => _toggleLocalServer(shareDir),
           icon: Icon(_webService.isLocalActive ? Icons.stop_rounded : Icons.play_arrow_rounded),
           label: Text(
-            _webService.isLocalActive ? 'Stop Web Server' : 'Start Web Server',
+            _webService.isLocalActive ? AppStrings.current.stopWebServer : AppStrings.current.startWebServer,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
         ),
@@ -573,16 +574,16 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
   Widget _buildInternetShareView(ThemeData theme, bool isDark) {
     final shareDir = context.read<FileManagerProvider>().rootPath;
     return ListView(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.all(20.0),
       children: [
-        const Text(
-          'Internet Share Tunnel',
+        Text(
+          AppStrings.current.uiInternetShareTunnel,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'LexendDeca'),
         ),
         const SizedBox(height: 4),
         Text(
-          'Generates a secure temporary public tunnel link. Share this link with anyone anywhere on the internet to let them download files high-speed, no matter the file size.',
+          AppStrings.current.uiGeneratesASecureTemporaryPublicTunnel,
           style: TextStyle(fontSize: 12.5, color: theme.colorScheme.onSurface.withOpacity(0.5)),
         ),
         const SizedBox(height: 20),
@@ -613,15 +614,15 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                         child: Icon(Icons.cloud_done, color: theme.colorScheme.primary, size: 16),
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Cloud Tunnel Active',
+                      Text(
+                        AppStrings.current.uiCloudTunnelActive,
                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blueAccent),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Temporary Share Link (Active 24h):',
+                    AppStrings.current.uiTemporaryShareLinkActive24h,
                     style: TextStyle(fontSize: 11.5, color: theme.colorScheme.onSurface.withOpacity(0.4), fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
@@ -645,7 +646,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                             padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                           icon: const Icon(Broken.copy, size: 16),
-                          label: const Text('Copy Link', style: TextStyle(fontSize: 12.5)),
+                          label: Text(AppStrings.current.copyLink, style: const TextStyle(fontSize: 12.5)),
                           onPressed: () => _copyToClipboard(_webService.internetShareLink),
                         ),
                       ),
@@ -658,7 +659,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                             padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                           icon: const Icon(Icons.qr_code_2_rounded, size: 16),
-                          label: const Text('QR Code', style: TextStyle(fontSize: 12.5)),
+                          label: Text(AppStrings.current.qrCode, style: const TextStyle(fontSize: 12.5)),
                           onPressed: () => _showQrCodeDialog(_webService.internetShareLink, 'Cloud Share'),
                         ),
                       ),
@@ -671,8 +672,8 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
           const SizedBox(height: 24),
 
           // Dynamic Active Speedometer Counter Clients
-          const Text(
-            'Connected Browser Clients',
+          Text(
+            AppStrings.current.uiConnectedBrowserClients,
             style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold, fontFamily: 'LexendDeca'),
           ),
           const SizedBox(height: 8),
@@ -681,7 +682,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12.0),
               child: Text(
-                'Waiting for incoming internet downloads...',
+                AppStrings.current.uiWaitingForIncomingInternetDownloads,
                 style: TextStyle(fontSize: 12.5, color: theme.colorScheme.onSurface.withOpacity(0.4), fontStyle: FontStyle.italic),
                 textAlign: TextAlign.center,
               ),
@@ -775,13 +776,13 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                     color: theme.colorScheme.onSurface.withOpacity(0.2),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Internet Sharing Inactive',
+                  Text(
+                    AppStrings.current.uiInternetSharingInactive,
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Activate the tunnel to establish a secure link that works beyond local Wi-Fi.',
+                    AppStrings.current.uiActivateTheTunnelToEstablishA,
                     style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withOpacity(0.5), height: 1.3),
                     textAlign: TextAlign.center,
                   ),

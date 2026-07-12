@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../core/utils.dart';
 
@@ -99,9 +100,9 @@ class _ConflictDialogState extends State<ConflictDialog> {
         children: [
           Icon(Broken.warning_2, color: Colors.orange, size: 28),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Text(
-              'File Already Exists',
+              AppStrings.current.uiFileAlreadyExists,
               style: TextStyle(fontWeight: FontWeight.bold),
               overflow: TextOverflow.ellipsis,
             ),
@@ -132,7 +133,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   Expanded(
                     child: _buildFileComparisonCard(
                       theme: theme,
-                      title: 'Existing File',
+                      title: AppStrings.current.uiExistingFile,
                       size: _destStat.size,
                       modified: _destStat.modified,
                       isNewer: _destStat.modified.isAfter(_sourceStat.modified),
@@ -143,7 +144,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   Expanded(
                     child: _buildFileComparisonCard(
                       theme: theme,
-                      title: 'New File',
+                      title: AppStrings.current.uiNewFile,
                       size: _sourceStat.size,
                       modified: _sourceStat.modified,
                       isNewer: _sourceStat.modified.isAfter(_destStat.modified),
@@ -180,7 +181,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Apply to all remaining conflicts',
+                        AppStrings.current.uiApplyToAllRemainingConflicts,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: theme.colorScheme.onSurface.withOpacity(0.8),
@@ -208,7 +209,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.redAccent,
                   ),
-                  child: const Text('Cancel Paste', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(AppStrings.current.cancelPaste, style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 OutlinedButton(
                   onPressed: () async {
@@ -227,7 +228,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Rename'),
+                  child: Text(AppStrings.current.rename),
                 ),
                 OutlinedButton(
                   onPressed: () => Navigator.pop(
@@ -237,7 +238,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Skip'),
+                  child: Text(AppStrings.current.skip),
                 ),
                 OutlinedButton(
                   onPressed: () => Navigator.pop(
@@ -247,7 +248,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Keep Both'),
+                  child: Text(AppStrings.current.keepBoth),
                 ),
                 FilledButton(
                   onPressed: () => Navigator.pop(
@@ -257,7 +258,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                   style: FilledButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Replace'),
+                  child: Text(AppStrings.current.replace),
                 ),
               ],
             ),
@@ -308,7 +309,7 @@ class _ConflictDialogState extends State<ConflictDialog> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    'Newer',
+                    AppStrings.current.uiNewer,
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
@@ -341,24 +342,23 @@ class _ConflictDialogState extends State<ConflictDialog> {
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Rename File'),
+        title: Text(AppStrings.current.renameFile),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'New filename',
+          decoration: InputDecoration(labelText: AppStrings.current.newFilename,
             border: OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.current.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('Rename'),
+            child: Text(AppStrings.current.rename),
           ),
         ],
       ),

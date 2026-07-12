@@ -12,6 +12,7 @@ import 'file_operation_progress_dialog.dart';
 import 'package:share_plus/share_plus.dart';
 import 'batch_rename_dialog.dart';
 import '../../services/folder_share_service.dart';
+import '../../core/app_strings.dart';
 
 class SelectionActionBar extends StatelessWidget {
   final FileManagerProvider provider;
@@ -42,7 +43,7 @@ class SelectionActionBar extends StatelessWidget {
           children: [
             _ActionButton(
               icon: Broken.document_copy,
-              label: 'Copy',
+              label: AppStrings.current.copy,
               hideLabel: provider.hideActionText,
               onTap: () {
                 provider.copySelected();
@@ -53,7 +54,7 @@ class SelectionActionBar extends StatelessWidget {
             ),
             _ActionButton(
               icon: Broken.scissor,
-              label: 'Cut',
+              label: AppStrings.current.cut,
               hideLabel: provider.hideActionText,
               onTap: () {
                 provider.cutSelected();
@@ -64,13 +65,13 @@ class SelectionActionBar extends StatelessWidget {
             ),
             _ActionButton(
               icon: Broken.trash,
-              label: 'Delete',
+              label: AppStrings.current.deleteQuestion,
               color: Colors.redAccent,
               hideLabel: provider.hideActionText,
               onTap: () async {
                 final confirm = await FileActionDialogs.showConfirmDialog(
                   context,
-                  title: 'Delete Selected',
+                  title: AppStrings.current.deleteSelected,
                   content: 'Are you sure you want to delete $selectedCount item(s)? This cannot be undone.',
                 );
                 if (confirm) {
@@ -80,7 +81,7 @@ class SelectionActionBar extends StatelessWidget {
             ),
             _ActionButton(
               icon: Broken.edit,
-              label: 'Rename',
+              label: AppStrings.current.rename,
               hideLabel: provider.hideActionText,
               onTap: () async {
                 if (selectedCount == 1) {
@@ -88,10 +89,10 @@ class SelectionActionBar extends StatelessWidget {
                   final currentName = p.basename(path);
                   final newName = await FileActionDialogs.showTextInputDialog(
                     context,
-                    title: 'Rename',
+                    title: AppStrings.current.rename,
                     hint: 'Enter new name',
                     initialValue: currentName,
-                    actionText: 'Rename',
+                    actionText: AppStrings.current.rename,
                   );
                   if (newName != null && newName.isNotEmpty) {
                     await provider.renameFile(path, newName);
@@ -104,7 +105,7 @@ class SelectionActionBar extends StatelessWidget {
             ),
             _ActionButton(
               icon: Broken.info_circle,
-              label: 'Properties',
+              label: AppStrings.current.properties,
               hideLabel: provider.hideActionText,
               onTap: () => _showPropertiesModal(context, provider),
             ),
@@ -115,7 +116,7 @@ class SelectionActionBar extends StatelessWidget {
                   const Icon(Broken.more, size: 24),
                   if (!provider.hideActionText) ...[
                     const SizedBox(height: 4),
-                    const Text('More', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                    Text(AppStrings.current.more, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
                   ],
                 ],
               ),
@@ -148,7 +149,7 @@ class SelectionActionBar extends StatelessWidget {
                   provider.clearSelection();
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Pasted items successfully')),
+                      SnackBar(content: Text(AppStrings.current.pastedSuccessfully)),
                     );
                   }
                 } else if (action == 'select_all') {
@@ -182,44 +183,44 @@ class SelectionActionBar extends StatelessWidget {
                 final selected = provider.selectedPaths.toList();
                 final allPinned = selected.isNotEmpty && selected.every((p) => PinService.isPinned(p));
                 return [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'archive',
                     child: Row(
                       children: [
                         Icon(Broken.box_add, size: 20),
                         SizedBox(width: 12),
-                        Text('Archive', style: TextStyle(fontWeight: FontWeight.w500)),
+                        Text(AppStrings.current.archive, style: TextStyle(fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),
                   if (hasClipboard)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'paste',
                       child: Row(
                         children: [
                           Icon(Broken.clipboard, size: 20),
                           SizedBox(width: 12),
-                          Text('Paste Here', style: TextStyle(fontWeight: FontWeight.w500)),
+                          Text(AppStrings.current.pasteHere, style: TextStyle(fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'share',
                     child: Row(
                       children: [
                         Icon(Icons.share_outlined, size: 20),
                         SizedBox(width: 12),
-                        Text('Share', style: TextStyle(fontWeight: FontWeight.w500)),
+                        Text(AppStrings.current.share, style: TextStyle(fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'select_all',
                     child: Row(
                       children: [
                         Icon(Broken.tick_square, size: 20),
                         SizedBox(width: 12),
-                        Text('Select All', style: TextStyle(fontWeight: FontWeight.w500)),
+                        Text(AppStrings.current.selectAll, style: TextStyle(fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),
@@ -380,19 +381,19 @@ class PropertiesModalDialogState extends State<PropertiesModalDialog> {
         children: [
           Icon(Broken.info_circle, color: theme.colorScheme.primary, size: 28),
           const SizedBox(width: 12),
-          const Text('Properties', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(AppStrings.current.properties, style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       content: _isLoading
-          ? const Padding(
+          ? Padding(
               padding: EdgeInsets.all(32.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 16),
-                  Text('Calculating sizes...', style: TextStyle(color: Colors.grey)),
+                  Text(AppStrings.current.calculatingSizes, style: TextStyle(color: Colors.grey)),
                 ],
               ),
             )
@@ -402,32 +403,32 @@ class PropertiesModalDialogState extends State<PropertiesModalDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (isSingle) ...[
-                    _CopyablePropertyRow(label: 'Name', value: nameDisplay),
-                    _CopyablePropertyRow(label: 'Path', value: widget.selectedPaths.first),
+                    _CopyablePropertyRow(label: AppStrings.current.uiName, value: nameDisplay),
+                    _CopyablePropertyRow(label: AppStrings.current.uiPath, value: widget.selectedPaths.first),
                     _CopyablePropertyRow(
-                      label: 'Size',
+                      label: AppStrings.current.uiSize,
                       value: '${FileUtils.formatBytes(_totalBytes, 2)} ($_totalBytes bytes)',
                     ),
                     if (_mimeType == 'Folder / Directory')
                       _CopyablePropertyRow(
-                        label: 'Contains',
-                        value: '${_folderCount - 1} subfolder(s), $_fileCount file(s)',
+                        label: AppStrings.current.contains,
+                        value: AppStrings.current.folderContains(_folderCount - 1, _fileCount),
                       ),
                     if (_lastModified != null)
-                      _CopyablePropertyRow(label: 'Modified', value: FileUtils.formatDate(_lastModified!)),
-                    if (_mimeType.isNotEmpty) _CopyablePropertyRow(label: 'Type', value: _mimeType),
-                    if (_permissions.isNotEmpty) _CopyablePropertyRow(label: 'Permissions', value: _permissions),
+                      _CopyablePropertyRow(label: AppStrings.current.modified, value: FileUtils.formatDate(_lastModified!)),
+                    if (_mimeType.isNotEmpty) _CopyablePropertyRow(label: AppStrings.current.type, value: _mimeType),
+                    if (_permissions.isNotEmpty) _CopyablePropertyRow(label: AppStrings.current.permissions, value: _permissions),
                   ] else ...[
                     _CopyablePropertyRow(
-                      label: 'Items Selected',
-                      value: '$count items ($_folderCount folder(s), $_fileCount file(s))',
+                      label: AppStrings.current.itemsSelected,
+                      value: AppStrings.current.itemsSelectedCount(count, _folderCount, _fileCount),
                     ),
                     _CopyablePropertyRow(
-                      label: 'Total Size',
+                      label: AppStrings.current.totalSize,
                       value: '${FileUtils.formatBytes(_totalBytes, 2)} ($_totalBytes bytes)',
                     ),
                     const SizedBox(height: 12),
-                    const Text('Selected Paths:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    Text(AppStrings.current.selectedPaths, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                     const SizedBox(height: 8),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxHeight: 180),
@@ -462,7 +463,7 @@ class PropertiesModalDialogState extends State<PropertiesModalDialog> {
         FilledButton(
           onPressed: () => Navigator.pop(context),
           style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          child: const Text('Done'),
+          child: Text(AppStrings.current.done),
         ),
       ],
     );
@@ -533,7 +534,7 @@ class _CopyablePropertyRow extends StatelessWidget {
         onTap: () {
           Clipboard.setData(ClipboardData(text: value));
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Copied $label to clipboard'), duration: const Duration(seconds: 1)),
+            SnackBar(content: Text(AppStrings.current.copedLabelToClipboard(label)), duration: const Duration(seconds: 1)),
           );
         },
         borderRadius: BorderRadius.circular(8),

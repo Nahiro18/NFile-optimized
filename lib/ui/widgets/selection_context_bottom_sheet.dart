@@ -10,6 +10,7 @@ import 'create_archive_dialog.dart';
 import 'package:share_plus/share_plus.dart';
 import 'batch_rename_dialog.dart';
 import '../../services/folder_share_service.dart';
+import '../../core/app_strings.dart';
 
 class SelectionContextBottomSheet extends StatelessWidget {
   final FileManagerProvider provider;
@@ -144,7 +145,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
             _buildMenuItem(
               context: context,
               icon: Broken.document_copy,
-              label: 'Copy Selected',
+              label: AppStrings.current.copySelected,
               onTap: () {
                 Navigator.pop(context);
                 provider.copySelected();
@@ -156,7 +157,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
             _buildMenuItem(
               context: context,
               icon: Broken.scissor,
-              label: 'Cut Selected',
+              label: AppStrings.current.cutSelectedB,
               onTap: () {
                 Navigator.pop(context);
                 provider.cutSelected();
@@ -169,16 +170,16 @@ class SelectionContextBottomSheet extends StatelessWidget {
               _buildMenuItem(
                 context: context,
                 icon: Broken.edit,
-                label: 'Rename',
+                label: AppStrings.current.rename,
                 onTap: () async {
                   Navigator.pop(context);
                   final currentName = p.basename(targetPath);
                   final newName = await FileActionDialogs.showTextInputDialog(
                     context,
-                    title: 'Rename',
+                    title: AppStrings.current.rename,
                     hint: 'Enter new name',
                     initialValue: currentName,
-                    actionText: 'Rename',
+                    actionText: AppStrings.current.rename,
                   );
                   if (newName != null && newName.isNotEmpty) {
                     await provider.renameFile(targetPath, newName);
@@ -190,7 +191,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
               _buildMenuItem(
                 context: context,
                 icon: Broken.edit,
-                label: 'Rename',
+                label: AppStrings.current.rename,
                 onTap: () async {
                   Navigator.pop(context);
                   await BatchRenameDialog.show(context, provider);
@@ -200,7 +201,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
               _buildMenuItem(
                 context: context,
                 icon: Broken.eye,
-                label: 'Open with...',
+                label: AppStrings.current.openWith,
                 onTap: () {
                   Navigator.pop(context);
                   provider.openFile(context, targetPath, forceOpenWith: true);
@@ -209,7 +210,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
             _buildMenuItem(
               context: context,
               icon: Broken.box_add,
-              label: 'Archive (Compress)',
+              label: AppStrings.current.archiveCompress,
               onTap: () async {
                 Navigator.pop(context);
                 final res = await CreateArchiveDialog.show(
@@ -236,7 +237,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
             _buildMenuItem(
               context: context,
               icon: Icons.share_outlined,
-              label: 'Share',
+              label: AppStrings.current.share,
               onTap: () async {
                 Navigator.pop(context);
                 final selectedPaths = provider.selectedPaths.toList();
@@ -246,7 +247,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
             _buildMenuItem(
               context: context,
               icon: Broken.info_circle,
-              label: 'Properties & Info',
+              label: AppStrings.current.propertiesAndInfo,
               onTap: () {
                 Navigator.pop(context);
                 showDialog(
@@ -262,13 +263,13 @@ class SelectionContextBottomSheet extends StatelessWidget {
             _buildMenuItem(
               context: context,
               icon: Broken.trash,
-              label: 'Delete Selected',
+              label: AppStrings.current.deleteSelected,
               color: Colors.redAccent,
               onTap: () async {
                 Navigator.pop(context);
                 final confirm = await FileActionDialogs.showConfirmDialog(
                   context,
-                  title: 'Delete Selected',
+                  title: AppStrings.current.deleteSelected,
                   content: 'Are you sure you want to delete $selectedCount item(s)? This cannot be undone.',
                 );
                 if (confirm) {

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 import '../../services/vault_service.dart';
 import 'vault_explorer_screen.dart';
 
@@ -23,7 +24,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
   
   // Input State
   String _inputBuffer = '';
-  String _message = 'Enter Password to Unlock';
+  String _message = AppStrings.current.vaultEnterPin;
   bool _isError = false;
 
   late final AnimationController _shakeController;
@@ -50,7 +51,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
       setState(() {
         _isPasswordSet = isSet;
         _checkingPasswordStatus = false;
-        _message = isSet ? 'Enter PIN to Unlock Wallet' : 'Set your 4-digit Wallet PIN';
+        _message = isSet ? AppStrings.current.vaultEnterPin : AppStrings.current.vaultSetPin;
       });
     }
   }
@@ -70,7 +71,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
           _tempPassword = _inputBuffer;
           _inputBuffer = '';
           _isConfirmMode = true;
-          _message = 'Confirm your 4-digit PIN';
+          _message = AppStrings.current.vaultConfirmPin;
         });
       });
     } else if (_inputBuffer.length == 4 && !_isPasswordSet && _isConfirmMode) {
@@ -83,7 +84,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
             setState(() {
               _isPasswordSet = true;
               _isConfirmMode = false;
-              _message = 'PIN Set Successfully!';
+              _message = AppStrings.current.vaultPinSuccess;
             });
             _unlockWallet(_inputBuffer);
           }
@@ -93,7 +94,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
           setState(() {
             _inputBuffer = '';
             _isError = true;
-            _message = 'PINs do not match. Try again!';
+            _message = AppStrings.current.vaultPinMismatch;
           });
         }
       });
@@ -110,7 +111,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
           setState(() {
             _inputBuffer = '';
             _isError = true;
-            _message = 'Incorrect PIN. Try again!';
+            _message = AppStrings.current.vaultPinIncorrect;
           });
         }
       });
@@ -218,7 +219,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Private Wallet',
+                    AppStrings.current.privateWallet,
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
@@ -327,13 +328,13 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
               _buildActionKeyButton(
                 icon: Icons.clear_rounded,
                 onPressed: _onClear,
-                tooltip: 'Clear All',
+                tooltip: AppStrings.current.clearAll,
               ),
               _buildKeyButton('0'),
               _buildActionKeyButton(
                 icon: Icons.backspace_rounded,
                 onPressed: _onDelete,
-                tooltip: 'Backspace',
+                tooltip: AppStrings.current.backspace,
               ),
             ],
           ),

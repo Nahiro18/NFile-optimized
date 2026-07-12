@@ -5,6 +5,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import '../ui/screens/audio_player/audio_artwork_widget.dart';
+import '../core/app_strings.dart';
 
 /// Global singleton handler instance
 NFileAudioHandler? _audioHandlerInstance;
@@ -221,9 +222,9 @@ class NFileAudioHandler extends BaseAudioHandler
           MediaControl.skipToPrevious,
           playing ? MediaControl.pause : MediaControl.play,
           MediaControl.skipToNext,
-          const MediaControl(
+          MediaControl(
             androidIcon: 'drawable/ic_close',
-            label: 'Close',
+            label: AppStrings.current.close,
             action: MediaAction.stop,
           ),
         ],

@@ -4,6 +4,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/media_provider.dart';
 
+import '../../../core/app_strings.dart';
 class AudioArtworkCache {
   static final Map<int, Uint8List?> _cache = {};
   static final Map<int, Future<Uint8List?>> _pending = {};
@@ -259,7 +260,7 @@ class _AudioArtworkWidgetState extends State<AudioArtworkWidget>
           Icon(Icons.music_note_rounded, size: size * 0.3, color: widget.accentColor.withOpacity(0.8)),
           const SizedBox(height: 12),
           Text(
-            'Lossless Audio',
+            AppStrings.current.uiLosslessAudio,
             style: TextStyle(
                color: widget.accentColor.withOpacity(0.6),
               fontSize: 16,

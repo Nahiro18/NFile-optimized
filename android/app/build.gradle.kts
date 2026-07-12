@@ -47,7 +47,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         androidResources {
-            localeFilters.addAll(listOf("en"))
+            localeFilters.addAll(listOf("en", "es"))
         }
     }
 

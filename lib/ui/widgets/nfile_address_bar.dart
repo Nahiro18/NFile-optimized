@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +7,7 @@ import '../../providers/file_manager_provider.dart';
 import '../../models/drag_payload.dart';
 import '../../services/root_shizuku_service.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 import 'drag_drop_action_dialog.dart';
 import 'package:flutter/services.dart';
 
@@ -271,7 +272,7 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
                           ? Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                               child: Text(
-                                'No matching directories or files found',
+                                AppStrings.current.uiNoMatchingDirectoriesOrFilesFound,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.colorScheme.onSurface.withOpacity(0.6),
                                   fontStyle: FontStyle.italic,
@@ -377,7 +378,7 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Path not found: $path'),
+                content: Text(AppStrings.current.pathNotFound(path)),
                 behavior: SnackBarBehavior.floating,
                 backgroundColor: Theme.of(context).colorScheme.error,
               ),
@@ -452,11 +453,11 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
                       focusNode: _focusNode,
                       controller: _controller,
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.symmetric(vertical: 12),
-                        hintText: 'Enter absolute path...',
+                        hintText: AppStrings.current.enterAbsolutePath,
                       ),
                       textInputAction: TextInputAction.go,
                       keyboardType: TextInputType.text,
@@ -469,7 +470,7 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
                         Clipboard.setData(ClipboardData(text: provider.currentPath));
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Copied: ${provider.currentPath}'),
+                            content: Text(AppStrings.current.copedPath(provider.currentPath)),
                             behavior: SnackBarBehavior.floating,
                             backgroundColor: theme.colorScheme.secondary,
                             duration: const Duration(seconds: 1),
@@ -484,7 +485,7 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
                           controller: _breadcrumbsScrollController,
                           scrollDirection: Axis.horizontal,
                           shrinkWrap: true,
-                          physics: const BouncingScrollPhysics(),
+                          physics: const ClampingScrollPhysics(),
                           itemCount: breadcrumbs.length,
                           itemBuilder: (context, index) {
                             final segment = breadcrumbs[index];

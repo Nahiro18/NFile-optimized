@@ -49,8 +49,8 @@ class FtpForegroundService : Service() {
         }
 
         val notification = builder
-            .setContentTitle("NFile FTP Server")
-            .setContentText("Running at ftp://$ip:$port")
+            .setContentTitle(getString(R.string.ftp_server_title))
+            .setContentText(getString(R.string.ftp_server_running, ip, port))
             .setSmallIcon(iconResId)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
@@ -67,8 +67,8 @@ class FtpForegroundService : Service() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "FTP Server"
-            val descriptionText = "Displays status of the background FTP Server"
+            val name = getString(R.string.ftp_server_channel_name)
+            val descriptionText = getString(R.string.ftp_server_channel_desc)
             val importance = NotificationManager.IMPORTANCE_LOW
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText

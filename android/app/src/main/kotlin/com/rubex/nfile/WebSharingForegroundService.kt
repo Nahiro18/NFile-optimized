@@ -48,11 +48,11 @@ class WebSharingForegroundService : Service() {
             Notification.Builder(this)
         }
 
-        val title = if (isInternet) "NFile Internet Web Share" else "NFile Local Web Share"
+        val title = if (isInternet) getString(R.string.web_share_internet) else getString(R.string.web_share_local)
 
         val notification = builder
             .setContentTitle(title)
-            .setContentText("Running at $url")
+            .setContentText(getString(R.string.web_share_running, url))
             .setSmallIcon(iconResId)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
@@ -69,8 +69,8 @@ class WebSharingForegroundService : Service() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Web Sharing Server"
-            val descriptionText = "Displays status of the background Web Sharing Server"
+            val name = getString(R.string.web_share_channel_name)
+            val descriptionText = getString(R.string.web_share_channel_desc)
             val importance = NotificationManager.IMPORTANCE_LOW
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText

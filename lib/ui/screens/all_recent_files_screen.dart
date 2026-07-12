@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as p;
@@ -10,6 +10,7 @@ import '../../models/file_item_model.dart';
 import '../widgets/file_item.dart';
 import '../widgets/folder_item.dart';
 import '../widgets/file_action_dialogs.dart';
+import '../../core/app_strings.dart';
 
 class AllRecentFilesScreen extends StatefulWidget {
   final Function(int)? onNavigateTab;
@@ -198,7 +199,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
     if (_selectedPaths.isEmpty) return;
     context.read<FileManagerProvider>().setClipboard(_selectedPaths.toList(), isCut: false);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Copied ${_selectedPaths.length} items to clipboard')),
+      SnackBar(content: Text(AppStrings.current.copedToClipboardN(_selectedPaths.length))),
     );
     _clearSelection();
   }
@@ -207,7 +208,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
     if (_selectedPaths.isEmpty) return;
     context.read<FileManagerProvider>().setClipboard(_selectedPaths.toList(), isCut: true);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Cut ${_selectedPaths.length} items to clipboard')),
+      SnackBar(content: Text(AppStrings.current.cutToClipboardN(_selectedPaths.length))),
     );
     _clearSelection();
   }
@@ -225,11 +226,11 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
         await Share.shareXFiles(shareFiles);
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error sharing: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.errorSharing(e.toString()))));
         }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No files available to share')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.noFilesToShare)));
     }
     _clearSelection();
   }
@@ -238,7 +239,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
     if (_selectedPaths.isEmpty) return;
     final confirm = await FileActionDialogs.showConfirmDialog(
       context,
-      title: 'Delete Selected',
+      title: AppStrings.current.deleteSelected,
       content: 'Are you sure you want to delete ${_selectedPaths.length} selected item(s)? This cannot be undone.',
     );
 
@@ -252,7 +253,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
         });
       }
       _clearSelection();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully deleted items')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.successfullyDeleted)));
     }
   }
 
@@ -270,27 +271,27 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
             await Share.shareXFiles([XFile(path)]);
           } catch (e) {
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error sharing: $e')));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.errorSharing(e.toString()))));
             }
           }
         }
         break;
       case 'copy':
         provider.copyFile(path);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.copedToClipboard)));
         break;
       case 'cut':
         provider.cutFile(path);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cut to clipboard')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.cutToClipboard)));
         break;
       case 'rename':
         final currentName = p.basename(path);
         final newName = await FileActionDialogs.showTextInputDialog(
           context,
-          title: 'Rename',
+          title: AppStrings.current.rename,
           hint: 'Enter new name',
           initialValue: currentName,
-          actionText: 'Rename',
+          actionText: AppStrings.current.rename,
         );
         if (newName != null && newName.isNotEmpty) {
           await provider.renameFile(path, newName);
@@ -300,7 +301,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
       case 'delete':
         final confirm = await FileActionDialogs.showConfirmDialog(
           context,
-          title: 'Delete File',
+          title: AppStrings.current.uiDeleteFile,
           content: 'Are you sure you want to delete this item? This cannot be undone.',
         );
         if (confirm) {
@@ -335,34 +336,34 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
             ? [
                 IconButton(
                   icon: const Icon(Broken.document_copy),
-                  tooltip: 'Copy',
+                  tooltip: AppStrings.current.copy,
                   onPressed: _handleCopySelected,
                 ),
                 IconButton(
                   icon: const Icon(Broken.scissor),
-                  tooltip: 'Cut',
+                  tooltip: AppStrings.current.cut,
                   onPressed: _handleCutSelected,
                 ),
                 IconButton(
                   icon: const Icon(Icons.share_outlined),
-                  tooltip: 'Share',
+                  tooltip: AppStrings.current.share,
                   onPressed: _handleShareSelected,
                 ),
                 IconButton(
                   icon: const Icon(Broken.trash, color: Colors.red),
-                  tooltip: 'Delete',
+                  tooltip: AppStrings.current.delete,
                   onPressed: _handleDeleteSelected,
                 ),
                 IconButton(
                   icon: const Icon(Broken.task_square),
-                  tooltip: 'Select All',
+                  tooltip: AppStrings.current.selectAll,
                   onPressed: _selectAll,
                 ),
               ]
             : [
                 IconButton(
                   icon: const Icon(Icons.refresh_rounded),
-                  tooltip: 'Refresh',
+                  tooltip: AppStrings.current.refresh,
                   onPressed: () {
                     setState(() => _isLoading = true);
                     _loadRecentFiles();
@@ -385,10 +386,10 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
                           child: Icon(Broken.document_filter, size: 64, color: theme.colorScheme.primary),
                         ),
                         const SizedBox(height: 24),
-                        Text('No recent files', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                        Text(AppStrings.current.noRecentFiles, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 8),
                         Text(
-                          'Newly created or downloaded files will show up here.',
+                          AppStrings.current.uiNewlyCreatedOrDownloadedFilesWill,
                           textAlign: TextAlign.center,
                           style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(127), fontSize: 15),
                         ),
@@ -397,7 +398,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
                   ),
                 )
               : ListView.builder(
-                  physics: const BouncingScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   padding: const EdgeInsets.only(top: 8, bottom: 24),
                   itemCount: _recentFiles.length,
                   itemBuilder: (context, index) {

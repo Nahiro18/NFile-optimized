@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 import '../../providers/media_provider.dart';
 import '../../providers/file_manager_provider.dart';
 import '../screens/media_category_screen.dart';
@@ -18,35 +19,35 @@ class QuickCategoriesGrid extends StatelessWidget {
   static Map<String, Map<String, dynamic>> getAllCategoriesMap(BuildContext context, bool isDark, Function(int) onNavigateTab) {
     final mediaProvider = Provider.of<MediaProvider>(context, listen: false);
     final map = <String, Map<String, dynamic>>{
-      'Images': {
-        'label': 'Images',
+      AppStrings.current.uiImages: {
+        'label': AppStrings.current.uiImages,
         'icon': Broken.image,
         'color': isDark ? Colors.purpleAccent : Colors.purple,
-        'count': '${mediaProvider.getCategoryItemCount("Images")}',
+        'count': '${mediaProvider.getCategoryItemCount(AppStrings.current.uiImages)}',
         'isCustom': false,
         'action': () => Navigator.push(context, MaterialPageRoute(builder: (_) => MediaCategoryScreen(mediaType: MediaType.images, onNavigateTab: onNavigateTab))),
       },
-      'Videos': {
-        'label': 'Videos',
+      AppStrings.current.uiVideos: {
+        'label': AppStrings.current.uiVideos,
         'icon': Broken.video,
         'color': isDark ? Colors.redAccent : const Color(0xFFD32F2F),
-        'count': '${mediaProvider.getCategoryItemCount("Videos")}',
+        'count': '${mediaProvider.getCategoryItemCount(AppStrings.current.uiVideos)}',
         'isCustom': false,
         'action': () => Navigator.push(context, MaterialPageRoute(builder: (_) => MediaCategoryScreen(mediaType: MediaType.videos, onNavigateTab: onNavigateTab))),
       },
-      'Audio': {
-        'label': 'Audio',
+      AppStrings.current.uiAudio: {
+        'label': AppStrings.current.uiAudio,
         'icon': Broken.music,
         'color': isDark ? Colors.orangeAccent : const Color(0xFFE65100),
-        'count': '${mediaProvider.getCategoryItemCount("Audio")}',
+        'count': '${mediaProvider.getCategoryItemCount(AppStrings.current.uiAudio)}',
         'isCustom': false,
         'action': () => Navigator.push(context, MaterialPageRoute(builder: (_) => MediaCategoryScreen(mediaType: MediaType.audios, onNavigateTab: onNavigateTab))),
       },
-      'Documents': {
-        'label': 'Documents',
+      AppStrings.current.uiDocuments: {
+        'label': AppStrings.current.uiDocuments,
         'icon': Broken.document,
         'color': isDark ? Colors.blueAccent : const Color(0xFF1976D2),
-        'count': '${mediaProvider.getCategoryItemCount("Documents")}',
+        'count': '${mediaProvider.getCategoryItemCount(AppStrings.current.uiDocuments)}',
         'isCustom': false,
         'action': () => Navigator.push(context, MaterialPageRoute(builder: (_) => MediaCategoryScreen(mediaType: MediaType.documents, onNavigateTab: onNavigateTab))),
       },
@@ -169,7 +170,7 @@ class QuickCategoriesGrid extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Quick Categories',
+                AppStrings.current.quickCategories,
                 style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               InkWell(
@@ -183,7 +184,7 @@ class QuickCategoriesGrid extends StatelessWidget {
                       Icon(Broken.setting_2, size: 16, color: theme.colorScheme.primary),
                       const SizedBox(width: 4),
                       Text(
-                        'Customize',
+                        AppStrings.current.uiCustomize,
                         style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
                       ),
                     ],
@@ -198,7 +199,7 @@ class QuickCategoriesGrid extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24.0),
                 child: Text(
-                  'No shortcuts pinned. Tap Customize to add.',
+                  AppStrings.current.uiNoShortcutsPinnedTapCustomizeTo,
                   style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5)),
                 ),
               ),
@@ -309,8 +310,8 @@ class _CustomizeCategoriesSheet extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Customize Shortcuts', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Done', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                      Text(AppStrings.current.customizeShortcuts, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                      TextButton(onPressed: () => Navigator.pop(context), child: Text(AppStrings.current.done, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
                     ],
                   ),
                 ),
@@ -319,7 +320,7 @@ class _CustomizeCategoriesSheet extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Drag items by the handle (=) to reorder icons on the Home Screen.',
+                      AppStrings.current.uiDragItemsByTheHandleTo,
                       style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 13),
                     ),
                   ),
@@ -329,7 +330,7 @@ class _CustomizeCategoriesSheet extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: OutlinedButton.icon(
                     icon: const NfileIcon(Broken.add, size: 20),
-                    label: const Text('Add Folder / File Shortcut', style: TextStyle(fontWeight: FontWeight.bold)),
+                    label: Text(AppStrings.current.addFolderFileShortcut, style: const TextStyle(fontWeight: FontWeight.bold)),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(46),
                       foregroundColor: theme.colorScheme.primary,
@@ -352,7 +353,7 @@ class _CustomizeCategoriesSheet extends StatelessWidget {
                 Expanded(
                   child: ReorderableListView.builder(
                     scrollController: scrollController,
-                    physics: const BouncingScrollPhysics(),
+                    physics: const ClampingScrollPhysics(),
                     onReorder: (oldIndex, newIndex) => provider.reorderCategory(oldIndex, newIndex),
                     itemCount: order.length,
                     itemBuilder: (context, index) {
@@ -409,24 +410,29 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
   bool _isExpanded = false;
 
   List<String> _getDefaultPaths(String category) {
-    switch (category) {
-      case 'Images':
+    if (category == AppStrings.current.uiImages) {
         return ['Device Gallery (Auto)', '/storage/emulated/0/DCIM', '/storage/emulated/0/Pictures'];
-      case 'Videos':
+    } else if (category == AppStrings.current.uiVideos) {
         return ['Device Gallery (Auto)', '/storage/emulated/0/DCIM', '/storage/emulated/0/Movies'];
-      case 'Audio':
+    } else if (category == AppStrings.current.uiAudio) {
         return ['Device Audio Library (Auto)', '/storage/emulated/0/Music'];
-      case 'Documents':
+    } else if (category == AppStrings.current.uiDocuments) {
         return ['/storage/emulated/0/Documents', 'Internal Storage (All Folders Scanned)'];
-      case 'Archives':
+    } else if (category == 'Archives') {
         return ['/storage/emulated/0/Download', 'Internal Storage (All Folders Scanned)'];
-      case 'Downloads':
+    } else if (category == 'Downloads') {
         return ['/storage/emulated/0/Download', '/storage/emulated/0/Downloads'];
-      case 'APKs':
-        return ['/storage/emulated/0/Download', 'Internal Storage (All Folders Scanned)'];
-      case 'Screenshots':
-        return ['Device Gallery (Screenshots)', '/storage/emulated/0/DCIM/Screenshots', '/storage/emulated/0/Pictures/Screenshots'];
-      default:
+    } else if (category == 'APKs') {
+        return ['Internal Storage (All Folders Scanned)'];
+    } else if (category == 'Bluetooth') {
+        return ['/storage/emulated/0/bluetooth'];
+    } else if (category == 'Large Files') {
+        return ['Internal Storage (Scanned by Size)'];
+    } else if (category == 'Recent Files') {
+        return ['Internal Storage (Scanned by Date Modified)'];
+    } else if (category == 'Vault Secure') {
+        return ['/storage/emulated/0/.nfile_vault'];
+    } else {
         return [];
     }
   }
@@ -435,15 +441,16 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isCustom = widget.cat['isCustom'] == true;
+
     final label = widget.label;
     final color = widget.cat['color'] as Color;
     final icon = widget.cat['icon'] as IconData;
 
-    final isStandardCategory = const [
-      'Images',
-      'Videos',
-      'Audio',
-      'Documents',
+    final isStandardCategory = [
+      AppStrings.current.uiImages,
+      AppStrings.current.uiVideos,
+      AppStrings.current.uiAudio,
+      AppStrings.current.uiDocuments,
       'Archives',
       'Downloads',
       'APKs',
@@ -481,7 +488,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                     });
                   },
                   visualDensity: VisualDensity.compact,
-                  tooltip: 'Custom Paths',
+                  tooltip: AppStrings.current.customPathsTooltip,
                 ),
               ],
             ],
@@ -489,7 +496,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
           subtitle: isCustom
               ? Text(widget.cat['path'] as String, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withOpacity(0.5)), maxLines: 1, overflow: TextOverflow.ellipsis)
               : (isStandardCategory && customPaths.isNotEmpty
-                  ? Text('${customPaths.length} custom path(s)', style: TextStyle(fontSize: 11, color: theme.colorScheme.primary, fontWeight: FontWeight.w500))
+                  ? Text(AppStrings.current.customPaths(customPaths.length), style: TextStyle(fontSize: 11, color: theme.colorScheme.primary, fontWeight: FontWeight.w500))
                   : null),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -497,7 +504,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
               if (isCustom) ...[
                 IconButton(
                   icon: const NfileIcon(Broken.trash, color: Colors.redAccent, size: 20),
-                  tooltip: 'Delete Shortcut',
+                  tooltip: AppStrings.current.deleteShortcut,
                   onPressed: () => widget.provider.removeCustomShortcut(label),
                 ),
                 const SizedBox(width: 4),
@@ -522,7 +529,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Default Scan Locations:',
+                  AppStrings.current.uiDefaultScanLocations,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -574,7 +581,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                         if (isExcluded)
                           IconButton(
                             icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 18),
-                            tooltip: 'Restore Location',
+                            tooltip: AppStrings.current.restoreLocation,
                             onPressed: () {
                               widget.provider.includeDefaultCategoryPath(label, path);
                             },
@@ -585,7 +592,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                         else
                           IconButton(
                             icon: const NfileIcon(Broken.trash, color: Colors.redAccent, size: 18),
-                            tooltip: 'Exclude Location',
+                            tooltip: AppStrings.current.excludeLocation,
                             onPressed: () {
                               widget.provider.excludeDefaultCategoryPath(label, path);
                             },
@@ -599,7 +606,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                 }),
                 const SizedBox(height: 12),
                 Text(
-                  'Custom Scan Locations:',
+                  AppStrings.current.uiCustomScanLocations,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -612,7 +619,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Text(
-                      'No custom paths added.',
+                      AppStrings.current.uiNoCustomPathsAdded,
                       style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.4), fontSize: 12, fontStyle: FontStyle.italic),
                     ),
                   )
@@ -664,7 +671,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                     }
                   },
                   icon: const NfileIcon(Broken.folder_add, size: 16),
-                  label: const Text('Add Custom Path', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  label: Text(AppStrings.current.addCustomPath, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                   style: TextButton.styleFrom(
                     foregroundColor: theme.colorScheme.primary,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

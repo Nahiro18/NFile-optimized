@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import '../../providers/file_manager_provider.dart';
+import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 
 class BatchRenameDialog extends StatefulWidget {
@@ -251,14 +252,14 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Renaming files...',
+            AppStrings.current.uiRenamingFiles,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Please wait, updating folder content',
+            AppStrings.current.uiPleaseWaitUpdatingFolderContent,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.6),
             ),
@@ -297,7 +298,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Batch Rename',
+                        AppStrings.current.uiBatchRename,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           letterSpacing: -0.5,
@@ -403,49 +404,49 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                   _buildShortcutButton(
                     icon: Icons.copy_rounded,
                     label: '% (Name)',
-                    tooltip: 'Original name (%)',
+                    tooltip: AppStrings.current.originalName,
                     onTap: () => _insertPlaceholder('%'),
                     theme: theme,
                   ),
                   _buildShortcutButton(
                     icon: Icons.format_list_numbered_rounded,
                     label: '# (Num)',
-                    tooltip: 'Sequential number (#)',
+                    tooltip: AppStrings.current.sequentialNumber,
                     onTap: () => _insertPlaceholder('#'),
                     theme: theme,
                   ),
                   _buildShortcutButton(
                     icon: Icons.numbers_rounded,
                     label: '### (001)',
-                    tooltip: 'Triple sequential number (###)',
+                    tooltip: AppStrings.current.tripleSequentialNumber,
                     onTap: () => _insertPlaceholder('###'),
                     theme: theme,
                   ),
                   _buildShortcutButton(
                     icon: Icons.abc_rounded,
                     label: '{n} (Base)',
-                    tooltip: 'File name without extension ({n})',
+                    tooltip: AppStrings.current.fileNameWithoutExtension,
                     onTap: () => _insertPlaceholder('{n}'),
                     theme: theme,
                   ),
                   _buildShortcutButton(
                     icon: Icons.extension_rounded,
                     label: '{de} (.ext)',
-                    tooltip: 'Extension with dot ({de})',
+                    tooltip: AppStrings.current.extensionWithDot,
                     onTap: () => _insertPlaceholder('{de}'),
                     theme: theme,
                   ),
                   _buildShortcutButton(
                     icon: Icons.extension_off_rounded,
                     label: '{e} (ext)',
-                    tooltip: 'Extension without dot ({e})',
+                    tooltip: AppStrings.current.extensionWithoutDot,
                     onTap: () => _insertPlaceholder('{e}'),
                     theme: theme,
                   ),
                   _buildShortcutButton(
                     icon: Icons.note_rounded,
                     label: '{N} (Full)',
-                    tooltip: 'Full name with extension ({N})',
+                    tooltip: AppStrings.current.fullNameWithExtension,
                     onTap: () => _insertPlaceholder('{N}'),
                     theme: theme,
                   ),
@@ -463,8 +464,8 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                   child: TextField(
                     controller: _patternController,
                     decoration: InputDecoration(
-                      labelText: 'Name Pattern',
-                      hintText: 'e.g. Image_#',
+                      labelText: AppStrings.current.namePattern,
+                      hintText: AppStrings.current.uiEgImage,
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -487,7 +488,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                   child: TextField(
                     controller: _extensionController,
                     decoration: InputDecoration(
-                      labelText: 'Extension',
+                      labelText: AppStrings.current.extensionLabel,
                       hintText: 'txt',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -515,8 +516,8 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                             controller: _paddingController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              labelText: 'Padding',
-                              hintText: 'e.g. 3',
+                              labelText: AppStrings.current.padding,
+                              hintText: AppStrings.current.uiEg3,
                               floatingLabelBehavior: FloatingLabelBehavior.always,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -529,8 +530,8 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                             controller: _startController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              labelText: 'Start Number',
-                              hintText: 'e.g. 1',
+                              labelText: AppStrings.current.startNumber,
+                              hintText: AppStrings.current.uiEg1,
                               floatingLabelBehavior: FloatingLabelBehavior.always,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -548,8 +549,8 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                           child: TextField(
                             controller: _findController,
                             decoration: InputDecoration(
-                              labelText: 'Find text',
-                              hintText: 'Search term',
+                              labelText: AppStrings.current.findText,
+                              hintText: AppStrings.current.searchTerm,
                               floatingLabelBehavior: FloatingLabelBehavior.always,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -561,8 +562,8 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                           child: TextField(
                             controller: _replaceController,
                             decoration: InputDecoration(
-                              labelText: 'Replace with',
-                              hintText: 'Replacement',
+                              labelText: AppStrings.current.replaceWith,
+                              hintText: AppStrings.current.replacement,
                               floatingLabelBehavior: FloatingLabelBehavior.always,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -612,7 +613,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                     OutlinedButton.icon(
                       onPressed: _showFullPreviewSheet,
                       icon: const Icon(Broken.eye, size: 16),
-                      label: const Text('Preview'),
+                      label: Text(AppStrings.current.preview),
                       style: OutlinedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -623,7 +624,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                     const Spacer(),
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(AppStrings.current.cancel),
                     ),
                     const SizedBox(width: 4),
                     ElevatedButton(
@@ -634,7 +635,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('OK'),
+                      child: Text(AppStrings.current.ok),
                     ),
                   ],
                 ),
@@ -683,7 +684,7 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Rename Preview',
+                            AppStrings.current.uiRenamePreview,
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -799,8 +800,8 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                             ),
                           ),
                           onPressed: () => Navigator.pop(ctx),
-                          child: const Text(
-                            'Back to Edit',
+                          child: Text(
+                            AppStrings.current.uiBackToEdit,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -821,8 +822,8 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
                             Navigator.pop(ctx); // Close sheet
                             _executeRename(); // Execute
                           },
-                          child: const Text(
-                            'Apply Changes',
+                          child: Text(
+                            AppStrings.current.uiApplyChanges,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),

@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +6,7 @@ import '../../../core/icon_fonts/broken_icons.dart';
 import '../../../providers/file_manager_provider.dart';
 import '../../../core/utils.dart';
 import '../../../services/app_manager_service.dart';
+import '../../../core/app_strings.dart';
 import '../media_category_screen.dart';
 import 'app_manager_screen.dart';
 
@@ -160,14 +161,14 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Storage Analytics',
+          AppStrings.current.uiStorageAnalytics,
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: _startStorageScan,
-            tooltip: 'Rescan Storage',
+            tooltip: AppStrings.current.rescanStorage,
           ),
         ],
       ),
@@ -211,12 +212,12 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
             ),
             const SizedBox(height: 32),
             Text(
-              'Scanning Device Storage',
+              AppStrings.current.uiScanningDeviceStorage,
               style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'Analyzing files, categorizing assets, and reading installed apps space...',
+              AppStrings.current.uiAnalyzingFilesCategorizingAssetsAndReading,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
@@ -266,7 +267,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
     final int freeSize = max(0, _totalStorageSize - _totalUsedSize);
 
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       child: Column(
         children: [
           // Circular progress card
@@ -316,7 +317,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total Storage',
+                        AppStrings.current.uiTotalStorage,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
                         ),
@@ -385,7 +386,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
             child: Row(
               children: [
                 Text(
-                  'Breakdown',
+                  AppStrings.current.uiBreakdown,
                   style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
@@ -395,7 +396,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
           // Category items
           _buildCategoryCard(
             context: context,
-            title: 'Applications',
+            title: AppStrings.current.uiApplications,
             size: _appsSize,
             color: const Color(0xFFEC4899), // Pink
             icon: Broken.mobile,
@@ -409,7 +410,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
           ),
           _buildCategoryCard(
             context: context,
-            title: 'Images',
+            title: AppStrings.current.uiImages,
             size: _imagesSize,
             color: const Color(0xFF8B5CF6), // Violet
             icon: Broken.image,
@@ -425,7 +426,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
           ),
           _buildCategoryCard(
             context: context,
-            title: 'Videos',
+            title: AppStrings.current.uiVideos,
             size: _videosSize,
             color: const Color(0xFFEF4444), // Red
             icon: Broken.video,
@@ -441,7 +442,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
           ),
           _buildCategoryCard(
             context: context,
-            title: 'Audio',
+            title: AppStrings.current.uiAudio,
             size: _audioSize,
             color: const Color(0xFFF97316), // Orange
             icon: Broken.music,
@@ -457,7 +458,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
           ),
           _buildCategoryCard(
             context: context,
-            title: 'Documents',
+            title: AppStrings.current.uiDocuments,
             size: _docsSize,
             color: const Color(0xFF3B82F6), // Blue
             icon: Broken.document,
@@ -473,7 +474,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
           ),
           _buildCategoryCard(
             context: context,
-            title: 'System / Other',
+            title: AppStrings.current.uiSystemOther,
             size: _systemSize,
             color: const Color(0xFF64748B), // Slate
             icon: Broken.category_2,
@@ -560,7 +561,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
                   ],
                 ),
               ),
-              if (title != 'System / Other') ...[
+              if (title != AppStrings.current.uiSystemOther) ...[
                 const SizedBox(width: 12),
                 Icon(
                   Broken.arrow_right_3,

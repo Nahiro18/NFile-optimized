@@ -21,6 +21,7 @@ import '../services/archive_service.dart';
 import '../services/apk_installer_service.dart';
 import '../ui/widgets/extract_archive_dialog.dart';
 import '../core/utils.dart';
+import '../core/app_strings.dart';
 import '../services/preferences_service.dart';
 import '../services/app_manager_service.dart';
 import '../models/custom_shortcut_model.dart';
@@ -90,7 +91,25 @@ int _calculateDirectorySizeSync(String path) {
 }
 
 class FileManagerProvider extends ChangeNotifier {
+  bool _isPickerMode = false;
+  bool get isPickerMode => _isPickerMode;
+  static const _pickerChannel = MethodChannel("com.rubex.nfile/picker");
+
+  Future<void> checkPickerMode() async {
+    try {
+      _isPickerMode = await _pickerChannel.invokeMethod("isPickerMode") ?? false;
+      if (_isPickerMode) notifyListeners();
+    } catch (e) {}
+  }
+
+  Future<void> returnPickerResult(String path) async {
+    try {
+      await _pickerChannel.invokeMethod("finishWithResult", {"path": path});
+    } catch (e) {}
+  }
+
   FileManagerProvider() {
+    checkPickerMode();
     _sortType = PreferencesService.getSortType();
     _isGridView = PreferencesService.getIsGridView();
     _iconScale = PreferencesService.getIconScale();
@@ -153,7 +172,7 @@ class FileManagerProvider extends ChangeNotifier {
     if (_totalStorageBytes > 0) {
       _storageVolumes = [
         StorageVolume(
-          name: 'Internal Storage',
+          name: AppStrings.current.uiInternalStorage,
           path: '/storage/emulated/0',
           isInternal: true,
           totalBytes: _totalStorageBytes,
@@ -1120,7 +1139,7 @@ class FileManagerProvider extends ChangeNotifier {
       }
     }
 
-    if (filter == 'All' || filter == 'Audio') {
+    if (filter == 'All' || filter == AppStrings.current.uiAudio) {
       for (final song in mediaProvider.audios) {
         final path = song.data;
         if (!isGlobal && !path.startsWith(rootPath)) continue;
@@ -1181,13 +1200,13 @@ class FileManagerProvider extends ChangeNotifier {
           bool matchFilter = false;
           if (filter == 'All') {
             matchFilter = true;
-          } else if (filter == 'Folders' && isDir) {
+          } else if (filter == AppStrings.current.uiFolders && isDir) {
             matchFilter = true;
-          } else if (filter == 'Images' && !isDir && isImage(name)) {
+          } else if (filter == AppStrings.current.uiImages && !isDir && isImage(name)) {
             matchFilter = true;
-          } else if (filter == 'Videos' && !isDir && isVideo(name)) {
+          } else if (filter == AppStrings.current.uiVideos && !isDir && isVideo(name)) {
             matchFilter = true;
-          } else if (filter == 'Audio' && !isDir && isAudio(name)) {
+          } else if (filter == AppStrings.current.uiAudio && !isDir && isAudio(name)) {
             matchFilter = true;
           } else if (filter == 'Docs' && !isDir && isDoc(name)) {
             matchFilter = true;
@@ -1453,7 +1472,7 @@ class FileManagerProvider extends ChangeNotifier {
   Future<void> _detectStorageVolumes() async {
     final volumes = <StorageVolume>[];
     if (Platform.isAndroid) {
-      volumes.add(StorageVolume(name: 'Internal Storage', path: '/storage/emulated/0', isInternal: true));
+      volumes.add(StorageVolume(name: AppStrings.current.uiInternalStorage, path: '/storage/emulated/0', isInternal: true));
 
       try {
         final extDirs = await getExternalStorageDirectories();
@@ -1492,7 +1511,7 @@ class FileManagerProvider extends ChangeNotifier {
       } catch (_) {}
     } else {
       final dir = await getApplicationDocumentsDirectory();
-      volumes.add(StorageVolume(name: 'Documents', path: dir.path, isInternal: true));
+      volumes.add(StorageVolume(name: AppStrings.current.uiDocuments, path: dir.path, isInternal: true));
     }
     _storageVolumes = volumes;
     await updateStorageSpace();
@@ -1912,7 +1931,7 @@ class FileManagerProvider extends ChangeNotifier {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(_isCut ? 'Moved items successfully' : 'Copied items successfully'),
+              content: Text(_isCut ? AppStrings.current.movedItemsSuccessfully : AppStrings.current.copiedItemsSuccessfully),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -1922,7 +1941,7 @@ class FileManagerProvider extends ChangeNotifier {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to transfer: $e'),
+              content: Text(AppStrings.current.failedToTransfer(e.toString())),
               backgroundColor: Colors.redAccent,
               behavior: SnackBarBehavior.floating,
             ),
@@ -1951,7 +1970,7 @@ class FileManagerProvider extends ChangeNotifier {
           if (context.mounted) {
             await FileActionDialogs.showWarningDialog(
               context,
-              title: 'Operation Cancelled',
+              title: AppStrings.current.uiOperationCancelled,
               content: 'Cannot cut and paste a file into the same folder.',
             );
           }
@@ -2316,7 +2335,7 @@ class FileManagerProvider extends ChangeNotifier {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to connect to remote server: $e'),
+            content: Text(AppStrings.current.failedToConnectRemote(e.toString())),
             backgroundColor: Colors.redAccent,
             behavior: SnackBarBehavior.floating,
           ),
@@ -2390,7 +2409,7 @@ class FileManagerProvider extends ChangeNotifier {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isCut ? 'Moved items successfully' : 'Copied items successfully'),
+            content: Text(_isCut ? AppStrings.current.movedItemsSuccessfully : AppStrings.current.copiedItemsSuccessfully),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -2400,7 +2419,7 @@ class FileManagerProvider extends ChangeNotifier {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString().contains('Cancelled') ? 'Operation Cancelled' : 'Transfer failed: $e'),
+            content: Text(e.toString().contains('Cancelled') ? AppStrings.current.uiOperationCancelled : 'Transfer failed: $e'),
             backgroundColor: e.toString().contains('Cancelled') ? null : Colors.redAccent,
             behavior: SnackBarBehavior.floating,
           ),
@@ -2673,7 +2692,7 @@ class FileManagerProvider extends ChangeNotifier {
         if (context != null && context.mounted) {
           await FileActionDialogs.showWarningDialog(
             context,
-            title: 'Compression Limit Exceeded',
+            title: AppStrings.current.uiCompressionLimitExceeded,
             content: 'TAR.ZSTD and TAR.LZ4 formats are highly memory-intensive and optimized for files under 600MB. Please use the ZIP or TAR format for larger files.',
           );
         }
@@ -2772,6 +2791,11 @@ class FileManagerProvider extends ChangeNotifier {
   }
 
   Future<void> openFileNatively(BuildContext context, String path) async {
+    if (isPickerMode) {
+      await returnPickerResult(path);
+      return;
+    }
+
     final mimeType = lookupMimeType(path) ?? '';
     final ext = p.extension(path).toLowerCase();
     const docExts = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.epub', '.odt'];
@@ -2958,7 +2982,7 @@ class FileManagerProvider extends ChangeNotifier {
 
     if (sourcePath == destPath || destFolderPath.startsWith(sourcePath + p.separator)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cannot move a folder inside itself or same location')),
+        SnackBar(content: Text(AppStrings.current.cannotMoveIntoItself)),
       );
       return;
     }
@@ -3006,14 +3030,14 @@ class FileManagerProvider extends ChangeNotifier {
       
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Moved $name successfully')),
+          SnackBar(content: Text(AppStrings.current.movedSuccessfully(name))),
         );
       }
     } catch (e) {
       debugPrint('Error moving item: $e');
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to move item: $e')),
+          SnackBar(content: Text(AppStrings.current.failedToMove(e.toString()))),
         );
       }
     }
@@ -3039,7 +3063,7 @@ class FileManagerProvider extends ChangeNotifier {
 
     if (sourcePath == destPath || destFolderPath.startsWith(sourcePath + p.separator)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cannot copy a folder inside itself or same location')),
+        SnackBar(content: Text(AppStrings.current.cannotCopyIntoItself)),
       );
       return;
     }
@@ -3077,14 +3101,14 @@ class FileManagerProvider extends ChangeNotifier {
       
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Copied $name successfully')),
+          SnackBar(content: Text(AppStrings.current.copedSuccessfully(name))),
         );
       }
     } catch (e) {
       debugPrint('Error copying item: $e');
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to copy item: $e')),
+          SnackBar(content: Text(AppStrings.current.failedToCopy(e.toString()))),
         );
       }
     }

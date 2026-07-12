@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import '../models/file_item_model.dart';
 import 'package:path/path.dart' as p;
+import '../core/app_strings.dart';
 
 class RootShizukuStatus {
   final bool isRootAvailable;
@@ -84,6 +85,9 @@ class RootShizukuService {
       });
       return res?.toString();
     } catch (e) {
+      if (e.toString().contains('EXEC_ERROR')) {
+        throw Exception(AppStrings.current.errorShizukuNotRunning);
+      }
       throw Exception('Execution failed: $e');
     }
   }

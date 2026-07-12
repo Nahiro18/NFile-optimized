@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../providers/file_manager_provider.dart';
 import '../screens/global_search_screen.dart';
@@ -51,15 +52,15 @@ class NFileDrawer extends StatelessWidget {
             // Scrollable Menu Items
             Expanded(
               child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
+                physics: const ClampingScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle(context, 'Navigation'),
+                    _buildSectionTitle(context, AppStrings.current.navigation),
                     _buildDrawerTile(
                       context,
                       icon: Broken.home,
-                      title: 'Home',
+                      title: AppStrings.current.home,
                       onTap: () {
                         Navigator.pop(context); // Close drawer
                         onNavigateTab?.call(0);
@@ -81,7 +82,7 @@ class NFileDrawer extends StatelessWidget {
                     _buildDrawerTile(
                       context,
                       icon: Broken.cpu,
-                      title: 'System Root',
+                      title: AppStrings.current.systemRoot,
                       isSelected: fileManager.rootPath == '/',
                       onTap: () {
                         Navigator.pop(context);
@@ -93,7 +94,7 @@ class NFileDrawer extends StatelessWidget {
                     _buildDrawerTile(
                       context,
                       icon: Broken.search_normal,
-                      title: 'Global Search',
+                      title: AppStrings.current.globalSearch,
                       onTap: () {
                         Navigator.pop(context);
                         onNavigateTab?.call(1);
@@ -113,7 +114,7 @@ class NFileDrawer extends StatelessWidget {
                     _buildDrawerTile(
                       context,
                       icon: Broken.trash,
-                      title: 'Recycle Bin',
+                      title: AppStrings.current.recycleBin,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const RecycleBinScreen()));
@@ -128,7 +129,7 @@ class NFileDrawer extends StatelessWidget {
                         child: ExpansionTile(
                           leading: NfileIcon(Broken.wifi_square, size: 22, color: theme.colorScheme.onSurface.withOpacity(0.8)),
                           title: Text(
-                            'Servers & Tools',
+                            AppStrings.current.serversAndTools,
                             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: theme.colorScheme.onSurface.withOpacity(0.9)),
                           ),
                           iconColor: theme.colorScheme.primary,
@@ -139,7 +140,7 @@ class NFileDrawer extends StatelessWidget {
                             _buildDrawerTile(
                               context,
                               icon: Broken.lock,
-                              title: 'Private Wallet',
+                              title: AppStrings.current.privateWallet,
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => const VaultLockScreen()));
@@ -148,7 +149,7 @@ class NFileDrawer extends StatelessWidget {
                             _buildDrawerTile(
                               context,
                               icon: Broken.wifi,
-                              title: 'FTP Server',
+                              title: AppStrings.current.ftpServer,
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => const FtpServerScreen()));
@@ -157,7 +158,7 @@ class NFileDrawer extends StatelessWidget {
                             _buildDrawerTile(
                               context,
                               icon: Icons.language_rounded,
-                              title: 'Web Sharing',
+                              title: AppStrings.current.webSharing,
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => const WebSharingScreen()));
@@ -199,7 +200,7 @@ class NFileDrawer extends StatelessWidget {
                             _buildDrawerTile(
                               context,
                               icon: Icons.add_link_rounded,
-                              title: 'Add Remote Connection',
+                              title: AppStrings.current.addRemoteConnection,
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(
@@ -222,7 +223,7 @@ class NFileDrawer extends StatelessWidget {
                         child: ExpansionTile(
                           leading: NfileIcon(Icons.category_rounded, size: 22, color: theme.colorScheme.onSurface.withOpacity(0.8)),
                           title: Text(
-                            'Quick Categories',
+                            AppStrings.current.quickCategories,
                             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: theme.colorScheme.onSurface.withOpacity(0.9)),
                           ),
                           iconColor: theme.colorScheme.primary,
@@ -248,7 +249,7 @@ class NFileDrawer extends StatelessWidget {
                             _buildDrawerTile(
                               context,
                               icon: Icons.add_rounded,
-                              title: 'Add Shortcut',
+                              title: AppStrings.current.addShortcut,
                               onTap: () async {
                                 final fileManager = context.read<FileManagerProvider>();
                                 final mediaProvider = context.read<MediaProvider>();
@@ -269,11 +270,11 @@ class NFileDrawer extends StatelessWidget {
                     ),
 
                     _buildDivider(context),
-                    _buildSectionTitle(context, 'Customization & Settings'),
+                    _buildSectionTitle(context, AppStrings.current.customizationAndSettings),
                     _buildDrawerTile(
                       context,
                       icon: isDark ? Broken.sun_1 : Broken.moon,
-                      title: isDark ? 'Light Mode' : 'Dark Mode',
+                      title: isDark ? AppStrings.current.lightMode : AppStrings.current.darkMode,
                       trailing: Transform.scale(
                         scale: 0.85,
                         child: Switch(
@@ -288,7 +289,7 @@ class NFileDrawer extends StatelessWidget {
                     _buildDrawerTile(
                       context,
                       icon: Broken.setting_2,
-                      title: 'More Settings',
+                      title: AppStrings.current.moreSettings,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const MoreSettingsScreen()));
@@ -297,7 +298,7 @@ class NFileDrawer extends StatelessWidget {
                     _buildDrawerTile(
                       context,
                       icon: Broken.info_circle,
-                      title: 'About NFile',
+                      title: AppStrings.current.aboutNFile,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -316,7 +317,7 @@ class NFileDrawer extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12.0),
               child: Text(
-                'NFile v1.0.42',
+                AppStrings.current.nfileVersion,
                 style: TextStyle(fontSize: 11.5, color: theme.colorScheme.onSurface.withOpacity(0.4), fontWeight: FontWeight.w600),
               ),
             ),
@@ -328,52 +329,37 @@ class NFileDrawer extends StatelessWidget {
 
   Widget _buildDrawerHeader(BuildContext context, ThemeData theme, bool isDark) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-      padding: const EdgeInsets.all(16.0),
+      margin: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [
-                  Color.alphaBlend(theme.colorScheme.primary.withOpacity(0.15), const Color(0xFF0F172A)),
-                  Color.alphaBlend(theme.colorScheme.primary.withOpacity(0.05), const Color(0xFF1E293B)),
-                ]
-              : [theme.colorScheme.primary.withOpacity(0.85), theme.colorScheme.primary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.25),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: isDark ? const Color(0xFF141414) : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE5E5E5)),
       ),
       child: Row(
         children: [
           Container(
-            width: 52,
-            height: 52,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              shape: BoxShape.circle,
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.06),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: const NfileIcon(Broken.folder, color: Colors.white, size: 28),
+            child: NfileIcon(Broken.folder, color: theme.colorScheme.primary, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'NFile',
-                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                Text(
+                  AppStrings.current.appTitle,
+                  style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 20, fontWeight: FontWeight.w600, letterSpacing: 0.3),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Beautiful Media Suite',
-                  style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12.5, fontWeight: FontWeight.w500),
+                  AppStrings.current.appSubtitle,
+                  style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5), fontSize: 12, fontWeight: FontWeight.w400),
                 ),
               ],
             ),

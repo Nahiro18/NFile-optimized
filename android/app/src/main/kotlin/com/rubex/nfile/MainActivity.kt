@@ -44,6 +44,7 @@ class MainActivity : AudioServiceFragmentActivity() {
     private var pendingPermissionResult: MethodChannel.Result? = null
     private var safPermissionResult: MethodChannel.Result? = null
     private val SAF_REQUEST_CODE = 10002
+    private var isPickerMode = false
 
     private val ACTION_CANCEL_OPERATION = "com.rubex.nfile.ACTION_CANCEL_OPERATION"
     private var notificationsChannel: MethodChannel? = null
@@ -66,6 +67,7 @@ class MainActivity : AudioServiceFragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isPickerMode = intent?.action == Intent.ACTION_GET_CONTENT || intent?.action == Intent.ACTION_PICK
         try {
             Shizuku.addBinderReceivedListenerSticky {
                 // Binder ready
@@ -140,6 +142,39 @@ class MainActivity : AudioServiceFragmentActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rubex.nfile/picker").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "isPickerMode" -> result.success(isPickerMode)
+                "finishWithResult" -> {
+                    val filePath = call.argument<String>("path")
+                    if (filePath != null) {
+                        try {
+                            val file = File(filePath)
+                            val uri = androidx.core.content.FileProvider.getUriForFile(
+                                this@MainActivity,
+                                "${applicationContext.packageName}.fileprovider",
+                                file
+                            )
+                            val resultIntent = Intent().apply {
+                                data = uri
+                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            }
+                            setResult(android.app.Activity.RESULT_OK, resultIntent)
+                            finish()
+                            result.success(true)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            result.success(false)
+                        }
+                    } else {
+                        result.success(false)
+                    }
+                }
+                else -> result.notImplemented()
+            }
+        }
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "checkStatus" -> {
@@ -710,11 +745,11 @@ class MainActivity : AudioServiceFragmentActivity() {
         notificationsChannel?.setMethodCallHandler { call, result ->
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = "nfile_archive_channel"
-            val channelName = "NFile Archive Operations"
+            val channelName = getString(R.string.archive_channel_name)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW).apply {
-                    description = "Shows progress of file compression and extraction"
+                    description = getString(R.string.archive_channel_desc)
                 }
                 notificationManager.createNotificationChannel(channel)
             }
@@ -762,8 +797,8 @@ class MainActivity : AudioServiceFragmentActivity() {
                         .setContentIntent(openPendingIntent)
 
                     if (progress < max) {
-                        builder.addAction(android.R.drawable.ic_menu_view, "Open", openPendingIntent)
-                        builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Cancel", cancelPendingIntent)
+                        builder.addAction(android.R.drawable.ic_menu_view, "Abrir", openPendingIntent)
+                        builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Cancelar", cancelPendingIntent)
                     }
 
                     if (indeterminate) {

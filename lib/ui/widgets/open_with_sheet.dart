@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/icon_fonts/broken_icons.dart';
+import '../../core/app_strings.dart';
 
 class OpenWithSheet extends StatefulWidget {
   final String fileName;
@@ -43,7 +44,7 @@ class _OpenWithSheetState extends State<OpenWithSheet> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Open with...',
+                AppStrings.current.openWith,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -106,7 +107,7 @@ class _OpenWithSheetState extends State<OpenWithSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Built-in NFile Viewer',
+                              AppStrings.current.uiBuiltinNfileViewer,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: _selectedType == 'native'
@@ -178,7 +179,7 @@ class _OpenWithSheetState extends State<OpenWithSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'System External App',
+                              AppStrings.current.uiSystemExternalApp,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: _selectedType == 'external'
@@ -188,7 +189,7 @@ class _OpenWithSheetState extends State<OpenWithSheet> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              "Open with third party apps on device",
+                              AppStrings.current.uiOpenWithThirdPartyAppsOn,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: theme.colorScheme.onSurface.withOpacity(0.6),
@@ -217,7 +218,7 @@ class _OpenWithSheetState extends State<OpenWithSheet> {
                       onPressed: () {
                         Navigator.pop(context, 'just_once_$_selectedType');
                       },
-                      child: const Text('Just once'),
+                      child: Text(AppStrings.current.justOnce),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -232,7 +233,7 @@ class _OpenWithSheetState extends State<OpenWithSheet> {
                       onPressed: () {
                         Navigator.pop(context, 'always_$_selectedType');
                       },
-                      child: const Text('Always'),
+                      child: Text(AppStrings.current.always),
                     ),
                   ),
                 ],
