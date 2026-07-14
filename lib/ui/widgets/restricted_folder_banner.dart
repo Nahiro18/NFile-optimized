@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../core/icon_fonts/broken_icons.dart';
-import '../../core/app_strings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RestrictedFolderBanner extends StatelessWidget {
@@ -55,13 +54,13 @@ class RestrictedFolderBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  AppStrings.current.uiRestrictedSystemFolder,
+                  'Restricted System Folder',
                   style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  AppStrings.current.uiAndroid11RestrictsStandardAccessTo,
+                  'Android 11+ restricts standard access to Android/data and Android/obb folders to protect app data. To view and modify these files, NFile requires advanced permissions.',
                   style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface.withOpacity(0.8), height: 1.4),
                   textAlign: TextAlign.center,
                 ),
@@ -76,7 +75,7 @@ class RestrictedFolderBanner extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                     ),
                     icon: const Icon(Broken.key, size: 24),
-                    label: Text(AppStrings.current.useRootAccess, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    label: const Text('Use Root Access (Superuser)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     onPressed: onEnableRoot,
                   ),
                   const SizedBox(height: 16),
@@ -90,13 +89,13 @@ class RestrictedFolderBanner extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                   ),
                   icon: const Icon(Broken.shield_tick, size: 24),
-                  label: Text(AppStrings.current.grantShizukuAccess, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  label: const Text('Grant Shizuku Access (No Root)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   onPressed: onEnableShizuku,
                 ),
                 const SizedBox(height: 20),
                 TextButton.icon(
                   icon: Icon(Broken.info_circle, size: 18, color: theme.colorScheme.primary),
-                  label: Text(AppStrings.current.howToSetupShizuku, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
+                  label: Text('How to setup Shizuku?', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
                   onPressed: () async {
                     final url = Uri.parse('https://shizuku.rikka.app/guide/setup/');
                     try {

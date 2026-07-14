@@ -11,8 +11,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 import 'core/theme.dart';
 import 'core/icon_fonts/broken_icons.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'core/app_strings.dart';
 import 'providers/file_manager_provider.dart';
 import 'providers/media_provider.dart';
 import 'services/preferences_service.dart';
@@ -33,9 +31,6 @@ void main() async {
   await PinService.init();
   await NetworkConnectionsService.init();
   await RecycleBinService.init();
-
-  AppStrings.locale = PreferencesService.getLocale();
-  await AppStrings.loadTranslations();
 
   // Load custom font dynamically if configured
   try {
@@ -321,14 +316,8 @@ class _NFileAppState extends State<NFileApp> {
 
             return MaterialApp(
               navigatorKey: navigatorKey,
-              title: AppStrings.current.appTitle,
+              title: 'NFile',
               debugShowCheckedModeBanner: false,
-              locale: PreferencesService.getLocale() == 'system' ? null : Locale(PreferencesService.getLocale()),
-              supportedLocales: AppStrings.supportedLocales,
-              localizationsDelegates: const [
-                AppStrings.delegate,
-                ...GlobalMaterialLocalizations.delegates,
-              ],
               theme: AppTheme.getAppTheme(light: true, seed: baseSeedColor, customScheme: activeLightScheme, fontFamily: fileManager.fontFamilyOption),
               darkTheme: AppTheme.getAppTheme(light: false, pitchBlack: fileManager.amoledMode, seed: baseSeedColor, customScheme: activeDarkScheme, fontFamily: fileManager.fontFamilyOption),
               themeMode: activeThemeMode,
@@ -429,7 +418,7 @@ class _IntentLoadingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              AppStrings.current.openingSharedDocument,
+              'Opening shared document...',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: theme.colorScheme.onSurface.withOpacity(0.8),
@@ -437,7 +426,7 @@ class _IntentLoadingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              AppStrings.current.resolvingSecureContent,
+              'Resolving secure content stream',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.5),
               ),
@@ -471,12 +460,12 @@ class _StoragePermissionShield extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  AppStrings.current.storageAccessRequired,
+                  'Storage Access Required',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  AppStrings.current.storagePermissionMessage,
+                  'NFile requires storage permission to manage, organize, and display your media files seamlessly.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                 ),
@@ -488,7 +477,7 @@ class _StoragePermissionShield extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   icon: const Icon(Broken.shield_tick),
-                  label: Text(AppStrings.current.grantPermission, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  label: const Text('Grant Permission', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             ),

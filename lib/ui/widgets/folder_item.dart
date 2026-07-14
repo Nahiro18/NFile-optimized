@@ -8,7 +8,6 @@ import '../../core/utils.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../services/pin_service.dart';
 import '../../services/app_manager_service.dart';
-import '../../core/app_strings.dart';
 import 'package:path/path.dart' as p;
 import 'dart:typed_data';
 
@@ -234,22 +233,22 @@ class FolderItem extends StatelessWidget {
                   itemBuilder: (context) {
                     return [
                       if (showShowInLocationOption)
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'show_in_location',
-                          child: Row(children: [NfileIcon(Broken.folder_open, size: 20), SizedBox(width: 12), Text(AppStrings.current.showInLocation, style: TextStyle(fontWeight: FontWeight.w500))]),
+                          child: Row(children: [NfileIcon(Broken.folder_open, size: 20), SizedBox(width: 12), Text('Show in location', style: TextStyle(fontWeight: FontWeight.w500))]),
                         ),
                       if (showShowInLocationOption)
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'share',
-                          child: Row(children: [Icon(Icons.share_outlined, size: 20), SizedBox(width: 12), Text(AppStrings.current.share, style: TextStyle(fontWeight: FontWeight.w500))]),
+                          child: Row(children: [Icon(Icons.share_outlined, size: 20), SizedBox(width: 12), Text('Share', style: TextStyle(fontWeight: FontWeight.w500))]),
                         ),
-                      PopupMenuItem(value: 'archive', child: Row(children: [NfileIcon(Broken.box_add, size: 20), SizedBox(width: 12), Text(AppStrings.current.archive, style: TextStyle(fontWeight: FontWeight.w500))])),
-                      PopupMenuItem(value: 'copy', child: Row(children: [NfileIcon(Broken.document_copy, size: 20), SizedBox(width: 12), Text(AppStrings.current.copy, style: TextStyle(fontWeight: FontWeight.w500))])),
-                      PopupMenuItem(value: 'cut', child: Row(children: [NfileIcon(Broken.scissor, size: 20), SizedBox(width: 12), Text(AppStrings.current.cut, style: TextStyle(fontWeight: FontWeight.w500))])),
-                      PopupMenuItem(value: 'rename', child: Row(children: [NfileIcon(Broken.edit, size: 20), SizedBox(width: 12), Text(AppStrings.current.rename, style: TextStyle(fontWeight: FontWeight.w500))])),
-                      PopupMenuItem(
+                      const PopupMenuItem(value: 'archive', child: Row(children: [NfileIcon(Broken.box_add, size: 20), SizedBox(width: 12), Text('Archive', style: TextStyle(fontWeight: FontWeight.w500))])),
+                      const PopupMenuItem(value: 'copy', child: Row(children: [NfileIcon(Broken.document_copy, size: 20), SizedBox(width: 12), Text('Copy', style: TextStyle(fontWeight: FontWeight.w500))])),
+                      const PopupMenuItem(value: 'cut', child: Row(children: [NfileIcon(Broken.scissor, size: 20), SizedBox(width: 12), Text('Cut', style: TextStyle(fontWeight: FontWeight.w500))])),
+                      const PopupMenuItem(value: 'rename', child: Row(children: [NfileIcon(Broken.edit, size: 20), SizedBox(width: 12), Text('Rename', style: TextStyle(fontWeight: FontWeight.w500))])),
+                      const PopupMenuItem(
                         value: 'delete',
-                        child: Row(children: [NfileIcon(Broken.trash, size: 20, color: Colors.redAccent), SizedBox(width: 12), Text(AppStrings.current.delete, style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w500))]),
+                        child: Row(children: [NfileIcon(Broken.trash, size: 20, color: Colors.redAccent), SizedBox(width: 12), Text('Delete', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w500))]),
                       ),
                     ];
                   },

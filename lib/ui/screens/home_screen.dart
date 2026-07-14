@@ -1,10 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../providers/media_provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
-import '../../core/app_strings.dart';
 import '../widgets/swipable_storage_overview.dart';
 import '../widgets/quick_categories_grid.dart';
 import '../widgets/recent_files_section.dart';
@@ -74,10 +73,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
           _isRefreshing = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppStrings.current.dashboardRefreshed),
+          const SnackBar(
+            content: Text('Dashboard refreshed successfully'),
             behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 1),
+            duration: Duration(seconds: 1),
           ),
         );
       }
@@ -88,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: AppStrings.current.exitConfirmation,
+      barrierLabel: 'Exit Confirmation',
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
@@ -127,15 +126,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      AppStrings.current.exitApplication,
+                      'Exit Application',
                       style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
-                content: Text(
-                  AppStrings.current.exitConfirmationMessage,
+                content: const Text(
+                  'Are you sure you want to exit? Press back again or tap Exit to close the app.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 15, height: 1.4),
+                  style: TextStyle(fontSize: 15, height: 1.4),
                 ),
                 actionsAlignment: MainAxisAlignment.spaceEvenly,
                 actionsPadding: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
@@ -146,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: Text(AppStrings.current.cancel, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -157,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                       elevation: 0,
                     ),
                     onPressed: () => SystemNavigator.pop(),
-                    child: Text(AppStrings.current.exit, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    child: const Text('Exit', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -192,9 +191,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
               _lastPressedAt = now;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(
-                    AppStrings.current.pressBackAgain,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                  content: const Text(
+                    'Press back again to exit',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                   backgroundColor: theme.colorScheme.primary,
                   behavior: SnackBarBehavior.floating,
@@ -244,16 +243,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                   }
                   setState(() => _currentIndex = index);
                 },
-                destinations: [
+                destinations: const [
                   NavigationDestination(
-                    icon: const NfileIcon(Broken.home),
-                    selectedIcon: const NfileIcon(Broken.home_1),
-                    label: AppStrings.current.home,
+                    icon: NfileIcon(Broken.home),
+                    selectedIcon: NfileIcon(Broken.home_1),
+                    label: 'Home',
                   ),
                   NavigationDestination(
-                    icon: const NfileIcon(Broken.folder),
-                    selectedIcon: const NfileIcon(Broken.folder_open),
-                    label: AppStrings.current.browse,
+                    icon: NfileIcon(Broken.folder),
+                    selectedIcon: NfileIcon(Broken.folder_open),
+                    label: 'Browse',
                   ),
                 ],
               )
@@ -266,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
     final theme = Theme.of(context);
     return SafeArea(
       child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -276,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    AppStrings.current.myFiles,
+                    'My Files',
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -286,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                     children: [
                       IconButton(
                         onPressed: _handleRefresh,
-                        tooltip: AppStrings.current.refreshDashboard,
+                        tooltip: 'Refresh Dashboard',
                         icon: RotationTransition(
                           turns: _refreshIconController,
                           child: const NfileIcon(Broken.refresh),

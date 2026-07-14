@@ -12,7 +12,6 @@ import 'package:path/path.dart' as p;
 import 'internal_file_picker_screen.dart';
 import 'backup_settings_screen.dart';
 import '../../services/settings_backup_service.dart';
-import '../../core/app_strings.dart';
 
 class MoreSettingsScreen extends StatefulWidget {
   const MoreSettingsScreen({super.key});
@@ -104,35 +103,35 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
     final fileManager = context.watch<FileManagerProvider>();
 
     // Visibilities for global search filtering
-    final showAddressBarVis = _shouldShow(AppStrings.current.showAddressBar, AppStrings.current.showAddressBarSub);
-    final preferFoldersVis = _shouldShow(AppStrings.current.defaultAlbumView, AppStrings.current.defaultAlbumViewSub);
-    final hideNavBarVis = _shouldShow(AppStrings.current.hideAndroidNavBar, AppStrings.current.hideAndroidNavBarSub);
-    final resetViewersVis = _shouldShow(AppStrings.current.resetDefaultViewers, AppStrings.current.resetDefaultViewersSub);
-    final skipDialogVis = _shouldShow(AppStrings.current.skipOpenWithDialog, AppStrings.current.skipOpenWithDialogSub);
-    final defaultBrowseVis = _shouldShow(AppStrings.current.defaultToBrowseScreen, AppStrings.current.defaultToBrowseScreenSub);
-    final showFloatingVis = _shouldShow(AppStrings.current.showFloatingButton, AppStrings.current.showFloatingButtonSub);
-    final showHiddenVis = _shouldShow(AppStrings.current.showHiddenFiles, AppStrings.current.showHiddenFilesSub);
-    final folderFileCountVis = _shouldShow(AppStrings.current.showFolderFileCount, AppStrings.current.showFolderFileCountSub);
-    final use24HourVis = _shouldShow(AppStrings.current.use24HourFormat, AppStrings.current.use24HourFormatSub);
-    final hideTimeDateVis = _shouldShow(AppStrings.current.hideTimeDate, AppStrings.current.hideTimeDateSub);
-    final folderContentsVis = _shouldShow(AppStrings.current.showFolderContentCount, AppStrings.current.showFolderContentCountSub);
-    final folderSizesVis = _shouldShow(AppStrings.current.showFolderSize, AppStrings.current.showFolderSizeSub);
-    final bottomActionBarVis = _shouldShow(AppStrings.current.showBottomNavBar, AppStrings.current.showBottomNavBarSub);
-    final hideActionTextVis = _shouldShow(AppStrings.current.hideActionBarLabels, AppStrings.current.hideActionBarLabelsSub);
-    final showHomeBrowseNavVis = _shouldShow(AppStrings.current.showHomeBrowseBar, AppStrings.current.showHomeBrowseBarSub);
-    final highlightFolderVis = _shouldShow(AppStrings.current.highlightExitedFolder, AppStrings.current.highlightExitedFolderSub);
-    final mediaPreviewsVis = _shouldShow(AppStrings.current.showMediaPreviews, AppStrings.current.showMediaPreviewsSub);
-    final adaptiveNamesVis = _shouldShow(AppStrings.current.adaptiveMultiLine, AppStrings.current.adaptiveMultiLineSub);
-    final hideActionButtonsVis = _shouldShow(AppStrings.current.hide3DotButtons, AppStrings.current.hide3DotButtonsSub);
-    final trailingInfoVis = fileManager.hideActionMenuButtons && _shouldShow(AppStrings.current.threeDotDisabledInfo, AppStrings.current.threeDotDisabledInfoSub);
-    final dragDropVis = _shouldShow(AppStrings.current.enableDragAndDrop, AppStrings.current.enableDragAndDropSub);
-    final confirmDragVis = fileManager.enableDragDrop && _shouldShow(AppStrings.current.confirmDragDrop, AppStrings.current.confirmDragDropSub);
-    final multipleTabsVis = _shouldShow(AppStrings.current.enableMultipleTabs, AppStrings.current.enableMultipleTabsSub);
-    final splitScreenVis = _shouldShow(AppStrings.current.enableSplitScreen, AppStrings.current.enableSplitScreenSub);
-    final disableLeftBackVis = _shouldShow(AppStrings.current.preventLeftBackGesture, AppStrings.current.preventLeftBackGestureSub);
-    final rememberLastFolderVis = _shouldShow(AppStrings.current.rememberLastFolder, AppStrings.current.rememberLastFolderSub);
-    final hideNavLabelsVis = _shouldShow(AppStrings.current.hideNavLabels, AppStrings.current.hideNavLabelsSub);
-    final exitOptionVis = _shouldShow(AppStrings.current.appExitBehavior, AppStrings.current.appExitBehaviorSub);
+    final showAddressBarVis = _shouldShow('Show Address Bar', 'Display an editable Windows-Explorer-style address bar at the top of file list');
+    final preferFoldersVis = _shouldShow('Default Album Preferred View', 'Open Images/Videos quick categories directly in Folders (Albums) preferred view');
+    final hideNavBarVis = _shouldShow('Hide Android Navigation Bar', 'Hide bottom navigation bar to maximize screen real estate (swiping up displays it)');
+    final resetViewersVis = _shouldShow('Reset Default File Viewers', 'Clear all remembered "Open With" associations for file viewers');
+    final skipDialogVis = _shouldShow('Skip "Open With" Dialog', 'Bypass the application choice dialog and immediately open files with default viewers');
+    final defaultBrowseVis = _shouldShow('Default to Browse Screen', 'Directly launch into the Browse storage explorer on app start');
+    final showFloatingVis = _shouldShow("Show Floating '+' Button", 'Enable quick creation (+) button at bottom of Browse screen');
+    final showHiddenVis = _shouldShow('Show Hidden Files', 'Display system files and folders starting with a dot (.)');
+    final folderFileCountVis = _shouldShow('Show Folder & File Count Header', 'Display total folders and files count under storage title bar');
+    final use24HourVis = _shouldShow('Use 24-Hour Time Format', 'Toggle between 12-hour (AM/PM) and 24-hour time formatting across lists');
+    final hideTimeDateVis = _shouldShow('Hide Time & Date from Lists', 'Completely hide modification dates and times under files and folders');
+    final folderContentsVis = _shouldShow('Show Folder Content Count', 'Calculate and display total files and folders inside directory listings');
+    final folderSizesVis = _shouldShow('Show Folder Size', 'Calculate and display total size of all files inside directories (can affect listing performance)');
+    final bottomActionBarVis = _shouldShow('Show Bottom Navigation Bar', 'Enable bottom action bar on Browse screen');
+    final hideActionTextVis = _shouldShow('Hide Action Bar Text Labels', 'Show only icons in selection action bar at bottom of Browse & Media screens');
+    final showHomeBrowseNavVis = _shouldShow('Show Home & Browse Bottom Bar', 'Toggle bottom navigation bar visibility on the Home screen');
+    final highlightFolderVis = _shouldShow('Highlight Exited Folder', 'Briefly flash and scroll to the folder you just exited when going back');
+    final mediaPreviewsVis = _shouldShow('Show Media Previews', 'Display actual image and video thumbnails instead of generic file icons');
+    final adaptiveNamesVis = _shouldShow('Adaptive Multi-line Filenames', 'Allow filenames to wrap 3 lines instead of truncating');
+    final hideActionButtonsVis = _shouldShow('Hide 3-Dot Action Buttons', 'Hide the three-dot option menu button next to folders and files');
+    final trailingInfoVis = fileManager.hideActionMenuButtons && _shouldShow('3-Dot Disabled Trailing Info', 'Choose what to show on the right side of files and folders when 3-dot is hidden');
+    final dragDropVis = _shouldShow('Enable Drag & Drop', 'Long press and drag folders or files to move them into other folders');
+    final confirmDragVis = fileManager.enableDragDrop && _shouldShow('Confirm Drag & Drop Actions', 'Show options popup (Copy, Move, Archive) when dropping files');
+    final multipleTabsVis = _shouldShow('Enable Multiple Tabs', 'Allow opening multiple folders in separate tabs for quick navigation');
+    final splitScreenVis = _shouldShow('Enable Split Screen', 'Browse two directories side by side and transfer files easily');
+    final disableLeftBackVis = _shouldShow('Prevent Left Back Gesture for Drawer', 'Excludes the left edge of the screen from Android system back gestures, making it easier to swipe open the drawer. You can still swipe from the right edge to go back.');
+    final rememberLastFolderVis = _shouldShow('Remember Last Opened Folder', 'Open the last folder you browsed when launching the app');
+    final hideNavLabelsVis = _shouldShow('Hide Bottom Navigation Labels', 'Hide text labels of the bottom bar (Home/Browse) for a cleaner and compact look');
+    final exitOptionVis = _shouldShow('App Exit Behavior', 'Choose between exit confirmation dialog or double-pressing back button to exit');
 
     final generalStartupList = [
       defaultBrowseVis,
@@ -178,24 +177,24 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
       hideActionTextVis,
     ];
 
-    final recycleBinVis = _shouldShow(AppStrings.current.enableRecycleBin, AppStrings.current.enableRecycleBinSub);
-    final autoDeleteDurationVis = RecycleBinService.isEnabled() && _shouldShow(AppStrings.current.autoDeleteTrashDuration, _getAutoDeleteDaysLabel(RecycleBinService.getAutoDeleteDays()));
+    final recycleBinVis = _shouldShow('Enable Recycle Bin', 'Move deleted files and folders to a hidden Recycle Bin instead of deleting permanently');
+    final autoDeleteDurationVis = RecycleBinService.isEnabled() && _shouldShow('Auto-Delete Trash Duration', _getAutoDeleteDaysLabel(RecycleBinService.getAutoDeleteDays()));
     final recycleBinList = [recycleBinVis, autoDeleteDurationVis];
 
-    final accentColorVis = _shouldShow(AppStrings.current.accentColorTheme, _getAccentColorLabel(fileManager.accentColorOption));
-    final folderIconVis = _shouldShow(AppStrings.current.folderIconStyle, _getFolderIconLabel(fileManager.folderIconOption));
-    final menuIconStyleVis = _shouldShow(AppStrings.current.appDrawerButtonStyle, _getMenuIconStyleLabel(fileManager.menuIconStyle));
-    final amoledVis = _shouldShow(AppStrings.current.amoledBlackMode, AppStrings.current.amoledBlackModeSub);
-    final appIconVis = _shouldShow(AppStrings.current.appIcon, _getAppIconLabel(fileManager.activeAppIcon));
-    final typographyVis = _shouldShow(AppStrings.current.appTypography, _getFontFamilyLabel(fileManager.fontFamilyOption));
+    final accentColorVis = _shouldShow('Accent Color / Dynamic Theme', _getAccentColorLabel(fileManager.accentColorOption));
+    final folderIconVis = _shouldShow('Folder Icon Style', _getFolderIconLabel(fileManager.folderIconOption));
+    final menuIconStyleVis = _shouldShow('App Drawer Button Style', _getMenuIconStyleLabel(fileManager.menuIconStyle));
+    final amoledVis = _shouldShow('AMOLED Black Mode', 'Use pitch black background in Dark Mode for AMOLED screens');
+    final appIconVis = _shouldShow('App Icon', _getAppIconLabel(fileManager.activeAppIcon));
+    final typographyVis = _shouldShow('App Typography / Font Family', _getFontFamilyLabel(fileManager.fontFamilyOption));
     final appearanceList = [accentColorVis, folderIconVis, menuIconStyleVis, amoledVis, appIconVis, typographyVis];
 
-    final customizeShortcutsVis = _shouldShow(AppStrings.current.customizeShortcuts, AppStrings.current.customizeShortcutsSub);
-    final showRecentVis = _shouldShow(AppStrings.current.showRecentFiles, AppStrings.current.showRecentFilesSub);
+    final customizeShortcutsVis = _shouldShow('Customize Shortcuts', 'Reorder and toggle visibility of quick category items');
+    final showRecentVis = _shouldShow('Show Recent Files', 'Display the list of recently accessed files on the Home screen');
     final homeScreenList = [customizeShortcutsVis, showRecentVis];
 
-    final backupSettingsVis = _shouldShow(AppStrings.current.backupSettings, AppStrings.current.backupSettingsSub);
-    final restoreSettingsVis = _shouldShow(AppStrings.current.restoreSettings, AppStrings.current.restoreSettingsSub);
+    final backupSettingsVis = _shouldShow('Backup Settings', 'Save all your current settings to NFile/Backups/Settings/');
+    final restoreSettingsVis = _shouldShow('Restore Settings', 'Select and restore settings from a JSON backup file');
 
     final hasAnyMatch = generalStartupList.contains(true) ||
         fileExplorerList.contains(true) ||
@@ -230,7 +229,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppStrings.current.searchSettings,
+                    hintText: 'Search settings...',
                     border: InputBorder.none,
                     hintStyle: TextStyle(
                       color: theme.colorScheme.onSurface.withOpacity(0.4),
@@ -242,7 +241,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     });
                   },
                 )
-              : Text(AppStrings.current.moreSettings),
+              : const Text('More Settings'),
           leading: IconButton(
             icon: const NfileIcon(Broken.arrow_left),
             onPressed: () {
@@ -285,14 +284,14 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
         ),
         body: SafeArea(
           child: ListView(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             children: [
               if (_searchQuery.isEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16.0, left: 4.0),
                   child: Text(
-                    AppStrings.current.settingsCategories,
+                    'Settings Categories',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
@@ -303,64 +302,64 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   context,
                   theme,
                   icon: Broken.setting_2,
-                  title: AppStrings.current.generalAndBehavior,
-                  subtitle: AppStrings.current.generalAndBehaviorSub,
+                  title: 'General & Behavior',
+                  subtitle: 'Default screen, navigation controls, and shortcuts',
                   targetScreen: const GeneralSettingsScreen(),
                 ),
                 _buildCategoryCard(
                   context,
                   theme,
                   icon: Broken.colorfilter,
-                  title: AppStrings.current.appearanceAndThemes,
-                  subtitle: AppStrings.current.appearanceAndThemesSub,
+                  title: 'Appearance & Themes',
+                  subtitle: 'Themes, app icons, folder styles, and typography',
                   targetScreen: const AppearanceSettingsScreen(),
                 ),
                 _buildCategoryCard(
                   context,
                   theme,
                   icon: Broken.folder_open,
-                  title: AppStrings.current.fileExplorerOptions,
-                  subtitle: AppStrings.current.fileExplorerOptionsSub,
+                  title: 'File Explorer Options',
+                  subtitle: 'Address bar, hidden files, tabs, and drag & drop',
                   targetScreen: const ExplorerSettingsScreen(),
                 ),
                 _buildCategoryCard(
                   context,
                   theme,
                   icon: Broken.text,
-                  title: AppStrings.current.listAndLayout,
-                  subtitle: AppStrings.current.listAndLayoutSub,
+                  title: 'List & Layout Styling',
+                  subtitle: 'Folder sizes, counts, and time/date formats',
                   targetScreen: const LayoutSettingsScreen(),
                 ),
                 _buildCategoryCard(
                   context,
                   theme,
                   icon: Broken.image,
-                  title: AppStrings.current.mediaPreferences,
-                  subtitle: AppStrings.current.mediaPreferencesSub,
+                  title: 'Media Preferences',
+                  subtitle: 'Default album view and thumbnail previews',
                   targetScreen: const MediaSettingsScreen(),
                 ),
                 _buildCategoryCard(
                   context,
                   theme,
                   icon: Broken.setting_3,
-                  title: AppStrings.current.fileActionsAndViewers,
-                  subtitle: AppStrings.current.fileActionsAndViewersSub,
+                  title: 'File Actions & Viewers',
+                  subtitle: 'Open actions and default viewers configuration',
                   targetScreen: const ActionsSettingsScreen(),
                 ),
                 _buildCategoryCard(
                   context,
                   theme,
                   icon: Broken.trash,
-                  title: AppStrings.current.recycleBinTrash,
-                  subtitle: AppStrings.current.recycleBinTrashSub,
+                  title: 'Recycle Bin (Trash)',
+                  subtitle: 'Recycle bin toggles and auto-delete duration',
                   targetScreen: const TrashSettingsScreen(),
                 ),
                 _buildCategoryCard(
                   context,
                   theme,
                   icon: Broken.document_upload,
-                  title: AppStrings.current.backupAndRestore,
-                  subtitle: AppStrings.current.backupAndRestoreSub,
+                  title: 'Backup & Restore',
+                  subtitle: 'Backup your settings to a JSON file or restore them',
                   targetScreen: const BackupSettingsScreen(),
                 ),
               ] else ...[
@@ -384,7 +383,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          AppStrings.current.noSettingsFound,
+                          'No settings found',
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: theme.colorScheme.onSurface,
@@ -392,7 +391,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          AppStrings.current.trySearchingAnotherKeyword,
+                          'Try searching for another keyword',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurface.withOpacity(0.55),
                           ),
@@ -402,12 +401,12 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   ),
                 ] else ...[
                   if (_shouldShowHeader(generalStartupList) || _shouldShowHeader(selectionActionBarList) || _shouldShowHeader(homeScreenList)) ...[
-                    _buildSectionHeader(theme, AppStrings.current.generalAndBehavior),
+                    _buildSectionHeader(theme, 'General & Behavior'),
                     if (defaultBrowseVis)
                       SettingsTile(
                         icon: Broken.folder_favorite,
-                        title: AppStrings.current.defaultToBrowseScreen,
-                        subtitle: AppStrings.current.defaultToBrowseScreenSub,
+                        title: 'Default to Browse Screen',
+                        subtitle: 'Directly launch into the Browse storage explorer on app start',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -421,8 +420,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (rememberLastFolderVis)
                       SettingsTile(
                         icon: Broken.folder_open,
-                        title: AppStrings.current.rememberLastFolder,
-                        subtitle: AppStrings.current.rememberLastFolderSub,
+                        title: 'Remember Last Opened Folder',
+                        subtitle: 'Open the last folder you browsed when launching the app',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -436,8 +435,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (showHomeBrowseNavVis)
                       SettingsTile(
                         icon: Broken.menu,
-                        title: AppStrings.current.showHomeBrowseBar,
-                        subtitle: AppStrings.current.showHomeBrowseBarSub,
+                        title: 'Show Home & Browse Bottom Bar',
+                        subtitle: 'Toggle bottom navigation bar visibility on the Home screen',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -451,8 +450,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (hideNavLabelsVis)
                       SettingsTile(
                         icon: Broken.menu_1,
-                        title: AppStrings.current.hideNavLabels,
-                        subtitle: AppStrings.current.hideNavLabelsSub,
+                        title: 'Hide Bottom Navigation Labels',
+                        subtitle: 'Hide text labels of the bottom bar (Home/Browse) for a cleaner and compact look',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -466,8 +465,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (hideNavBarVis)
                       SettingsTile(
                         icon: Icons.android,
-                        title: AppStrings.current.hideAndroidNavBar,
-                        subtitle: AppStrings.current.hideAndroidNavBarSub,
+                        title: 'Hide Android Navigation Bar',
+                        subtitle: 'Hide bottom navigation bar to maximize screen real estate (swiping up displays it)',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -481,8 +480,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (disableLeftBackVis)
                       SettingsTile(
                         icon: Icons.gesture,
-                        title: AppStrings.current.preventLeftBackGesture,
-                        subtitle: AppStrings.current.preventLeftBackGestureSub,
+                        title: 'Prevent Left Back Gesture for Drawer',
+                        subtitle: 'Excludes the left edge of the screen from Android system back gestures, making it easier to swipe open the drawer. You can still swipe from the right edge to go back.',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -496,17 +495,17 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (exitOptionVis)
                       SettingsTile(
                         icon: Icons.logout_rounded,
-                        title: AppStrings.current.appExitBehavior,
+                        title: 'App Exit Behavior',
                         subtitle: fileManager.exitOption == 'confirm'
-                            ? AppStrings.current.showConfirmationDialog
-                            : AppStrings.current.doublePressBackToExit,
+                            ? 'Show confirmation dialog'
+                            : 'Double-press back button to exit',
                         onTap: () => _showExitOptionPickerDialog(context, fileManager, theme),
                       ),
                     if (bottomActionBarVis)
                       SettingsTile(
                         icon: Broken.menu,
-                        title: AppStrings.current.showBottomNavBar,
-                        subtitle: AppStrings.current.showBottomNavBarSub,
+                        title: 'Show Bottom Navigation Bar',
+                        subtitle: 'Enable bottom action bar on Browse screen',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -520,8 +519,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (hideActionTextVis)
                       SettingsTile(
                         icon: Icons.label_off_rounded,
-                        title: AppStrings.current.hideActionBarLabels,
-                        subtitle: AppStrings.current.hideActionBarLabelsSub,
+                        title: 'Hide Action Bar Text Labels',
+                        subtitle: 'Show only icons in selection action bar at bottom of Browse & Media screens',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -535,15 +534,15 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (customizeShortcutsVis)
                       SettingsTile(
                         icon: Broken.setting_2,
-                        title: AppStrings.current.customizeShortcuts,
-                        subtitle: AppStrings.current.customizeShortcutsSub,
+                        title: 'Customize Shortcuts',
+                        subtitle: 'Reorder and toggle visibility of quick category items',
                         onTap: () => QuickCategoriesGrid.showCustomizeDialog(context),
                       ),
                     if (showRecentVis)
                       SettingsTile(
                         icon: Broken.clock,
-                        title: AppStrings.current.showRecentFiles,
-                        subtitle: AppStrings.current.showRecentFilesSub,
+                        title: 'Show Recent Files',
+                        subtitle: 'Display the list of recently accessed files on the Home screen',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -557,33 +556,33 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   ],
                   if (_shouldShowHeader(appearanceList)) ...[
                     const SizedBox(height: 24),
-                    _buildSectionHeader(theme, AppStrings.current.appearanceAndThemes),
+                    _buildSectionHeader(theme, 'Appearance & Themes'),
                     if (accentColorVis)
                       SettingsTile(
                         icon: Broken.colorfilter,
-                        title: AppStrings.current.accentColorTheme,
+                        title: 'Accent Color / Dynamic Theme',
                         subtitle: _getAccentColorLabel(fileManager.accentColorOption),
                         onTap: () => _showThemePickerDialog(context, fileManager, theme),
                       ),
                     if (folderIconVis)
                       SettingsTile(
                         icon: FileUtils.getFolderIcon(fileManager.folderIconOption),
-                        title: AppStrings.current.folderIconStyle,
+                        title: 'Folder Icon Style',
                         subtitle: _getFolderIconLabel(fileManager.folderIconOption),
                         onTap: () => _showFolderIconPickerDialog(context, fileManager, theme),
                       ),
                     if (menuIconStyleVis)
                       SettingsTile(
                         icon: Broken.category,
-                        title: AppStrings.current.appDrawerButtonStyle,
+                        title: 'App Drawer Button Style',
                         subtitle: _getMenuIconStyleLabel(fileManager.menuIconStyle),
                         onTap: () => _showMenuIconStylePickerDialog(context, fileManager, theme),
                       ),
                     if (amoledVis)
                       SettingsTile(
                         icon: Broken.moon,
-                        title: AppStrings.current.amoledBlackMode,
-                        subtitle: AppStrings.current.amoledBlackModeSub,
+                        title: 'AMOLED Black Mode',
+                        subtitle: 'Use pitch black background in Dark Mode for AMOLED screens',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -597,26 +596,26 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (appIconVis)
                       SettingsTile(
                         icon: Broken.category,
-                        title: AppStrings.current.appIcon,
+                        title: 'App Icon',
                         subtitle: _getAppIconLabel(fileManager.activeAppIcon),
                         onTap: () => _showAppIconPickerDialog(context, fileManager, theme),
                       ),
                     if (typographyVis)
                       SettingsTile(
                         icon: Broken.text,
-                        title: AppStrings.current.appTypography,
+                        title: 'App Typography / Font Family',
                         subtitle: _getFontFamilyLabel(fileManager.fontFamilyOption),
                         onTap: () => _showFontFamilyPickerDialog(context, fileManager, theme),
                       ),
                   ],
                   if (_shouldShowHeader(fileExplorerList)) ...[
                     const SizedBox(height: 24),
-                    _buildSectionHeader(theme, AppStrings.current.fileExplorerAndNavigation),
+                    _buildSectionHeader(theme, 'File Explorer & Navigation'),
                     if (showAddressBarVis)
                       SettingsTile(
                         icon: Broken.edit,
-                        title: AppStrings.current.showAddressBar,
-                        subtitle: AppStrings.current.showAddressBarSub,
+                        title: 'Show Address Bar',
+                        subtitle: 'Display an editable Windows-Explorer-style address bar at the top of file list',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -630,8 +629,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (showFloatingVis)
                       SettingsTile(
                         icon: Broken.add_square,
-                        title: AppStrings.current.showFloatingButton,
-                        subtitle: AppStrings.current.showFloatingButtonSub,
+                        title: "Show Floating '+' Button",
+                        subtitle: 'Enable quick creation (+) button at bottom of Browse screen',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -645,8 +644,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (showHiddenVis)
                       SettingsTile(
                         icon: Broken.folder_open,
-                        title: AppStrings.current.showHiddenFiles,
-                        subtitle: AppStrings.current.showHiddenFilesSub,
+                        title: 'Show Hidden Files',
+                        subtitle: 'Display system files and folders starting with a dot (.)',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -660,8 +659,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (highlightFolderVis)
                       SettingsTile(
                         icon: Broken.colorfilter,
-                        title: AppStrings.current.highlightExitedFolder,
-                        subtitle: AppStrings.current.highlightExitedFolderSub,
+                        title: 'Highlight Exited Folder',
+                        subtitle: 'Briefly flash and scroll to the folder you just exited when going back',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -675,8 +674,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (multipleTabsVis)
                       SettingsTile(
                         icon: Broken.category,
-                        title: AppStrings.current.enableMultipleTabs,
-                        subtitle: AppStrings.current.enableMultipleTabsSub,
+                        title: 'Enable Multiple Tabs',
+                        subtitle: 'Allow opening multiple folders in separate tabs for quick navigation',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -690,8 +689,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (splitScreenVis)
                       SettingsTile(
                         icon: Icons.splitscreen,
-                        title: AppStrings.current.enableSplitScreen,
-                        subtitle: AppStrings.current.enableSplitScreenSub,
+                        title: 'Enable Split Screen',
+                        subtitle: 'Browse two directories side by side and transfer files easily',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -705,8 +704,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (dragDropVis)
                       SettingsTile(
                         icon: Broken.folder_connection,
-                        title: AppStrings.current.enableDragAndDrop,
-                        subtitle: AppStrings.current.enableDragAndDropSub,
+                        title: 'Enable Drag & Drop',
+                        subtitle: 'Long press and drag folders or files to move them into other folders',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -722,8 +721,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                         padding: const EdgeInsets.only(left: 16.0),
                         child: SettingsTile(
                           icon: Broken.task_square,
-                          title: AppStrings.current.confirmDragDrop,
-                          subtitle: AppStrings.current.confirmDragDropSub,
+                          title: 'Confirm Drag & Drop Actions',
+                          subtitle: 'Show options popup (Copy, Move, Archive) when dropping files',
                           trailing: Transform.scale(
                             scale: 0.85,
                             child: Switch(
@@ -738,12 +737,12 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   ],
                   if (_shouldShowHeader(listLayoutList)) ...[
                     const SizedBox(height: 24),
-                    _buildSectionHeader(theme, AppStrings.current.listAndLayout),
+                    _buildSectionHeader(theme, 'List & Layout Styling'),
                     if (folderFileCountVis)
                       SettingsTile(
                         icon: Broken.document_text_1,
-                        title: AppStrings.current.showFolderFileCount,
-                        subtitle: AppStrings.current.showFolderFileCountSub,
+                        title: 'Show Folder & File Count Header',
+                        subtitle: 'Display total folders and files count under storage title bar',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -757,8 +756,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (folderContentsVis)
                       SettingsTile(
                         icon: Broken.folder_open,
-                        title: AppStrings.current.showFolderContentCount,
-                        subtitle: AppStrings.current.showFolderContentCountSub,
+                        title: 'Show Folder Content Count',
+                        subtitle: 'Calculate and display total files and folders inside directory listings',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -772,8 +771,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (folderSizesVis)
                       SettingsTile(
                         icon: Broken.document_text_1,
-                        title: AppStrings.current.showFolderSize,
-                        subtitle: AppStrings.current.showFolderSizeSub,
+                        title: 'Show Folder Size',
+                        subtitle: 'Calculate and display total size of all files inside directories (can affect listing performance)',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -787,8 +786,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (use24HourVis)
                       SettingsTile(
                         icon: Icons.access_time_rounded,
-                        title: AppStrings.current.use24HourFormat,
-                        subtitle: AppStrings.current.use24HourFormatSub,
+                        title: 'Use 24-Hour Time Format',
+                        subtitle: 'Toggle between 12-hour (AM/PM) and 24-hour time formatting across lists',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -802,8 +801,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (hideTimeDateVis)
                       SettingsTile(
                         icon: Icons.visibility_off_rounded,
-                        title: AppStrings.current.hideTimeDate,
-                        subtitle: AppStrings.current.hideTimeDateSub,
+                        title: 'Hide Time & Date from Lists',
+                        subtitle: 'Completely hide modification dates and times under files and folders',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -817,8 +816,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (adaptiveNamesVis)
                       SettingsTile(
                         icon: Broken.text,
-                        title: AppStrings.current.adaptiveMultiLine,
-                        subtitle: AppStrings.current.adaptiveMultiLineSub,
+                        title: 'Adaptive Multi-line Filenames',
+                        subtitle: 'Allow filenames to wrap 3 lines instead of truncating',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -832,8 +831,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (hideActionButtonsVis)
                       SettingsTile(
                         icon: Icons.more_vert_rounded,
-                        title: AppStrings.current.hide3DotButtons,
-                        subtitle: AppStrings.current.hide3DotButtonsSub,
+                        title: 'Hide 3-Dot Action Buttons',
+                        subtitle: 'Hide the three-dot option menu button next to folders and files',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -847,19 +846,19 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (trailingInfoVis)
                       SettingsTile(
                         icon: Icons.info_outline_rounded,
-                        title: AppStrings.current.threeDotDisabledInfo,
+                        title: '3-Dot Disabled Trailing Info',
                         subtitle: _getTrailingInfoTypeLabel(fileManager.trailingInfoType),
                         onTap: () => _showTrailingInfoTypePickerDialog(context, fileManager, theme),
                       ),
                   ],
                   if (_shouldShowHeader(mediaActionsList)) ...[
                     const SizedBox(height: 24),
-                    _buildSectionHeader(theme, AppStrings.current.mediaAndDefaultActions),
+                    _buildSectionHeader(theme, 'Media & Default Actions'),
                     if (preferFoldersVis)
                       SettingsTile(
                         icon: Broken.folder_2,
-                        title: AppStrings.current.defaultAlbumView,
-                        subtitle: AppStrings.current.defaultAlbumViewSub,
+                        title: 'Default Album Preferred View',
+                        subtitle: 'Open Images/Videos quick categories directly in Folders (Albums) preferred view',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -884,8 +883,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (mediaPreviewsVis)
                       SettingsTile(
                         icon: Broken.image,
-                        title: AppStrings.current.showMediaPreviews,
-                        subtitle: AppStrings.current.showMediaPreviewsSub,
+                        title: 'Show Media Previews',
+                        subtitle: 'Display actual image and video thumbnails instead of generic file icons',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -899,8 +898,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (skipDialogVis)
                       SettingsTile(
                         icon: Broken.setting_3,
-                        title: AppStrings.current.skipOpenWithDialog,
-                        subtitle: AppStrings.current.skipOpenWithDialogSub,
+                        title: 'Skip "Open With" Dialog',
+                        subtitle: 'Bypass the application choice dialog and immediately open files with default viewers',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -914,14 +913,14 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (resetViewersVis)
                       SettingsTile(
                         icon: Broken.refresh_2,
-                        title: AppStrings.current.resetDefaultViewers,
-                        subtitle: AppStrings.current.resetDefaultViewersSub,
+                        title: 'Reset Default File Viewers',
+                        subtitle: 'Clear all remembered "Open With" associations for file viewers',
                         onTap: () async {
                           await PreferencesService.clearAllDefaultOpenActions();
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(AppStrings.current.viewerChoicesReset),
+                              const SnackBar(
+                                content: Text('All default viewer choices have been reset'),
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
@@ -931,12 +930,12 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   ],
                   if (_shouldShowHeader(recycleBinList)) ...[
                     const SizedBox(height: 24),
-                    _buildSectionHeader(theme, AppStrings.current.recycleBinTrash),
+                    _buildSectionHeader(theme, 'Recycle Bin (Trash)'),
                     if (recycleBinVis)
                       SettingsTile(
                         icon: Broken.trash,
-                        title: AppStrings.current.enableRecycleBin,
-                        subtitle: AppStrings.current.enableRecycleBinSub,
+                        title: 'Enable Recycle Bin',
+                        subtitle: 'Move deleted files and folders to a hidden Recycle Bin instead of deleting permanently',
                         trailing: Transform.scale(
                           scale: 0.85,
                           child: Switch(
@@ -959,7 +958,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     if (autoDeleteDurationVis)
                       SettingsTile(
                         icon: Icons.access_time_rounded,
-                        title: AppStrings.current.autoDeleteTrashDuration,
+                        title: 'Auto-Delete Trash Duration',
                         subtitle: _getAutoDeleteDaysLabel(RecycleBinService.getAutoDeleteDays()),
                         onTap: () => _showAutoDeleteDaysPickerDialog(context, theme, () {
                           setState(() {});
@@ -968,19 +967,19 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   ],
                   if (_shouldShowHeader([backupSettingsVis, restoreSettingsVis])) ...[
                     const SizedBox(height: 24),
-                    _buildSectionHeader(theme, AppStrings.current.backupAndRestore),
+                    _buildSectionHeader(theme, 'Backup & Restore'),
                     if (backupSettingsVis)
                       SettingsTile(
                         icon: Broken.document_upload,
-                        title: AppStrings.current.backupSettings,
-                        subtitle: AppStrings.current.backupSettingsSub,
+                        title: 'Backup Settings',
+                        subtitle: 'Save all your current settings to NFile/Backups/Settings/',
                         onTap: () => SettingsBackupService.backupSettings(context),
                       ),
                     if (restoreSettingsVis)
                       SettingsTile(
                         icon: Broken.document_download,
-                        title: AppStrings.current.restoreSettings,
-                        subtitle: AppStrings.current.restoreSettingsSub,
+                        title: 'Restore Settings',
+                        subtitle: 'Select and restore settings from a JSON backup file',
                         onTap: () async {
                           final pickedPaths = await InternalFilePickerScreen.show(
                             context,
@@ -998,7 +997,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(AppStrings.current.pleaseSelectValidBackup),
+                                    content: const Text('Please select a valid .json settings backup file'),
                                     behavior: SnackBarBehavior.floating,
                                     backgroundColor: theme.colorScheme.error,
                                   ),
@@ -1098,7 +1097,7 @@ class GeneralSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.current.generalAndBehavior),
+        title: const Text('General & Behavior'),
         leading: IconButton(
           icon: const NfileIcon(Broken.arrow_left),
           onPressed: () => Navigator.pop(context),
@@ -1106,61 +1105,13 @@ class GeneralSettingsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          physics: const ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           children: [
             SettingsTile(
-              icon: Broken.global,
-              title: AppStrings.current.language,
-              subtitle: AppStrings.current.languageSub,
-              trailing: Text(
-                PreferencesService.getLocale() == 'system' ? AppStrings.current.systemDefault : 
-                PreferencesService.getLocale() == 'es' ? AppStrings.current.spanish : AppStrings.current.english,
-                style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => SimpleDialog(
-                    title: Text(AppStrings.current.language),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    children: [
-                      RadioListTile<String>(
-                        title: Text(AppStrings.current.systemDefault),
-                        value: 'system',
-                        groupValue: PreferencesService.getLocale(),
-                        onChanged: (val) {
-                          AppStrings.setLocale(context, val!);
-                          Navigator.pop(ctx);
-                        },
-                      ),
-                      RadioListTile<String>(
-                        title: Text(AppStrings.current.spanish),
-                        value: 'es',
-                        groupValue: PreferencesService.getLocale(),
-                        onChanged: (val) {
-                          AppStrings.setLocale(context, val!);
-                          Navigator.pop(ctx);
-                        },
-                      ),
-                      RadioListTile<String>(
-                        title: Text(AppStrings.current.english),
-                        value: 'en',
-                        groupValue: PreferencesService.getLocale(),
-                        onChanged: (val) {
-                          AppStrings.setLocale(context, val!);
-                          Navigator.pop(ctx);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            SettingsTile(
               icon: Broken.folder_favorite,
-              title: AppStrings.current.defaultToBrowseScreen,
-              subtitle: AppStrings.current.defaultToBrowseScreenSub,
+              title: 'Default to Browse Screen',
+              subtitle: 'Directly launch into the Browse storage explorer on app start',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1173,8 +1124,8 @@ class GeneralSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.folder_open,
-              title: AppStrings.current.rememberLastFolder,
-              subtitle: AppStrings.current.rememberLastFolderSub,
+              title: 'Remember Last Opened Folder',
+              subtitle: 'Open the last folder you browsed when launching the app',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1187,8 +1138,8 @@ class GeneralSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.menu,
-              title: AppStrings.current.showHomeBrowseBar,
-              subtitle: AppStrings.current.showHomeBrowseBarSub,
+              title: 'Show Home & Browse Bottom Bar',
+              subtitle: 'Toggle bottom navigation bar visibility on the Home screen',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1201,8 +1152,8 @@ class GeneralSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.menu_1,
-              title: AppStrings.current.hideNavLabels,
-              subtitle: AppStrings.current.hideNavLabelsSub,
+              title: 'Hide Bottom Navigation Labels',
+              subtitle: 'Hide text labels of the bottom bar (Home/Browse) for a cleaner and compact look',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1215,8 +1166,8 @@ class GeneralSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Icons.android,
-              title: AppStrings.current.hideAndroidNavBar,
-              subtitle: AppStrings.current.hideAndroidNavBarSub,
+              title: 'Hide Android Navigation Bar',
+              subtitle: 'Hide bottom navigation bar to maximize screen real estate (swiping up displays it)',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1229,8 +1180,8 @@ class GeneralSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.menu,
-              title: AppStrings.current.showBottomNavBar,
-              subtitle: AppStrings.current.showBottomNavBarSub,
+              title: 'Show Bottom Navigation Bar',
+              subtitle: 'Enable bottom action bar on Browse screen',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1243,8 +1194,8 @@ class GeneralSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Icons.label_off_rounded,
-              title: AppStrings.current.hideActionBarLabels,
-              subtitle: AppStrings.current.hideActionBarLabelsSub,
+              title: 'Hide Action Bar Text Labels',
+              subtitle: 'Show only icons in selection action bar at bottom of Browse & Media screens',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1257,14 +1208,14 @@ class GeneralSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.setting_2,
-              title: AppStrings.current.customizeShortcuts,
-              subtitle: AppStrings.current.customizeShortcutsSub,
+              title: 'Customize Shortcuts',
+              subtitle: 'Reorder and toggle visibility of quick category items',
               onTap: () => QuickCategoriesGrid.showCustomizeDialog(context),
             ),
             SettingsTile(
               icon: Broken.clock,
-              title: AppStrings.current.showRecentFiles,
-              subtitle: AppStrings.current.showRecentFilesSub,
+              title: 'Show Recent Files',
+              subtitle: 'Display the list of recently accessed files on the Home screen',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1277,8 +1228,8 @@ class GeneralSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Icons.gesture,
-              title: AppStrings.current.preventLeftBackGesture,
-              subtitle: AppStrings.current.preventLeftBackGestureSub,
+              title: 'Prevent Left Back Gesture for Drawer',
+              subtitle: 'Excludes the left edge of the screen from Android system back gestures, making it easier to swipe open the drawer. You can still swipe from the right edge to go back.',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1291,10 +1242,10 @@ class GeneralSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Icons.logout_rounded,
-              title: AppStrings.current.appExitBehavior,
+              title: 'App Exit Behavior',
               subtitle: fileManager.exitOption == 'confirm'
-                  ? AppStrings.current.showConfirmationDialog
-                  : AppStrings.current.doublePressBackToExit,
+                  ? 'Show confirmation dialog'
+                  : 'Double-press back button to exit',
               onTap: () => _showExitOptionPickerDialog(context, fileManager, theme),
             ),
           ],
@@ -1314,7 +1265,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.current.appearanceAndThemes),
+        title: const Text('Appearance & Themes'),
         leading: IconButton(
           icon: const NfileIcon(Broken.arrow_left),
           onPressed: () => Navigator.pop(context),
@@ -1322,31 +1273,31 @@ class AppearanceSettingsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          physics: const ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           children: [
             SettingsTile(
               icon: Broken.colorfilter,
-              title: AppStrings.current.accentColorTheme,
+              title: 'Accent Color / Dynamic Theme',
               subtitle: _getAccentColorLabel(fileManager.accentColorOption),
               onTap: () => _showThemePickerDialog(context, fileManager, theme),
             ),
             SettingsTile(
               icon: FileUtils.getFolderIcon(fileManager.folderIconOption),
-              title: AppStrings.current.folderIconStyle,
+              title: 'Folder Icon Style',
               subtitle: _getFolderIconLabel(fileManager.folderIconOption),
               onTap: () => _showFolderIconPickerDialog(context, fileManager, theme),
             ),
             SettingsTile(
               icon: Broken.category,
-              title: AppStrings.current.appDrawerButtonStyle,
+              title: 'App Drawer Button Style',
               subtitle: _getMenuIconStyleLabel(fileManager.menuIconStyle),
               onTap: () => _showMenuIconStylePickerDialog(context, fileManager, theme),
             ),
             SettingsTile(
               icon: Broken.moon,
-              title: AppStrings.current.amoledBlackMode,
-              subtitle: AppStrings.current.amoledBlackModeSub,
+              title: 'AMOLED Black Mode',
+              subtitle: 'Use pitch black background in Dark Mode for AMOLED screens',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1359,20 +1310,20 @@ class AppearanceSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.category,
-              title: AppStrings.current.appIcon,
+              title: 'App Icon',
               subtitle: _getAppIconLabel(fileManager.activeAppIcon),
               onTap: () => _showAppIconPickerDialog(context, fileManager, theme),
             ),
             SettingsTile(
               icon: Broken.text,
-              title: AppStrings.current.appTypography,
+              title: 'App Typography / Font Family',
               subtitle: _getFontFamilyLabel(fileManager.fontFamilyOption),
               onTap: () => _showFontFamilyPickerDialog(context, fileManager, theme),
             ),
             SettingsTile(
               icon: Broken.setting,
-              title: AppStrings.current.useMaterialIcons,
-              subtitle: AppStrings.current.useMaterialIconsSub,
+              title: 'Use Expressive Material Icons',
+              subtitle: 'Replace custom Broken icons with standard Material Design icons',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1400,7 +1351,7 @@ class ExplorerSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.current.fileExplorerOptions),
+        title: const Text('File Explorer Options'),
         leading: IconButton(
           icon: const NfileIcon(Broken.arrow_left),
           onPressed: () => Navigator.pop(context),
@@ -1408,13 +1359,13 @@ class ExplorerSettingsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          physics: const ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           children: [
             SettingsTile(
               icon: Broken.edit,
-              title: AppStrings.current.showAddressBar,
-              subtitle: AppStrings.current.showAddressBarSub,
+              title: 'Show Address Bar',
+              subtitle: 'Display an editable Windows-Explorer-style address bar at the top of file list',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1427,8 +1378,8 @@ class ExplorerSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.add_square,
-              title: AppStrings.current.showFloatingButton,
-              subtitle: AppStrings.current.showFloatingButtonSub,
+              title: "Show Floating '+' Button",
+              subtitle: 'Enable quick creation (+) button at bottom of Browse screen',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1441,8 +1392,8 @@ class ExplorerSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.folder_open,
-              title: AppStrings.current.showHiddenFiles,
-              subtitle: AppStrings.current.showHiddenFilesSub,
+              title: 'Show Hidden Files',
+              subtitle: 'Display system files and folders starting with a dot (.)',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1455,8 +1406,8 @@ class ExplorerSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.colorfilter,
-              title: AppStrings.current.highlightExitedFolder,
-              subtitle: AppStrings.current.highlightExitedFolderSub,
+              title: 'Highlight Exited Folder',
+              subtitle: 'Briefly flash and scroll to the folder you just exited when going back',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1469,8 +1420,8 @@ class ExplorerSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.category,
-              title: AppStrings.current.enableMultipleTabs,
-              subtitle: AppStrings.current.enableMultipleTabsSub,
+              title: 'Enable Multiple Tabs',
+              subtitle: 'Allow opening multiple folders in separate tabs for quick navigation',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1483,8 +1434,8 @@ class ExplorerSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Icons.splitscreen,
-              title: AppStrings.current.enableSplitScreen,
-              subtitle: AppStrings.current.enableSplitScreenSub,
+              title: 'Enable Split Screen',
+              subtitle: 'Browse two directories side by side and transfer files easily',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1497,8 +1448,8 @@ class ExplorerSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.folder_connection,
-              title: AppStrings.current.enableDragAndDrop,
-              subtitle: AppStrings.current.enableDragAndDropSub,
+              title: 'Enable Drag & Drop',
+              subtitle: 'Long press and drag folders or files to move them into other folders',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1514,8 +1465,8 @@ class ExplorerSettingsScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 16.0),
                 child: SettingsTile(
                   icon: Broken.task_square,
-                  title: AppStrings.current.confirmDragDrop,
-                  subtitle: AppStrings.current.confirmDragDropSub,
+                  title: 'Confirm Drag & Drop Actions',
+                  subtitle: 'Show options popup (Copy, Move, Archive) when dropping files',
                   trailing: Transform.scale(
                     scale: 0.85,
                     child: Switch(
@@ -1544,7 +1495,7 @@ class LayoutSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.current.listAndLayout),
+        title: const Text('List & Layout Styling'),
         leading: IconButton(
           icon: const NfileIcon(Broken.arrow_left),
           onPressed: () => Navigator.pop(context),
@@ -1552,13 +1503,13 @@ class LayoutSettingsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          physics: const ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           children: [
             SettingsTile(
               icon: Broken.document_text_1,
-              title: AppStrings.current.showFolderFileCount,
-              subtitle: AppStrings.current.showFolderFileCountSub,
+              title: 'Show Folder & File Count Header',
+              subtitle: 'Display total folders and files count under storage title bar',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1571,8 +1522,8 @@ class LayoutSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.folder_open,
-              title: AppStrings.current.showFolderContentCount,
-              subtitle: AppStrings.current.showFolderContentCountSub,
+              title: 'Show Folder Content Count',
+              subtitle: 'Calculate and display total files and folders inside directory listings',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1585,8 +1536,8 @@ class LayoutSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.document_text_1,
-              title: AppStrings.current.showFolderSize,
-              subtitle: AppStrings.current.showFolderSizeSub,
+              title: 'Show Folder Size',
+              subtitle: 'Calculate and display total size of all files inside directories (can affect listing performance)',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1599,8 +1550,8 @@ class LayoutSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Icons.access_time_rounded,
-              title: AppStrings.current.use24HourFormat,
-              subtitle: AppStrings.current.use24HourFormatSub,
+              title: 'Use 24-Hour Time Format',
+              subtitle: 'Toggle between 12-hour (AM/PM) and 24-hour time formatting across lists',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1613,8 +1564,8 @@ class LayoutSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Icons.visibility_off_rounded,
-              title: AppStrings.current.hideTimeDate,
-              subtitle: AppStrings.current.hideTimeDateSub,
+              title: 'Hide Time & Date from Lists',
+              subtitle: 'Completely hide modification dates and times under files and folders',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1627,8 +1578,8 @@ class LayoutSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.text,
-              title: AppStrings.current.adaptiveMultiLine,
-              subtitle: AppStrings.current.adaptiveMultiLineSub,
+              title: 'Adaptive Multi-line Filenames',
+              subtitle: 'Allow filenames to wrap 3 lines instead of truncating',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1641,8 +1592,8 @@ class LayoutSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Icons.more_vert_rounded,
-              title: AppStrings.current.hide3DotButtons,
-              subtitle: AppStrings.current.hide3DotButtonsSub,
+              title: 'Hide 3-Dot Action Buttons',
+              subtitle: 'Hide the three-dot option menu button next to folders and files',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1656,7 +1607,7 @@ class LayoutSettingsScreen extends StatelessWidget {
             if (fileManager.hideActionMenuButtons)
               SettingsTile(
                 icon: Icons.info_outline_rounded,
-                title: AppStrings.current.threeDotDisabledInfo,
+                title: '3-Dot Disabled Trailing Info',
                 subtitle: _getTrailingInfoTypeLabel(fileManager.trailingInfoType),
                 onTap: () => _showTrailingInfoTypePickerDialog(context, fileManager, theme),
               ),
@@ -1690,7 +1641,7 @@ class _MediaSettingsScreenState extends State<MediaSettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.current.mediaPreferences),
+        title: const Text('Media Preferences'),
         leading: IconButton(
           icon: const NfileIcon(Broken.arrow_left),
           onPressed: () => Navigator.pop(context),
@@ -1698,13 +1649,13 @@ class _MediaSettingsScreenState extends State<MediaSettingsScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          physics: const ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           children: [
             SettingsTile(
               icon: Broken.folder_2,
-              title: AppStrings.current.defaultAlbumView,
-              subtitle: AppStrings.current.defaultAlbumViewSub,
+              title: 'Default Album Preferred View',
+              subtitle: 'Open Images/Videos quick categories directly in Folders (Albums) preferred view',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1728,8 +1679,8 @@ class _MediaSettingsScreenState extends State<MediaSettingsScreen> {
             ),
             SettingsTile(
               icon: Broken.image,
-              title: AppStrings.current.showMediaPreviews,
-              subtitle: AppStrings.current.showMediaPreviewsSub,
+              title: 'Show Media Previews',
+              subtitle: 'Display actual image and video thumbnails instead of generic file icons',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1757,7 +1708,7 @@ class ActionsSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.current.fileActionsAndViewers),
+        title: const Text('File Actions & Viewers'),
         leading: IconButton(
           icon: const NfileIcon(Broken.arrow_left),
           onPressed: () => Navigator.pop(context),
@@ -1765,13 +1716,13 @@ class ActionsSettingsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          physics: const ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           children: [
             SettingsTile(
               icon: Broken.setting_3,
-              title: AppStrings.current.skipOpenWithDialog,
-              subtitle: AppStrings.current.skipOpenWithDialogSub,
+              title: 'Skip "Open With" Dialog',
+              subtitle: 'Bypass the application choice dialog and immediately open files with default viewers',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1784,14 +1735,14 @@ class ActionsSettingsScreen extends StatelessWidget {
             ),
             SettingsTile(
               icon: Broken.refresh_2,
-              title: AppStrings.current.resetDefaultViewers,
-              subtitle: AppStrings.current.resetDefaultViewersSub,
+              title: 'Reset Default File Viewers',
+              subtitle: 'Clear all remembered "Open With" associations for file viewers',
               onTap: () async {
                 await PreferencesService.clearAllDefaultOpenActions();
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(AppStrings.current.viewerChoicesReset),
+                    const SnackBar(
+                      content: Text('All default viewer choices have been reset'),
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
@@ -1819,7 +1770,7 @@ class _TrashSettingsScreenState extends State<TrashSettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.current.recycleBinTrash),
+        title: const Text('Recycle Bin (Trash)'),
         leading: IconButton(
           icon: const NfileIcon(Broken.arrow_left),
           onPressed: () => Navigator.pop(context),
@@ -1827,13 +1778,13 @@ class _TrashSettingsScreenState extends State<TrashSettingsScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          physics: const ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           children: [
             SettingsTile(
               icon: Broken.trash,
-              title: AppStrings.current.enableRecycleBin,
-              subtitle: AppStrings.current.enableRecycleBinSub,
+              title: 'Enable Recycle Bin',
+              subtitle: 'Move deleted files and folders to a hidden Recycle Bin instead of deleting permanently',
               trailing: Transform.scale(
                 scale: 0.85,
                 child: Switch(
@@ -1856,7 +1807,7 @@ class _TrashSettingsScreenState extends State<TrashSettingsScreen> {
             if (RecycleBinService.isEnabled())
               SettingsTile(
                 icon: Icons.access_time_rounded,
-                title: AppStrings.current.autoDeleteTrashDuration,
+                title: 'Auto-Delete Trash Duration',
                 subtitle: _getAutoDeleteDaysLabel(RecycleBinService.getAutoDeleteDays()),
                 onTap: () => _showAutoDeleteDaysPickerDialog(context, theme, () {
                   setState(() {});
@@ -1875,82 +1826,82 @@ class _TrashSettingsScreenState extends State<TrashSettingsScreen> {
 
 String _getAccentColorLabel(String option) {
   switch (option) {
-    case 'dynamic': return AppStrings.current.materialYouDynamic;
-    case 'orange': return AppStrings.current.vibrantOrange;
-    case 'purple': return AppStrings.current.royalPurple;
-    case 'green': return AppStrings.current.emeraldGreen;
-    case 'red': return AppStrings.current.crimsonRed;
-    case 'gold': return AppStrings.current.amberGold;
-    case 'pink': return AppStrings.current.cyberpunkPink;
-    case 'sapphire': return AppStrings.current.sapphireBlue;
-    case 'forest': return AppStrings.current.forestGreen;
-    case 'peach': return AppStrings.current.sunsetPeach;
+    case 'dynamic': return 'Material You (Dynamic Wallpaper Colors)';
+    case 'orange': return 'Vibrant Orange';
+    case 'purple': return 'Royal Purple';
+    case 'green': return 'Emerald Green';
+    case 'red': return 'Crimson Red';
+    case 'gold': return 'Amber Gold';
+    case 'pink': return 'Cyberpunk Pink';
+    case 'sapphire': return 'Sapphire Blue';
+    case 'forest': return 'Forest Green';
+    case 'peach': return 'Sunset Peach';
     case 'blue':
     default:
-      return AppStrings.current.originalDefaultBlue;
+      return 'Original Default (Signature Blue)';
   }
 }
 
 String _getFolderIconLabel(String option) {
   switch (option) {
-    case 'solid': return AppStrings.current.classicSolid;
-    case 'rounded': return AppStrings.current.modernRounded;
-    case 'special': return AppStrings.current.starredSpecial;
-    case 'snippet': return AppStrings.current.snippetDocument;
-    case 'outlined': return AppStrings.current.minimalOutlined;
+    case 'solid': return 'Classic Solid (Material)';
+    case 'rounded': return 'Modern Rounded (Material)';
+    case 'special': return 'Starred Special (Material)';
+    case 'snippet': return 'Snippet Document (Material)';
+    case 'outlined': return 'Minimal Outlined (Material)';
     case 'broken':
     default:
-      return AppStrings.current.nfileBrokenOutline;
+      return 'NFile Broken Outline (Default)';
   }
 }
 
 String _getMenuIconStyleLabel(String option) {
   switch (option) {
-    case 'category': return AppStrings.current.categoryGridVuesax;
+    case 'category': return 'Category Grid / Vuesax Grid';
     case 'hamburger':
     default:
-      return AppStrings.current.hamburgerClassicMenu;
+      return 'Hamburger / Classic Menu';
   }
 }
 
 String _getAppIconLabel(String option) {
   switch (option) {
-    case 'logo1': return AppStrings.current.logo1;
-    case 'logo2': return AppStrings.current.logo2;
-    case 'logo3': return AppStrings.current.logo3;
-    case 'logo4': return AppStrings.current.logo4;
+    case 'logo1': return 'Logo 1';
+    case 'logo2': return 'Logo 2';
+    case 'logo3': return 'Logo 3';
+    case 'logo4': return 'Logo 4';
     case 'default':
     default:
-      return AppStrings.current.defaultLogo;
+      return 'Default Logo';
   }
 }
 
 String _getFontFamilyLabel(String option) {
   switch (option) {
-    case 'nothing': return AppStrings.current.dotMatrixSans;
-    case 'outfit': return AppStrings.current.outfitModernSans;
-    case 'jetbrains': return AppStrings.current.jetBrainsTechMono;
-    case 'montserrat': return AppStrings.current.montserratUrbanSans;
-    case 'custom': return AppStrings.current.customImportedFont;
+    case 'nothing': return 'Dot-Matrix & Sans';
+    case 'outfit': return 'Outfit Modern Sans';
+    case 'jetbrains': return 'JetBrains Tech Mono';
+    case 'montserrat': return 'Montserrat Urban Sans';
+    case 'custom': return 'Custom Imported Font';
     case 'default':
     default:
-      return AppStrings.current.signatureDefaultFont;
+      return 'Signature Default (Lexend Deca)';
   }
 }
 
 String _getAutoDeleteDaysLabel(int days) {
-  if (days <= 0) return AppStrings.current.neverAutoDeleteDisabled;
-  if (days == 1) return AppStrings.current.after1Day;
-  return AppStrings.current.afterNDays.replaceAll('{days}', days.toString());
+  if (days <= 0) return 'Never (Auto-delete disabled)';
+  if (days == 1) return 'After 1 Day';
+  return 'After $days Days';
 }
 
 String _getTrailingInfoTypeLabel(String option) {
   switch (option) {
-    case 'dateTime': return AppStrings.current.dateTimeTitle;
-    case 'sizeAndCount': return AppStrings.current.fileSizeItemCount;
+    case 'dateTime': return 'Date & Time';
+    case 'sizeAndCount': return 'File Size / Item Count';
     case 'none':
     default:
-      return AppStrings.current.noneHideInfo;
+      return 'None / Hide Info';
   }
 }
 
@@ -1963,9 +1914,9 @@ void _showTrailingInfoTypePickerDialog(BuildContext context, FileManagerProvider
     builder: (ctx) {
       final current = fileManager.trailingInfoType;
       final options = [
-        {'key': 'none', 'name': AppStrings.current.noneHideInfo, 'desc': AppStrings.current.noneHideInfoDesc},
-        {'key': 'dateTime', 'name': AppStrings.current.dateTimeTitle, 'desc': AppStrings.current.dateTimeDesc},
-        {'key': 'sizeAndCount', 'name': AppStrings.current.fileSizeItemCount, 'desc': AppStrings.current.fileSizeItemCountDesc},
+        {'key': 'none', 'name': 'None / Hide Info', 'desc': 'Do not display additional information on the right side'},
+        {'key': 'dateTime', 'name': 'Date & Time', 'desc': 'Display the last modified date and time'},
+        {'key': 'sizeAndCount', 'name': 'File Size / Item Count', 'desc': 'Display file size for files and item count for folders'},
       ];
 
       return SafeArea(
@@ -1974,7 +1925,7 @@ void _showTrailingInfoTypePickerDialog(BuildContext context, FileManagerProvider
             bottom: MediaQuery.of(ctx).viewInsets.bottom,
           ),
           child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               child: Column(
@@ -1987,13 +1938,13 @@ void _showTrailingInfoTypePickerDialog(BuildContext context, FileManagerProvider
                   const SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(AppStrings.current.chooseTrailingInfoStyle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    child: Text('Choose Trailing Info Style', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 6),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
-                      AppStrings.current.chooseTrailingInfoDesc,
+                      'Choose what is displayed on the right side of files and folders when the 3-dot action buttons are hidden.',
                       style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 13),
                     ),
                   ),
@@ -2060,8 +2011,8 @@ void _showExitOptionPickerDialog(BuildContext context, FileManagerProvider fileM
     builder: (ctx) {
       final current = fileManager.exitOption;
       final options = [
-        {'key': 'confirm', 'name': AppStrings.current.confirmDialogTitle, 'desc': AppStrings.current.confirmDialogDesc},
-        {'key': 'double_press', 'name': AppStrings.current.doublePressToExit, 'desc': AppStrings.current.doublePressToExitDesc},
+        {'key': 'confirm', 'name': 'Confirmation Dialog', 'desc': 'Prompt for exit verification before closing'},
+        {'key': 'double_press', 'name': 'Double-Press to Exit', 'desc': 'Tap the back button twice within a short window to exit'},
       ];
 
       return SafeArea(
@@ -2070,7 +2021,7 @@ void _showExitOptionPickerDialog(BuildContext context, FileManagerProvider fileM
             bottom: MediaQuery.of(ctx).viewInsets.bottom,
           ),
           child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               child: Column(
@@ -2083,7 +2034,7 @@ void _showExitOptionPickerDialog(BuildContext context, FileManagerProvider fileM
                   const SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(AppStrings.current.chooseExitBehavior, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    child: Text('Choose Exit Behavior', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 16),
                   ListView.builder(
@@ -2129,17 +2080,17 @@ void _showThemePickerDialog(BuildContext context, FileManagerProvider fileManage
     builder: (ctx) {
       final current = fileManager.accentColorOption;
       final options = [
-        {'key': 'blue', 'name': AppStrings.current.originalDefaultBlue, 'color': const Color(0xFF369FE7)},
-        {'key': 'dynamic', 'name': AppStrings.current.materialYouDynamic, 'color': Colors.teal},
-        {'key': 'orange', 'name': AppStrings.current.vibrantOrange, 'color': const Color(0xFFFF6D00)},
-        {'key': 'purple', 'name': AppStrings.current.royalPurple, 'color': const Color(0xFF8E24AA)},
-        {'key': 'green', 'name': AppStrings.current.emeraldGreen, 'color': const Color(0xFF00C853)},
-        {'key': 'red', 'name': AppStrings.current.crimsonRed, 'color': const Color(0xFFD50000)},
-        {'key': 'gold', 'name': AppStrings.current.amberGold, 'color': const Color(0xFFFFD600)},
-        {'key': 'pink', 'name': AppStrings.current.cyberpunkPink, 'color': const Color(0xFFFF2E93)},
-        {'key': 'sapphire', 'name': AppStrings.current.sapphireBlue, 'color': const Color(0xFF0F52BA)},
-        {'key': 'forest', 'name': AppStrings.current.forestGreen, 'color': const Color(0xFF228B22)},
-        {'key': 'peach', 'name': AppStrings.current.sunsetPeach, 'color': const Color(0xFFFF7F50)},
+        {'key': 'blue', 'name': 'Original Default (Signature Blue)', 'color': const Color(0xFF369FE7)},
+        {'key': 'dynamic', 'name': 'Material You (Dynamic Wallpaper Colors)', 'color': Colors.teal},
+        {'key': 'orange', 'name': 'Vibrant Orange', 'color': const Color(0xFFFF6D00)},
+        {'key': 'purple', 'name': 'Royal Purple', 'color': const Color(0xFF8E24AA)},
+        {'key': 'green', 'name': 'Emerald Green', 'color': const Color(0xFF00C853)},
+        {'key': 'red', 'name': 'Crimson Red', 'color': const Color(0xFFD50000)},
+        {'key': 'gold', 'name': 'Amber Gold', 'color': const Color(0xFFFFD600)},
+        {'key': 'pink', 'name': 'Cyberpunk Pink', 'color': const Color(0xFFFF2E93)},
+        {'key': 'sapphire', 'name': 'Sapphire Blue', 'color': const Color(0xFF0F52BA)},
+        {'key': 'forest', 'name': 'Forest Green', 'color': const Color(0xFF228B22)},
+        {'key': 'peach', 'name': 'Sunset Peach', 'color': const Color(0xFFFF7F50)},
       ];
 
       return SafeArea(
@@ -2148,7 +2099,7 @@ void _showThemePickerDialog(BuildContext context, FileManagerProvider fileManage
             bottom: MediaQuery.of(ctx).viewInsets.bottom,
           ),
           child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               child: Column(
@@ -2161,7 +2112,7 @@ void _showThemePickerDialog(BuildContext context, FileManagerProvider fileManage
                   const SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(AppStrings.current.chooseAccentTheme, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    child: Text('Choose Accent Theme', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 16),
                   ListView.builder(
@@ -2215,12 +2166,12 @@ void _showFolderIconPickerDialog(BuildContext context, FileManagerProvider fileM
     builder: (ctx) {
       final current = fileManager.folderIconOption;
       final options = [
-        {'key': 'broken', 'name': AppStrings.current.nfileBrokenOutline, 'icon': Broken.folder},
-        {'key': 'rounded', 'name': AppStrings.current.modernRounded, 'icon': Icons.folder_rounded},
-        {'key': 'solid', 'name': AppStrings.current.classicSolid, 'icon': Icons.folder},
-        {'key': 'special', 'name': AppStrings.current.starredSpecial, 'icon': Icons.folder_special_rounded},
-        {'key': 'snippet', 'name': AppStrings.current.snippetDocument, 'icon': Icons.snippet_folder_rounded},
-        {'key': 'outlined', 'name': AppStrings.current.minimalOutlined, 'icon': Icons.folder_outlined},
+        {'key': 'broken', 'name': 'NFile Broken Outline (Default)', 'icon': Broken.folder},
+        {'key': 'rounded', 'name': 'Modern Rounded (Material)', 'icon': Icons.folder_rounded},
+        {'key': 'solid', 'name': 'Classic Solid (Material)', 'icon': Icons.folder},
+        {'key': 'special', 'name': 'Starred Special (Material)', 'icon': Icons.folder_special_rounded},
+        {'key': 'snippet', 'name': 'Snippet Document (Material)', 'icon': Icons.snippet_folder_rounded},
+        {'key': 'outlined', 'name': 'Minimal Outlined (Material)', 'icon': Icons.folder_outlined},
       ];
 
       return SafeArea(
@@ -2229,7 +2180,7 @@ void _showFolderIconPickerDialog(BuildContext context, FileManagerProvider fileM
             bottom: MediaQuery.of(ctx).viewInsets.bottom,
           ),
           child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               child: Column(
@@ -2242,7 +2193,7 @@ void _showFolderIconPickerDialog(BuildContext context, FileManagerProvider fileM
                   const SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(AppStrings.current.chooseFolderIconStyle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    child: Text('Choose Folder Icon Style', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 16),
                   ListView.builder(
@@ -2295,7 +2246,7 @@ void _showMenuIconStylePickerDialog(BuildContext context, FileManagerProvider fi
       final current = fileManager.menuIconStyle;
       final options = [
         {'key': 'hamburger', 'name': 'Hamburger / Classic Menu', 'icon': Broken.menu},
-        {'key': 'category', 'name': AppStrings.current.categoryGridVuesax, 'icon': Broken.category},
+        {'key': 'category', 'name': 'Category Grid / Vuesax Grid', 'icon': Broken.category},
       ];
 
       return SafeArea(
@@ -2304,7 +2255,7 @@ void _showMenuIconStylePickerDialog(BuildContext context, FileManagerProvider fi
             bottom: MediaQuery.of(ctx).viewInsets.bottom,
           ),
           child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               child: Column(
@@ -2317,7 +2268,7 @@ void _showMenuIconStylePickerDialog(BuildContext context, FileManagerProvider fi
                   const SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(AppStrings.current.chooseDrawerButtonStyle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    child: Text('Choose Drawer Button Style', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 16),
                   ListView.builder(
@@ -2364,7 +2315,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
-    barrierLabel: AppStrings.current.appIconPicker,
+    barrierLabel: 'App Icon Picker',
     barrierColor: Colors.black.withOpacity(0.55),
     transitionDuration: const Duration(milliseconds: 250),
     pageBuilder: (context, anim1, anim2) => const SizedBox.shrink(),
@@ -2380,7 +2331,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
               children: [
                 Icon(Broken.category, color: theme.colorScheme.primary, size: 26),
                 const SizedBox(width: 12),
-                Text(AppStrings.current.appLauncherIcon, style: const TextStyle(fontWeight: FontWeight.bold)),
+                const Text('App Launcher Icon', style: TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
             content: SizedBox(
@@ -2388,9 +2339,9 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    AppStrings.current.chooseAppLauncherIconDesc,
-                    style: const TextStyle(fontSize: 13, height: 1.3, color: Colors.grey),
+                  const Text(
+                    'Choose a custom logo for the application launcher icon. Note that some launchers may take a few seconds to update.',
+                    style: TextStyle(fontSize: 13, height: 1.3, color: Colors.grey),
                   ),
                   const SizedBox(height: 20),
                   Flexible(
@@ -2408,7 +2359,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                             fileManager,
                             theme,
                             id: 'default',
-                            title: AppStrings.current.logo,
+                            title: 'Logo',
                             imagePath: 'assets/ic_launcher.webp',
                           ),
                           _buildIconOptionCard(
@@ -2416,7 +2367,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                             fileManager,
                             theme,
                             id: 'logo1',
-                            title: AppStrings.current.logo1,
+                            title: 'Logo 1',
                             imagePath: 'assets/logo/n1.png',
                           ),
                           _buildIconOptionCard(
@@ -2424,7 +2375,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                             fileManager,
                             theme,
                             id: 'logo2',
-                            title: AppStrings.current.logo2,
+                            title: 'Logo 2',
                             imagePath: 'assets/logo/n2.png',
                           ),
                           _buildIconOptionCard(
@@ -2432,7 +2383,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                             fileManager,
                             theme,
                             id: 'logo3',
-                            title: AppStrings.current.logo3,
+                            title: 'Logo 3',
                             imagePath: 'assets/logo/n3.png',
                           ),
                           _buildIconOptionCard(
@@ -2440,7 +2391,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                             fileManager,
                             theme,
                             id: 'logo4',
-                            title: AppStrings.current.logo4,
+                            title: 'Logo 4',
                             imagePath: 'assets/logo/n4.png',
                           ),
                         ],
@@ -2453,7 +2404,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(AppStrings.current.close),
+                child: const Text('Close'),
               ),
             ],
           ),
@@ -2488,7 +2439,7 @@ Widget _buildIconOptionCard(
         fileManager.setActiveAppIcon(id);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppStrings.current.appIconSwitched(title)),
+            content: Text('App icon switched to $title successfully!'),
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 2),
           ),
@@ -2542,13 +2493,13 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
       final current = fileManager.fontFamilyOption;
       final hasCustomFont = fileManager.customFontPath != null;
       final options = [
-        {'key': 'default', 'name': AppStrings.current.signatureDefaultFont, 'desc': AppStrings.current.signatureDefaultFontDesc},
-        {'key': 'nothing', 'name': AppStrings.current.nothingDotMatrix, 'desc': AppStrings.current.nothingDotMatrixDesc},
-        {'key': 'outfit', 'name': AppStrings.current.outfitModernSans, 'desc': AppStrings.current.outfitFontDesc},
-        {'key': 'jetbrains', 'name': AppStrings.current.jetBrainsTechMono, 'desc': AppStrings.current.jetBrainsFontDesc},
-        {'key': 'montserrat', 'name': AppStrings.current.montserratUrbanSans, 'desc': AppStrings.current.montserratFontDesc},
+        {'key': 'default', 'name': 'Signature Default (Lexend Deca)', 'desc': 'Original NFile clean geometric look'},
+        {'key': 'nothing', 'name': 'Nothing Dot-Matrix & Sans', 'desc': 'High-tech retro dot matrix headings + clean body'},
+        {'key': 'outfit', 'name': 'Outfit Modern Sans', 'desc': 'Super sleek, minimal, and premium geometric aesthetic'},
+        {'key': 'jetbrains', 'name': 'JetBrains Tech Mono', 'desc': 'Clean and futuristic developer monospaced look'},
+        {'key': 'montserrat', 'name': 'Montserrat Urban Sans', 'desc': 'Bold, modern, and striking typographic scale'},
         if (hasCustomFont)
-          {'key': 'custom', 'name': AppStrings.current.customFontTitle(p.basename(fileManager.customFontPath!)), 'desc': AppStrings.current.customFontDesc},
+          {'key': 'custom', 'name': 'Custom Font (${p.basename(fileManager.customFontPath!)})', 'desc': 'Your custom loaded font file'},
       ];
 
       return SafeArea(
@@ -2557,7 +2508,7 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
             bottom: MediaQuery.of(ctx).viewInsets.bottom,
           ),
           child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               child: Column(
@@ -2569,12 +2520,12 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    AppStrings.current.appTypographyTitle,
+                    'App Typography',
                     style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, fontFamily: 'LexendDeca'),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    AppStrings.current.selectTypefaceDesc,
+                    'Select a beautiful typeface to customize NFile\'s overall visual theme',
                     style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 13, fontFamily: 'LexendDeca'),
                   ),
                   const SizedBox(height: 16),
@@ -2614,7 +2565,7 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                   OutlinedButton.icon(
                     icon: const Icon(Broken.document_upload, size: 20),
                     label: Text(
-                      hasCustomFont ? AppStrings.current.replaceCustomFontFile : AppStrings.current.importCustomFontFile,
+                      hasCustomFont ? 'Replace Custom Font File' : 'Import Custom Font File (.ttf/.otf)',
                       style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'LexendDeca'),
                     ),
                     style: OutlinedButton.styleFrom(
@@ -2638,13 +2589,13 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                             fileManager.setFontFamilyOption('custom');
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(AppStrings.current.customFontLoaded)),
+                                SnackBar(content: Text('Custom font "${p.basename(filePat)}" applied successfully!')),
                               );
                             }
                           } else {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(AppStrings.current.failedToLoadFont)),
+                                const SnackBar(content: Text('Failed to load the selected font file.')),
                               );
                             }
                           }
@@ -2653,12 +2604,12 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text(AppStrings.current.invalidFileType),
-                                content: Text(AppStrings.current.invalidFileTypeMessage),
+                                title: const Text('Invalid File Type'),
+                                content: const Text('Please select a valid OpenType (.otf) or TrueType (.ttf) font file.'),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
-                                    child: Text(AppStrings.current.ok),
+                                    child: const Text('OK'),
                                   ),
                                 ],
                               ),
@@ -2672,7 +2623,7 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                     const SizedBox(height: 8),
                     TextButton.icon(
                       icon: const Icon(Broken.trash, size: 18, color: Colors.redAccent),
-                      label: Text(AppStrings.current.removeCustomFont, style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontFamily: 'LexendDeca')),
+                      label: const Text('Remove Custom Font', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontFamily: 'LexendDeca')),
                       onPressed: () async {
                         Navigator.pop(ctx);
                         await fileManager.setCustomFontPath(null);
@@ -2681,7 +2632,7 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                         }
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppStrings.current.customFontRemoved)),
+                            const SnackBar(content: Text('Custom font removed.')),
                           );
                         }
                       },
@@ -2705,10 +2656,10 @@ void _showAutoDeleteDaysPickerDialog(BuildContext context, ThemeData theme, Void
     builder: (ctx) {
       final current = RecycleBinService.getAutoDeleteDays();
       final options = [
-        {'days': 7, 'label': AppStrings.current.days7},
-        {'days': 15, 'label': AppStrings.current.days15},
-        {'days': 30, 'label': AppStrings.current.days30Recommended},
-        {'days': 0, 'label': AppStrings.current.neverManuallyClean},
+        {'days': 7, 'label': '7 Days'},
+        {'days': 15, 'label': '15 Days'},
+        {'days': 30, 'label': '30 Days (Recommended)'},
+        {'days': 0, 'label': 'Never (Manually clean bin)'},
       ];
 
       return SafeArea(
@@ -2732,7 +2683,7 @@ void _showAutoDeleteDaysPickerDialog(BuildContext context, ThemeData theme, Void
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
-                  AppStrings.current.autoDeleteTrashDuration,
+                  'Auto-Delete Trash Duration',
                   style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
               ),
@@ -2740,7 +2691,7 @@ void _showAutoDeleteDaysPickerDialog(BuildContext context, ThemeData theme, Void
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
-                  AppStrings.current.trashDeletionWarning,
+                  'Items in the Recycle Bin will be permanently deleted after this duration.',
                   style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.5)),
                 ),
               ),

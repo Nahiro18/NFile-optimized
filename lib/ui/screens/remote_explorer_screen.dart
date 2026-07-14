@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,9 +14,8 @@ import '../../services/remote/sftp_client.dart';
 import '../../services/remote/webdav_client.dart';
 import '../../services/remote/lan_client.dart';
 import '../../services/remote/saf_client.dart';
-import '../../core/app_strings.dart';
 
-// Clipboard for remoteâ†’local operations
+// Clipboard for remote→local operations
 class _RemoteClipboard {
   final List<RemoteFileItem> items;
   final bool isCut;
@@ -192,9 +191,9 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
     _loadDirectoryContents(path);
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   // COPY / CUT / PASTE - Remote items
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
 
   void _copyRemoteItem(RemoteFileItem item) {
     context.read<FileManagerProvider>().setRemoteClipboard(
@@ -278,9 +277,9 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
     }
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  // UPLOAD - Local device â†’ Remote server
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
+  // UPLOAD - Local device → Remote server
+  // ─────────────────────────────────────────────────────────────────────────
 
   /// Upload all files from local app clipboard to current remote directory
   Future<void> _uploadFromLocalClipboard() async {
@@ -340,9 +339,9 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
     }
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  // DOWNLOAD - Remote â†’ Local device clipboard / downloads folder
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
+  // DOWNLOAD - Remote → Local device clipboard / downloads folder
+  // ─────────────────────────────────────────────────────────────────────────
 
   /// Download remote file to local Downloads and then put path in local clipboard
   Future<void> _downloadToLocalClipboard(
@@ -385,7 +384,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
           localPath,
         ], isCut: false);
         _showSnack(
-          '"${item.name}" downloaded â†’ local clipboard ready to paste',
+          '"${item.name}" downloaded → local clipboard ready to paste',
         );
         if (isCut) await _loadDirectoryContents(_currentPath);
       }
@@ -397,9 +396,9 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
     }
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   // DELETE
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
 
   Future<void> _deleteItem(RemoteFileItem item) async {
     final confirmed = await showDialog<bool>(
@@ -407,18 +406,18 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
       builder: (ctx) {
         final theme = Theme.of(ctx);
         return AlertDialog(
-          title: Text(
-              AppStrings.current.deleteQuestion,
+          title: const Text(
+            'Delete Item',
             style: TextStyle(
               fontFamily: 'LexendDeca',
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Text(AppStrings.current.deletePermanentlyFromServer(item.name)),
+          content: Text('Delete "${item.name}" permanently from the server?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: Text(AppStrings.current.cancel),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -429,7 +428,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                 ),
               ),
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text(AppStrings.current.delete),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -448,9 +447,9 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
     }
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   // CREATE FOLDER
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
 
   void _showAddFolderDialog() {
     final controller = TextEditingController();
@@ -460,8 +459,8 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(
-            AppStrings.current.uiNewRemoteFolder,
+          title: const Text(
+            'New Remote Folder',
             style: TextStyle(
               fontFamily: 'LexendDeca',
               fontSize: 18,
@@ -473,7 +472,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
             autofocus: true,
             style: const TextStyle(fontSize: 14),
             decoration: InputDecoration(
-              hintText: AppStrings.current.folderName,
+              hintText: 'Folder name',
               hintStyle: TextStyle(
                 color: theme.colorScheme.onSurface.withOpacity(0.35),
               ),
@@ -497,7 +496,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(AppStrings.current.cancel),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -526,7 +525,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                   }
                 }
               },
-              child: Text(AppStrings.current.create),
+              child: const Text('Create'),
             ),
           ],
         );
@@ -534,9 +533,9 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
     );
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   // ITEM ACTIONS BOTTOM SHEET
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
 
   void _showItemActions(RemoteFileItem item) {
     final theme = Theme.of(context);
@@ -617,12 +616,12 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
               const Divider(height: 1),
               const SizedBox(height: 8),
 
-              // â”€â”€ Actions â”€â”€
+              // ── Actions ──
               // Copy remote item
               _buildActionTile(
                 ctx,
                 icon: Broken.copy,
-                label: AppStrings.current.copy,
+                label: 'Copy',
                 color: theme.colorScheme.primary,
                 onTap: () {
                   Navigator.pop(ctx);
@@ -634,7 +633,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
               _buildActionTile(
                 ctx,
                 icon: Broken.scissor,
-                label: AppStrings.current.cut,
+                label: 'Cut',
                 color: Colors.orange,
                 onTap: () {
                   Navigator.pop(ctx);
@@ -647,8 +646,8 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                 _buildActionTile(
                   ctx,
                   icon: Icons.download_for_offline_rounded,
-                  label: AppStrings.current.copyToLocalDevice,
-                  subtitle: 'Downloads file â†’ local clipboard',
+                  label: 'Copy to Local Device',
+                  subtitle: 'Downloads file → local clipboard',
                   color: const Color(0xFF0D9488),
                   onTap: () {
                     Navigator.pop(ctx);
@@ -661,8 +660,8 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                 _buildActionTile(
                   ctx,
                   icon: Icons.drive_file_move_rtl_rounded,
-                  label: AppStrings.current.moveToLocalDevice,
-                  subtitle: AppStrings.current.uiDownloadsAndDeletesFromServer,
+                  label: 'Move to Local Device',
+                  subtitle: 'Downloads and deletes from server',
                   color: const Color(0xFF7C3AED),
                   onTap: () {
                     Navigator.pop(ctx);
@@ -671,10 +670,10 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                 ),
 
               // Delete
-                _buildActionTile(
+              _buildActionTile(
                 ctx,
                 icon: Broken.trash,
-                label: AppStrings.current.delete,
+                label: 'Delete',
                 color: Colors.redAccent,
                 onTap: () {
                   Navigator.pop(ctx);
@@ -754,9 +753,9 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
     );
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   // BUILD
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -880,7 +879,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                           ),
                         ],
                       ),
-                      tooltip: AppStrings.current.uploadLocalClipboard,
+                      tooltip: 'Upload local clipboard to server',
                       onPressed: _uploadFromLocalClipboard,
                     ),
                   // Paste remote clipboard
@@ -911,13 +910,13 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                         ],
                       ),
                       tooltip: provider.isCut
-                          ? AppStrings.current.uiMoveHere
+                          ? 'Move here'
                           : 'Paste remote clipboard',
                       onPressed: _pasteRemoteClipboard,
                     ),
                   IconButton(
                     icon: const Icon(Broken.folder_add, size: 20),
-                    tooltip: AppStrings.current.newFolder,
+                    tooltip: 'New Folder',
                     onPressed: _showAddFolderDialog,
                   ),
                 ]
@@ -942,7 +941,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        AppStrings.current.uiConnectionLost,
+                        'Connection Lost',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -976,7 +975,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                           _initClient();
                         },
                         icon: const Icon(Icons.refresh_rounded),
-                        label: Text(AppStrings.current.retryConnection),
+                        label: const Text('Retry Connection'),
                       ),
                     ],
                   ),
@@ -1074,7 +1073,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                                 ),
                                 const SizedBox(height: 14),
                                 Text(
-                                  AppStrings.current.uiEmptyDirectory,
+                                  'Empty Directory',
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -1090,7 +1089,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                                       Icons.upload_rounded,
                                       size: 16,
                                     ),
-                                    label: Text(AppStrings.current.uploadClipboardHere),
+                                    label: const Text('Upload Clipboard Here'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
                                           theme.colorScheme.primary,
@@ -1113,7 +1112,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                               overscroll: false,
                             ),
                             child: ListView.builder(
-                              physics: const ClampingScrollPhysics(),
+                              physics: const BouncingScrollPhysics(),
                               padding: const EdgeInsets.symmetric(
                                 vertical: 8.0,
                               ),
@@ -1212,13 +1211,13 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                                       _popItem(
                                         'copy',
                                         Broken.copy,
-                                        AppStrings.current.copy,
+                                        'Copy',
                                         theme.colorScheme.primary,
                                       ),
                                       _popItem(
                                         'cut',
                                         Broken.scissor,
-                                        AppStrings.current.cut,
+                                        'Cut',
                                         Colors.orange,
                                       ),
                                       if (hasRemoteClipboard)
@@ -1247,7 +1246,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                                       _popItem(
                                         'delete',
                                         Broken.trash,
-                                        AppStrings.current.delete,
+                                        'Delete',
                                         Colors.redAccent,
                                       ),
                                     ],
@@ -1339,7 +1338,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: Text(AppStrings.current.upload, style: const TextStyle(fontSize: 12)),
+              child: const Text('Upload', style: TextStyle(fontSize: 12)),
             ),
           if (hasRemote)
             TextButton(
@@ -1356,7 +1355,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: Text(AppStrings.current.paste, style: const TextStyle(fontSize: 12)),
+              child: const Text('Paste', style: TextStyle(fontSize: 12)),
             ),
           const SizedBox(width: 4),
           GestureDetector(

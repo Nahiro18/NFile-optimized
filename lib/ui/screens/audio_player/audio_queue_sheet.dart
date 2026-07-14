@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:nfile/core/app_strings.dart';
 
 class AudioQueueSheet extends StatelessWidget {
   final List<SongModel> songs;
@@ -46,7 +45,7 @@ class AudioQueueSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  AppStrings.current.playingQueueCount(songs.length),
+                  'Playing Queue (${songs.length})',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -62,7 +61,7 @@ class AudioQueueSheet extends StatelessWidget {
           const Divider(),
           Expanded(
             child: ListView.builder(
-              physics: const ClampingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: songs.length,
               itemBuilder: (context, index) {
                 final song = songs[index];

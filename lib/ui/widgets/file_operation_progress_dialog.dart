@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../providers/file_manager_provider.dart';
-import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../core/utils.dart';
 
@@ -156,7 +155,7 @@ class FileOperationProgressDialog extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  AppStrings.current.uiOverallProgress,
+                                  'Overall Progress',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: theme.colorScheme.onSurface.withOpacity(0.55),
@@ -207,7 +206,7 @@ class FileOperationProgressDialog extends StatelessWidget {
                             Expanded(
                               child: _buildStatTile(
                                 theme,
-                                label: AppStrings.current.transferSpeed,
+                                label: 'Transfer Speed',
                                 value: speedText,
                                 icon: Broken.chart_3,
                               ),
@@ -216,7 +215,7 @@ class FileOperationProgressDialog extends StatelessWidget {
                             Expanded(
                               child: _buildStatTile(
                                 theme,
-                                label: AppStrings.current.estTime,
+                                label: 'Est. Time',
                                 value: etaText,
                                 icon: Broken.clock,
                               ),
@@ -226,7 +225,7 @@ class FileOperationProgressDialog extends StatelessWidget {
                         const SizedBox(height: 12),
                         _buildStatTile(
                           theme,
-                          label: AppStrings.current.dataProcessed,
+                          label: 'Data Processed',
                           value: '$processedSize of $totalSize',
                           icon: Broken.folder_open,
                           isRow: true,
@@ -239,7 +238,7 @@ class FileOperationProgressDialog extends StatelessWidget {
                             provider.cancelOperation();
                           },
                           icon: const Icon(Broken.close_square, size: 18),
-                          label: Text(AppStrings.current.cancelOperation, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          label: const Text('Cancel Operation', style: TextStyle(fontWeight: FontWeight.bold)),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.redAccent,
                             side: BorderSide(color: Colors.redAccent.withOpacity(0.4)),

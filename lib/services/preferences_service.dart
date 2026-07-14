@@ -633,14 +633,4 @@ class PreferencesService {
   static Future<void> saveExitOption(String val) async {
     await _prefs?.setString(_keyExitOption, val);
   }
-
-  static const String _keyLocale = 'locale';
-
-  static String getLocale() {
-    return _prefs?.getString(_keyLocale) ?? 'system';
-  }
-
-  static Future<void> saveLocale(String locale) async {
-    await _prefs?.setString(_keyLocale, locale);
-  }
 }

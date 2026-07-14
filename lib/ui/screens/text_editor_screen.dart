@@ -1,10 +1,9 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
-import '../../core/app_strings.dart';
 import '../../providers/file_manager_provider.dart';
 import 'html_viewer_screen.dart';
 import 'markdown_viewer_screen.dart';
@@ -330,7 +329,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
       _controller.addListener(_onTextChanged);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.errorLoadingFile(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error loading file: $e')));
       }
     } finally {
       if (mounted) {
@@ -374,11 +373,11 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
       if (mounted) {
         setState(() => _isModified = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.fileSaved)));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('File saved successfully')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.errorSavingFile(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error saving file: $e')));
       }
     } finally {
       if (mounted) {
@@ -440,7 +439,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
     final count = query.allMatches(text).length;
     if (count > 0) {
       _controller.text = text.replaceAll(query, replacement);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.current.replacedOccurrences(count))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Replaced $count occurrences')));
     }
   }
 
@@ -469,7 +468,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(AppStrings.current.selectSyntax, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+              child: Text('Select Syntax', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
             ),
             const Divider(height: 1),
             Expanded(
@@ -544,7 +543,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         actions: [
           IconButton(
             icon: Icon(_showFindReplace ? Broken.search_zoom_out : Broken.search_normal),
-            tooltip: AppStrings.current.findReplace,
+            tooltip: 'Find / Replace',
             onPressed: () => setState(() => _showFindReplace = !_showFindReplace),
           ),
           if (_isSaving)
@@ -559,12 +558,12 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
           else
             IconButton(
               icon: const Icon(Broken.save_2),
-              tooltip: AppStrings.current.saveFile,
+              tooltip: 'Save File',
               onPressed: _saveFile,
             ),
           PopupMenuButton<String>(
             icon: const Icon(Broken.more),
-            tooltip: AppStrings.current.moreOptions,
+            tooltip: 'More Options',
             onSelected: (value) async {
               if (value == 'html_preview') {
                 if (context.mounted) {
@@ -609,18 +608,18 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
             },
             itemBuilder: (context) => [
               if (isHtml)
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'html_preview',
-                  child: Row(children: [const Icon(Broken.global, size: 18, color: Colors.blueAccent), const SizedBox(width: 12), Text(AppStrings.current.htmlPreview, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent))]),
+                  child: Row(children: [Icon(Broken.global, size: 18, color: Colors.blueAccent), SizedBox(width: 12), Text('HTML Preview', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent))]),
                 ),
               if (isMd)
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'md_preview',
-                  child: Row(children: [const Icon(Broken.document_text, size: 18, color: Colors.blueAccent), const SizedBox(width: 12), Text(AppStrings.current.markdownPreview, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent))]),
+                  child: Row(children: [Icon(Broken.document_text, size: 18, color: Colors.blueAccent), SizedBox(width: 12), Text('Markdown Preview', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent))]),
                 ),
               PopupMenuItem(
                 value: 'reset_zoom',
-                child: Row(children: [const Icon(Broken.search_zoom_in_1, size: 18), const SizedBox(width: 12), Text(AppStrings.current.defaultZoom("${_fontSize.toInt()}pt"))]),
+                child: Row(children: [const Icon(Broken.search_zoom_in_1, size: 18), const SizedBox(width: 12), Text('Default Zoom (${_fontSize.toInt()}pt)')]),
               ),
               PopupMenuItem(
                 value: 'lock_zoom',
@@ -640,7 +639,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
               ),
               PopupMenuItem(
                 value: 'syntax',
-                child: Row(children: [const Icon(Broken.code, size: 18), const SizedBox(width: 12), Text(AppStrings.current.syntax(_selectedLanguage))]),
+                child: Row(children: [const Icon(Broken.code, size: 18), const SizedBox(width: 12), Text('Syntax ($_selectedLanguage)')]),
               ),
             ],
           ),
@@ -666,9 +665,9 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                                 height: 36,
                                 child: TextField(
                                   controller: _findController,
-                                  decoration: InputDecoration(
-                                    hintText: AppStrings.current.find,
-                                    border: const OutlineInputBorder(),
+                                  decoration: const InputDecoration(
+                                    hintText: 'Find...',
+                                    border: OutlineInputBorder(),
                                     contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                                   ),
                                   onSubmitted: (_) => _findNext(),
@@ -689,18 +688,18 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                                   height: 36,
                                   child: TextField(
                                     controller: _replaceController,
-                                    decoration: InputDecoration(
-                                      hintText: AppStrings.current.replaceWith,
-                                      border: const OutlineInputBorder(),
+                                    decoration: const InputDecoration(
+                                      hintText: 'Replace with...',
+                                      border: OutlineInputBorder(),
                                       contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                                     ),
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              ElevatedButton(onPressed: _replace, child: Text(AppStrings.current.replace)),
+                              ElevatedButton(onPressed: _replace, child: const Text('Replace')),
                               const SizedBox(width: 6),
-                              ElevatedButton(onPressed: _replaceAll, child: Text(AppStrings.current.replaceAll)),
+                              ElevatedButton(onPressed: _replaceAll, child: const Text('Replace All')),
                             ],
                           ),
                         ],
@@ -760,7 +759,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                               ? _buildTextField(theme)
                               : SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
-                                  physics: const ClampingScrollPhysics(),
+                                  physics: const BouncingScrollPhysics(),
                                   child: SizedBox(
                                     width: MediaQuery.of(context).size.width * 2.5,
                                     child: _buildTextField(theme),
@@ -781,12 +780,12 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Broken.rotate_left, size: 18),
-                          tooltip: AppStrings.current.undo,
+                          tooltip: 'Undo',
                           onPressed: _history.length > 1 ? _undo : null,
                         ),
                         IconButton(
                           icon: const Icon(Broken.rotate_right_1, size: 18),
-                          tooltip: AppStrings.current.redo,
+                          tooltip: 'Redo',
                           onPressed: _redoHistory.isNotEmpty ? _redo : null,
                         ),
                         Container(width: 1, height: 24, color: theme.dividerColor.withValues(alpha: 0.2)),
@@ -829,7 +828,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
       child: TextField(
         controller: _controller,
         scrollController: _textScrollController,
-        scrollPhysics: const ClampingScrollPhysics(),
+        scrollPhysics: const BouncingScrollPhysics(),
         maxLines: null,
         expands: true,
         readOnly: _readOnly,

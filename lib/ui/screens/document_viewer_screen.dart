@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:docx_to_text/docx_to_text.dart';
@@ -9,7 +9,6 @@ import 'package:open_filex/open_filex.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:xml/xml.dart';
 import '../../core/icon_fonts/broken_icons.dart';
-import '../../core/app_strings.dart';
 
 class DocumentViewerScreen extends StatefulWidget {
   final String filePath;
@@ -87,7 +86,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.current.errorLoading(e.toString()))),
+          SnackBar(content: Text('Error loading: $e')),
         );
       }
     } finally {
@@ -192,8 +191,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       await file.writeAsString(_textController.text);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppStrings.current.savedSuccessfully),
+          const SnackBar(
+            content: Text('Saved successfully ✓'),
             duration: Duration(seconds: 2),
           ),
         );
@@ -202,7 +201,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.current.errorSaving(e.toString()))),
+          SnackBar(content: Text('Error saving: $e')),
         );
       }
     } finally {
@@ -244,7 +243,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
               ),
               child: SafeArea(
                 child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,7 +273,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                AppStrings.current.uiPdfDisplaySettings,
+                                'PDF Display Settings',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -290,7 +289,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        AppStrings.current.uiOptimizeRenderingPerformanceForLargeDesignheavy,
+                        'Optimize rendering performance for large, design-heavy, or scanned documents.',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface.withOpacity(0.6),
                         ),
@@ -312,7 +311,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              AppStrings.current.uiQuickPerformancePresets,
+                              'Quick Performance Presets',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary,
@@ -325,8 +324,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                 Expanded(
                                   child: _buildPresetButton(
                                     context: context,
-                                    label: AppStrings.current.standardMode,
-                                    subtitle: AppStrings.current.uiBestForTextDocuments,
+                                    label: 'Standard Mode',
+                                    subtitle: 'Best for text documents',
                                     isActive: _pdfLayoutMode == PdfPageLayoutMode.continuous && _pdfEnableTextSelection,
                                     onTap: () {
                                       setModalState(() {
@@ -342,8 +341,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                 Expanded(
                                   child: _buildPresetButton(
                                     context: context,
-                                    label: AppStrings.current.lagFreeMode,
-                                    subtitle: AppStrings.current.uiBestForBrochuresPhotos,
+                                    label: 'Lag-Free Mode',
+                                    subtitle: 'Best for brochures & photos',
                                     isActive: _pdfLayoutMode == PdfPageLayoutMode.single && !_pdfEnableTextSelection,
                                     onTap: () {
                                       setModalState(() {
@@ -364,7 +363,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
 
                       // Detail Tuning header
                       Text(
-                        AppStrings.current.uiDetailedTuningOptions,
+                        'Detailed Tuning Options',
                         style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
@@ -372,7 +371,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       // Page Layout Option
                       _buildTuningOption(
                         context: context,
-                        title: AppStrings.current.uiPageLayout,
+                        title: 'Page Layout',
                         subtitle: _pdfLayoutMode == PdfPageLayoutMode.continuous
                             ? 'Continuous (Vertical scrolling list)'
                             : 'Single Page (Instant page-by-page swipe)',
@@ -382,16 +381,16 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             selectedBackgroundColor: theme.colorScheme.primary.withOpacity(0.12),
                             selectedForegroundColor: theme.colorScheme.primary,
                           ),
-                          segments: [
+                          segments: const [
                             ButtonSegment<PdfPageLayoutMode>(
                               value: PdfPageLayoutMode.continuous,
-                              icon: const Icon(Icons.view_day_outlined, size: 18),
-                              label: Text(AppStrings.current.continuous),
+                              icon: Icon(Icons.view_day_outlined, size: 18),
+                              label: Text('Continuous'),
                             ),
                             ButtonSegment<PdfPageLayoutMode>(
                               value: PdfPageLayoutMode.single,
-                              icon: const Icon(Icons.auto_stories_outlined, size: 18),
-                              label: Text(AppStrings.current.singlePage),
+                              icon: Icon(Icons.auto_stories_outlined, size: 18),
+                              label: Text('Single Page'),
                             ),
                           ],
                           selected: {_pdfLayoutMode},
@@ -413,7 +412,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       // Scroll Direction Option
                       _buildTuningOption(
                         context: context,
-                        title: AppStrings.current.uiScrollDirection,
+                        title: 'Scroll Direction',
                         subtitle: _pdfScrollDirection == PdfScrollDirection.vertical
                             ? 'Vertical (Top to bottom scroll)'
                             : 'Horizontal (Left to right swipe)',
@@ -423,16 +422,16 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             selectedBackgroundColor: theme.colorScheme.primary.withOpacity(0.12),
                             selectedForegroundColor: theme.colorScheme.primary,
                           ),
-                          segments: [
+                          segments: const [
                             ButtonSegment<PdfScrollDirection>(
                               value: PdfScrollDirection.vertical,
-                              icon: const Icon(Icons.swap_vert_rounded, size: 18),
-                              label: Text(AppStrings.current.vertical),
+                              icon: Icon(Icons.swap_vert_rounded, size: 18),
+                              label: Text('Vertical'),
                             ),
                             ButtonSegment<PdfScrollDirection>(
                               value: PdfScrollDirection.horizontal,
-                              icon: const Icon(Icons.swap_horiz_rounded, size: 18),
-                              label: Text(AppStrings.current.horizontal),
+                              icon: Icon(Icons.swap_horiz_rounded, size: 18),
+                              label: Text('Horizontal'),
                             ),
                           ],
                           selected: {_pdfScrollDirection},
@@ -459,9 +458,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             Icons.text_format_rounded,
                             color: theme.colorScheme.primary,
                           ),
-                          title: Text(AppStrings.current.enableTextSelection, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                          subtitle: Text(
-                            AppStrings.current.uiDisableToSignificantlyBoostPageRendering,
+                          title: const Text('Enable Text Selection', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                          subtitle: const Text(
+                            'Disable to significantly boost page rendering speed and eliminate scroll stutter.',
                             style: TextStyle(fontSize: 12),
                           ),
                           value: _pdfEnableTextSelection,
@@ -634,7 +633,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                 IconButton(
                   icon: const Icon(Icons.save_rounded),
                   onPressed: _saveFile,
-                  tooltip: AppStrings.current.save,
+                  tooltip: 'Save',
                 ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -644,25 +643,25 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                     _textController.text = _textContent;
                   });
                 },
-                tooltip: AppStrings.current.cancel,
+                tooltip: 'Cancel',
               ),
             ] else
               IconButton(
                 icon: const Icon(Icons.edit_rounded),
                 onPressed: () => setState(() => _isEditing = true),
-                tooltip: AppStrings.current.edit,
+                tooltip: 'Edit',
               ),
           ],
           if (_isPdf)
             IconButton(
               icon: const Icon(Icons.tune_rounded),
               onPressed: _showPdfSettings,
-              tooltip: AppStrings.current.displaySettings,
+              tooltip: 'Display Settings',
             ),
           IconButton(
             icon: const Icon(Icons.open_in_new_rounded),
             onPressed: _openExternal,
-            tooltip: AppStrings.current.openWith,
+            tooltip: 'Open with',
           ),
         ],
       ),
@@ -703,7 +702,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     return Container(
       color: isDark ? const Color(0xFF0D0D1A) : const Color(0xFFF9F9FF),
       child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Container(
           width: double.infinity,
@@ -776,12 +775,12 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
           ),
         Expanded(
           child: rows.isEmpty
-              ? Center(child: Text(AppStrings.current.emptySheet))
+              ? const Center(child: Text('Empty Sheet'))
               : SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  physics: const ClampingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   child: SingleChildScrollView(
-                    physics: const ClampingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Table(
@@ -829,7 +828,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     return Container(
       color: isDark ? const Color(0xFF0D0D1A) : const Color(0xFFF9F9FF),
       child: ListView.builder(
-        physics: const ClampingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.all(24),
         itemCount: _pptSlides.length,
         itemBuilder: (context, index) {
@@ -912,7 +911,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     return Container(
       color: isDark ? const Color(0xFF0D0D1A) : const Color(0xFFF9F9FF),
       child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.all(16),
         child: SelectableText(
           _textController.text.isEmpty ? '(Empty file)' : _textController.text,
@@ -1007,7 +1006,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             width: double.infinity,
             child: FilledButton.icon(
               icon: const Icon(Icons.open_in_new_rounded),
-              label: Text(AppStrings.current.openWithApp),
+              label: const Text('Open with App'),
               style: FilledButton.styleFrom(
                 backgroundColor: fileColor,
                 foregroundColor: Colors.white,
@@ -1023,7 +1022,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             width: double.infinity,
             child: OutlinedButton.icon(
               icon: Icon(Icons.share, color: fileColor),
-              label: Text(AppStrings.current.share, style: TextStyle(color: fileColor)),
+              label: Text('Share', style: TextStyle(color: fileColor)),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: fileColor.withOpacity(0.5)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -1032,7 +1031,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
               ),
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppStrings.current.shareComingSoon)),
+                  const SnackBar(content: Text('Share coming soon')),
                 );
               },
             ),

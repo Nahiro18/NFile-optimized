@@ -5,7 +5,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'archive_service.dart';
 import 'app_manager_service.dart';
-import '../core/app_strings.dart';
 
 class ApkInstallerService {
   static const List<String> apkExtensions = ['.apk', '.xapk', '.apks', '.apkm', '.aab'];
@@ -27,12 +26,12 @@ class ApkInstallerService {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
+      builder: (_) => const AlertDialog(
         content: Row(
           children: [
             CircularProgressIndicator(),
             SizedBox(width: 20),
-            Expanded(child: Text(AppStrings.current.extractingBundle)),
+            Expanded(child: Text("Extracting package bundle for installation...")),
           ],
         ),
       ),
@@ -79,7 +78,7 @@ class ApkInstallerService {
         if (!context.mounted) return;
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.current.noInstallableApk)),
+          const SnackBar(content: Text('No installable APK found in package bundle')),
         );
         return;
       }
@@ -95,7 +94,7 @@ class ApkInstallerService {
         final success = await AppManagerService.installSplitApks(apkPaths);
         if (!success && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppStrings.current.failedToTriggerInstaller)),
+            const SnackBar(content: Text('Failed to trigger split APK installer')),
           );
         }
       }
@@ -103,7 +102,7 @@ class ApkInstallerService {
       if (!context.mounted) return;
       Navigator.pop(context); // Close loading dialog
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppStrings.current.failedToExtractBundle(e.toString()))),
+        SnackBar(content: Text('Failed to extract package bundle: $e')),
       );
     }
   }

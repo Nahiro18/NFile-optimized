@@ -14,7 +14,6 @@ import '../models/custom_shortcut_model.dart';
 import '../models/file_item_model.dart';
 import '../core/utils.dart';
 
-import '../core/app_strings.dart';
 enum MediaSortOrder {
   newest,
   oldest,
@@ -244,10 +243,10 @@ class MediaProvider extends ChangeNotifier {
   List<AssetPathEntity> get videoAlbums => _videoAlbums;
 
   List<String> _categoryOrder = [
-    AppStrings.current.uiImages,
-    AppStrings.current.uiVideos,
-    AppStrings.current.uiAudio,
-    AppStrings.current.uiDocuments,
+    'Images',
+    'Videos',
+    'Audio',
+    'Documents',
     'Archives',
     'Downloads',
     'APKs',
@@ -258,10 +257,10 @@ class MediaProvider extends ChangeNotifier {
   ];
 
   List<String> _activeCategories = [
-    AppStrings.current.uiImages,
-    AppStrings.current.uiVideos,
-    AppStrings.current.uiAudio,
-    AppStrings.current.uiDocuments,
+    'Images',
+    'Videos',
+    'Audio',
+    'Documents',
     'Archives',
     'Downloads',
     'APKs',
@@ -302,7 +301,7 @@ class MediaProvider extends ChangeNotifier {
   }
 
   List<dynamic> get images {
-    final excluded = _excludedDefaultPaths[AppStrings.current.uiImages] ?? [];
+    final excluded = _excludedDefaultPaths['Images'] ?? [];
     final excludeGallery = excluded.contains('Device Gallery (Auto)');
     final list = [..._images, ..._customImages].where((item) {
       if (item is AssetEntity && excludeGallery) return false;
@@ -317,7 +316,7 @@ class MediaProvider extends ChangeNotifier {
   }
 
   List<dynamic> get videos {
-    final excluded = _excludedDefaultPaths[AppStrings.current.uiVideos] ?? [];
+    final excluded = _excludedDefaultPaths['Videos'] ?? [];
     final excludeGallery = excluded.contains('Device Gallery (Auto)');
     final list = [..._videos, ..._customVideos].where((item) {
       if (item is AssetEntity && excludeGallery) return false;
@@ -332,7 +331,7 @@ class MediaProvider extends ChangeNotifier {
   }
 
   List<SongModel> get audios {
-    final excluded = _excludedDefaultPaths[AppStrings.current.uiAudio] ?? [];
+    final excluded = _excludedDefaultPaths['Audio'] ?? [];
     final excludeLibrary = excluded.contains('Device Audio Library (Auto)');
     return _audios.where((song) {
       if (excludeLibrary && song.id < 900000) return false;
@@ -343,10 +342,10 @@ class MediaProvider extends ChangeNotifier {
   }
 
   List<FileSystemEntity> get documents {
-    final excluded = _excludedDefaultPaths[AppStrings.current.uiDocuments] ?? [];
+    final excluded = _excludedDefaultPaths['Documents'] ?? [];
     final excludeAllScanned = excluded.contains('Internal Storage (All Folders Scanned)');
     return _documents.where((file) {
-      final docPaths = _customCategoryPaths[AppStrings.current.uiDocuments] ?? [];
+      final docPaths = _customCategoryPaths['Documents'] ?? [];
       final isCustom = docPaths.any((dir) => p.isWithin(dir, file.path));
       if (excludeAllScanned && !isCustom) return false;
       if (_isPathExcluded(file.path, excluded)) return false;
@@ -519,19 +518,19 @@ class MediaProvider extends ChangeNotifier {
 
   int getCategoryItemCount(String category) {
     if (_isLoaded) {
-      if (category == AppStrings.current.uiImages) return images.length;
-      else if (category == AppStrings.current.uiVideos) return videos.length;
-      else if (category == AppStrings.current.uiAudio) return _audios.length;
-      else if (category == AppStrings.current.uiDocuments) return _documents.length;
-      else if (category == 'Archives') return _archives.length;
-      else if (category == 'Downloads') return _downloads.length;
-      else if (category == 'APKs') return _apks.length;
-      else if (category == 'Screenshots') return screenshots.length;
-      else if (category == 'Apps') return 0;
-      else if (category == 'Settings') return 0;
-      else return 0;
+      switch (category) {
+        case 'Images': return images.length;
+        case 'Videos': return videos.length;
+        case 'Audio': return _audios.length;
+        case 'Documents': return _documents.length;
+        case 'Archives': return _archives.length;
+        case 'Downloads': return _downloads.length;
+        case 'APKs': return _apks.length;
+        case 'Screenshots': return screenshots.length;
+        case 'Apps': return 0;
+        case 'Settings': return 0;
+      }
     }
-
     return PreferencesService.getCategoryCount(category);
   }
 
@@ -793,10 +792,10 @@ class MediaProvider extends ChangeNotifier {
     await _saveCache();
     _applySort();
     
-    PreferencesService.saveCategoryCount(AppStrings.current.uiImages, images.length);
-    PreferencesService.saveCategoryCount(AppStrings.current.uiVideos, videos.length);
-    PreferencesService.saveCategoryCount(AppStrings.current.uiAudio, _audios.length);
-    PreferencesService.saveCategoryCount(AppStrings.current.uiDocuments, _documents.length);
+    PreferencesService.saveCategoryCount('Images', images.length);
+    PreferencesService.saveCategoryCount('Videos', videos.length);
+    PreferencesService.saveCategoryCount('Audio', _audios.length);
+    PreferencesService.saveCategoryCount('Documents', _documents.length);
     PreferencesService.saveCategoryCount('Archives', _archives.length);
     PreferencesService.saveCategoryCount('Downloads', _downloads.length);
     PreferencesService.saveCategoryCount('APKs', _apks.length);
@@ -919,10 +918,10 @@ class MediaProvider extends ChangeNotifier {
 
     _applySort();
 
-    PreferencesService.saveCategoryCount(AppStrings.current.uiImages, images.length);
-    PreferencesService.saveCategoryCount(AppStrings.current.uiVideos, videos.length);
-    PreferencesService.saveCategoryCount(AppStrings.current.uiAudio, _audios.length);
-    PreferencesService.saveCategoryCount(AppStrings.current.uiDocuments, _documents.length);
+    PreferencesService.saveCategoryCount('Images', images.length);
+    PreferencesService.saveCategoryCount('Videos', videos.length);
+    PreferencesService.saveCategoryCount('Audio', _audios.length);
+    PreferencesService.saveCategoryCount('Documents', _documents.length);
     PreferencesService.saveCategoryCount('Archives', _archives.length);
     PreferencesService.saveCategoryCount('Downloads', _downloads.length);
     PreferencesService.saveCategoryCount('APKs', _apks.length);
@@ -1088,7 +1087,7 @@ class MediaProvider extends ChangeNotifier {
   Future<void> _loadDocuments() async {
     final docs = <FileSystemEntity>[];
     final searchDirs = await _getUserSearchDirs();
-    final excluded = _excludedDefaultPaths[AppStrings.current.uiDocuments] ?? [];
+    final excluded = _excludedDefaultPaths['Documents'] ?? [];
 
     for (final dirPath in searchDirs) {
       if (_isPathExcluded(dirPath, excluded)) continue;
@@ -1099,7 +1098,7 @@ class MediaProvider extends ChangeNotifier {
       );
     }
 
-    final docPaths = _customCategoryPaths[AppStrings.current.uiDocuments] ?? [];
+    final docPaths = _customCategoryPaths['Documents'] ?? [];
     for (final dirPath in docPaths) {
       if (await Directory(dirPath).exists()) {
         await _scanDirectoryRecursively(
@@ -1205,16 +1204,16 @@ class MediaProvider extends ChangeNotifier {
   }
 
   Future<void> _scanCustomCategories() async {
-    final imagePaths = _customCategoryPaths[AppStrings.current.uiImages] ?? [];
+    final imagePaths = _customCategoryPaths['Images'] ?? [];
     _customImages = await _scanCustomPaths(imagePaths, FileUtils.isImage);
 
-    final videoPaths = _customCategoryPaths[AppStrings.current.uiVideos] ?? [];
+    final videoPaths = _customCategoryPaths['Videos'] ?? [];
     _customVideos = await _scanCustomPaths(videoPaths, FileUtils.isVideo);
 
     final screenshotPaths = _customCategoryPaths['Screenshots'] ?? [];
     _customScreenshots = await _scanCustomPaths(screenshotPaths, FileUtils.isImage);
 
-    final audioPaths = _customCategoryPaths[AppStrings.current.uiAudio] ?? [];
+    final audioPaths = _customCategoryPaths['Audio'] ?? [];
     final customAudFiles = await _scanCustomPaths(audioPaths, FileUtils.isAudio);
     _audios.removeWhere((song) => song.id >= 900000);
     final existingAudioPaths = _audios.map((s) => s.data).toSet();
@@ -1241,7 +1240,7 @@ class MediaProvider extends ChangeNotifier {
     }
 
     // Documents custom path scan and merge
-    final docPaths = _customCategoryPaths[AppStrings.current.uiDocuments] ?? [];
+    final docPaths = _customCategoryPaths['Documents'] ?? [];
     final customDocs = await _scanCustomPaths(docPaths, (ext) => _docExtensions.contains(ext));
     _documents.removeWhere((entity) {
       final isInCustomPath = docPaths.any((dir) => p.isWithin(dir, entity.path));
@@ -1600,10 +1599,10 @@ class MediaProvider extends ChangeNotifier {
     }
 
     // Update Counts and Cache
-    PreferencesService.saveCategoryCount(AppStrings.current.uiImages, images.length);
-    PreferencesService.saveCategoryCount(AppStrings.current.uiVideos, videos.length);
-    PreferencesService.saveCategoryCount(AppStrings.current.uiAudio, _audios.length);
-    PreferencesService.saveCategoryCount(AppStrings.current.uiDocuments, _documents.length);
+    PreferencesService.saveCategoryCount('Images', images.length);
+    PreferencesService.saveCategoryCount('Videos', videos.length);
+    PreferencesService.saveCategoryCount('Audio', _audios.length);
+    PreferencesService.saveCategoryCount('Documents', _documents.length);
     PreferencesService.saveCategoryCount('Archives', _archives.length);
     PreferencesService.saveCategoryCount('Downloads', _downloads.length);
     PreferencesService.saveCategoryCount('APKs', _apks.length);

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/app_strings.dart';
 
 class FileActionDialogs {
   static Future<String?> showTextInputDialog(
@@ -37,7 +36,7 @@ class FileActionDialogs {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(AppStrings.current.cancel),
+              child: const Text('Cancel'),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, controller.text),
@@ -69,7 +68,7 @@ class FileActionDialogs {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(AppStrings.current.cancel),
+              child: const Text('Cancel'),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
@@ -79,7 +78,7 @@ class FileActionDialogs {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(AppStrings.current.delete),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -108,7 +107,7 @@ class FileActionDialogs {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(AppStrings.current.ok),
+              child: const Text('OK'),
             ),
           ],
         );

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../core/utils.dart';
@@ -8,7 +8,6 @@ import '../../models/file_item_model.dart';
 import '../screens/all_recent_files_screen.dart';
 import 'file_item.dart';
 
-import '../../core/app_strings.dart';
 class RecentFilesSection extends StatelessWidget {
   final Function(int)? onNavigateTab;
   const RecentFilesSection({super.key, this.onNavigateTab});
@@ -53,7 +52,7 @@ class RecentFilesSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  AppStrings.current.uiRecentFiles,
+                  'Recent Files',
                   style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 InkWell(
@@ -67,7 +66,7 @@ class RecentFilesSection extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                     child: Text(
-                      AppStrings.current.uiViewAll,
+                      'View All',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
@@ -85,7 +84,7 @@ class RecentFilesSection extends StatelessWidget {
             child: isLoading
                 ? _buildShimmer(isDark, theme)
                 : ListView.builder(
-                    physics: const ClampingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     itemCount: displayFiles.length,

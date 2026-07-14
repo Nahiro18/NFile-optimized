@@ -47,9 +47,9 @@ class NFileDocumentsProvider : DocumentsProvider() {
         row.add(DocumentsContract.Root.COLUMN_DOCUMENT_ID, getDocIdForFile(File("/storage/emulated/0")))
         row.add(DocumentsContract.Root.COLUMN_MIME_TYPES, "*/*")
         row.add(DocumentsContract.Root.COLUMN_FLAGS, flags)
-        row.add(DocumentsContract.Root.COLUMN_TITLE, context?.getString(R.string.storage_provider_title) ?: "NFile Storage")
-        row.add(DocumentsContract.Root.COLUMN_SUMMARY, context?.getString(R.string.storage_provider_desc) ?: "Internal storage via NFile")
-        row.add(DocumentsContract.Root.COLUMN_ICON, R.mipmap.ic_launcher)
+        row.add(DocumentsContract.Root.COLUMN_TITLE, "NFile Storage")
+        row.add(DocumentsContract.Root.COLUMN_SUMMARY, "Internal storage via NFile")
+        row.add(DocumentsContract.Root.COLUMN_ICON, android.R.drawable.sym_def_app_icon)
         
         try {
             val stat = android.os.StatFs("/storage/emulated/0")
@@ -112,15 +112,6 @@ class NFileDocumentsProvider : DocumentsProvider() {
         return getDocIdForFile(file)
     }
 
-    override fun renameDocument(documentId: String?, displayName: String?): String {
-        val file = getFileForDocId(documentId ?: "")
-        val newFile = File(file.parentFile, displayName ?: file.name)
-        if (!file.renameTo(newFile)) {
-            throw FileNotFoundException("Failed to rename document: $documentId")
-        }
-        return getDocIdForFile(newFile)
-    }
-
     override fun deleteDocument(documentId: String?) {
         val file = getFileForDocId(documentId ?: "")
         if (!file.deleteRecursively()) {
@@ -162,8 +153,7 @@ class NFileDocumentsProvider : DocumentsProvider() {
 
     private fun includeFile(result: MatrixCursor, docId: String?, file: File) {
         val flags = DocumentsContract.Document.FLAG_SUPPORTS_DELETE or
-                    DocumentsContract.Document.FLAG_SUPPORTS_WRITE or
-                    DocumentsContract.Document.FLAG_SUPPORTS_RENAME
+                    DocumentsContract.Document.FLAG_SUPPORTS_WRITE
 
         val mimeType = getMimeType(file)
         val finalFlags = if (mimeType == DocumentsContract.Document.MIME_TYPE_DIR) {
