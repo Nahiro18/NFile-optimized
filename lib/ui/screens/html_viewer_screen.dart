@@ -1,9 +1,8 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:path/path.dart' as p;
 import '../../core/icon_fonts/broken_icons.dart';
-import '../../core/app_strings.dart';
 
 class HtmlViewerScreen extends StatefulWidget {
   final String filePath;
@@ -59,13 +58,13 @@ class _HtmlViewerScreenState extends State<HtmlViewerScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(p.basename(widget.filePath), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            Text(AppStrings.current.htmlPreview, style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
+            Text('HTML Preview', style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
           ],
         ),
         actions: [
           IconButton(
             icon: const Icon(Broken.refresh_2),
-            tooltip: AppStrings.current.reload,
+            tooltip: 'Reload',
             onPressed: () {
               setState(() => _isLoading = true);
               _loadHtml();
@@ -77,7 +76,7 @@ class _HtmlViewerScreenState extends State<HtmlViewerScreen> {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
-              physics: const ClampingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               child: HtmlWidget(
                 _htmlContent,
                 textStyle: theme.textTheme.bodyMedium,

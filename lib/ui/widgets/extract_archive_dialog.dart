@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 
 class ExtractArchiveResult {
@@ -79,7 +78,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          AppStrings.current.uiExtractArchive,
+                          'Extract Archive',
                           style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
@@ -99,7 +98,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
               TextField(
                 controller: _destController,
                 decoration: InputDecoration(
-                  labelText: AppStrings.current.extractToFolder,
+                  labelText: 'Extract to Folder',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   prefixIcon: const Icon(Broken.folder_open),
                 ),
@@ -111,7 +110,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
-                  labelText: AppStrings.current.passwordIfEncrypted,
+                  labelText: 'Password (if encrypted)',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   prefixIcon: const Icon(Broken.lock),
                   suffixIcon: IconButton(
@@ -127,7 +126,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text(AppStrings.current.cancel),
+                    child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 12),
                   FilledButton(
@@ -143,7 +142,7 @@ class _ExtractArchiveDialogState extends State<ExtractArchiveDialog> {
                         ),
                       );
                     },
-                    child: Text(AppStrings.current.extract),
+                    child: const Text('Extract'),
                   ),
                 ],
               ),

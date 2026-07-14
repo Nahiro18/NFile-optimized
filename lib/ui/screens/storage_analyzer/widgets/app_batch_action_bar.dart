@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../core/icon_fonts/broken_icons.dart';
 import '../../../../models/app_info_model.dart';
 import '../../../../services/app_manager_service.dart';
-import '../../../../core/app_strings.dart';
 
 class AppBatchActionBar extends StatelessWidget {
   final List<AppInfoModel> allApps;
@@ -34,12 +33,12 @@ class AppBatchActionBar extends StatelessWidget {
         return AlertDialog(
           backgroundColor: theme.colorScheme.surface,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(AppStrings.current.uninstallAppsTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
-          content: Text(AppStrings.current.confirmUninstallApps(selectedPackages.length)),
+          title: const Text('Uninstall Apps', style: TextStyle(fontWeight: FontWeight.bold)),
+          content: Text('Are you sure you want to uninstall ${selectedPackages.length} selected app(s)?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(AppStrings.current.cancel),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -48,7 +47,7 @@ class AppBatchActionBar extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () => Navigator.pop(context, true),
-              child: Text(AppStrings.current.uninstall, style: const TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text('Uninstall', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         );
@@ -76,12 +75,12 @@ class AppBatchActionBar extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (context) => const AlertDialog(
         content: Row(
           children: [
             CircularProgressIndicator(),
             SizedBox(width: 20),
-            Expanded(child: Text(AppStrings.current.backingUpApps)),
+            Expanded(child: Text("Backing up selected applications...")),
           ],
         ),
       ),
@@ -92,7 +91,7 @@ class AppBatchActionBar extends StatelessWidget {
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.current.backedUpApps(appsToBackup.length))),
+          SnackBar(content: Text('Successfully backed up ${appsToBackup.length} app(s) to NFile/Backups/Apps/')),
         );
         onRefreshNeeded();
       }
@@ -100,7 +99,7 @@ class AppBatchActionBar extends StatelessWidget {
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.current.failedToBackupApps(e.toString()))),
+          SnackBar(content: Text('Failed to back up some apps: $e')),
         );
       }
     }
@@ -138,7 +137,7 @@ class AppBatchActionBar extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
               onPressed: onClearSelection,
-              child: Text(AppStrings.current.clear, style: const TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text('Clear', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -148,7 +147,7 @@ class AppBatchActionBar extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       icon: const Icon(Broken.document_download, size: 18),
-                      label: Text(AppStrings.current.backup, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      label: const Text('Backup', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange.withOpacity(0.15),
                         foregroundColor: Colors.orange,
@@ -164,7 +163,7 @@ class AppBatchActionBar extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       icon: const Icon(Broken.export_1, size: 18),
-                      label: Text(AppStrings.current.share, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      label: const Text('Share', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal.withOpacity(0.15),
                         foregroundColor: Colors.teal,
@@ -181,7 +180,7 @@ class AppBatchActionBar extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton.icon(
                         icon: const Icon(Broken.trash, size: 18),
-                        label: Text(AppStrings.current.uninstall, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        label: const Text('Uninstall', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red.withOpacity(0.15),
                           foregroundColor: Colors.red,

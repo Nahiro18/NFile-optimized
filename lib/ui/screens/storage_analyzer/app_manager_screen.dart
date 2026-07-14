@@ -4,7 +4,6 @@ import '../../../core/icon_fonts/broken_icons.dart';
 import '../../../models/app_info_model.dart';
 import '../../../services/app_manager_service.dart';
 import '../../../core/utils.dart';
-import '../../../core/app_strings.dart';
 import 'widgets/app_list_tab.dart';
 import 'widgets/backup_list_tab.dart';
 import 'widgets/app_options_sheet.dart';
@@ -169,7 +168,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
                 style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               )
             : Text(
-                AppStrings.current.uiAppManager,
+                'App Manager',
                 style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
         actions: [
@@ -177,7 +176,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
             IconButton(
               icon: const Icon(Broken.task_square),
               onPressed: () => _selectAll(processedApps),
-              tooltip: AppStrings.current.selectAll,
+              tooltip: 'Select All',
             )
           else
             IconButton(
@@ -188,7 +187,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
                   _backupTabKey = UniqueKey();
                 });
               },
-              tooltip: AppStrings.current.refreshList,
+              tooltip: 'Refresh List',
             ),
         ],
         bottom: TabBar(
@@ -272,12 +271,12 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
                       CheckedPopupMenuItem(
                         value: 'size',
                         checked: _sortBy == 'size',
-                        child: Text(AppStrings.current.sortBySize),
+                        child: const Text('Sort by Size'),
                       ),
                       CheckedPopupMenuItem(
                         value: 'name',
                         checked: _sortBy == 'name',
-                        child: Text(AppStrings.current.sortAlphabetically),
+                        child: const Text('Sort Alphabetically'),
                       ),
                       CheckedPopupMenuItem(
                         value: 'date',
@@ -355,9 +354,9 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
             children: [
               Icon(Broken.info_circle, color: theme.colorScheme.primary, size: 20),
               const SizedBox(width: 8),
-              Expanded(
+              const Expanded(
                 child: Text(
-                  AppStrings.current.uiExactStorageCalculation,
+                  'Exact Storage Calculation',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ),
@@ -365,7 +364,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
           ),
           const SizedBox(height: 6),
           Text(
-            AppStrings.current.uiToSeeExactAppStorageSizes,
+            'To see exact app storage sizes (APK + data + cache) instead of just the raw installer size, please enable the Usage Access permission for NFile in System Settings.',
             style: TextStyle(
               fontSize: 12.5,
               color: theme.textTheme.bodyMedium?.color?.withOpacity(0.8),
@@ -389,8 +388,8 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
                   _loadApplications();
                 });
               },
-              child: Text(
-                AppStrings.current.uiGrantUsageAccessPermission,
+              child: const Text(
+                'Grant Usage Access Permission',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               ),
             ),

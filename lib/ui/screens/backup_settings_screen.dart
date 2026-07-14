@@ -1,7 +1,6 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../core/icon_fonts/broken_icons.dart';
-import '../../core/app_strings.dart';
 import '../../services/settings_backup_service.dart';
 import 'internal_file_picker_screen.dart';
 
@@ -14,7 +13,7 @@ class BackupSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.current.backupAndRestore),
+        title: const Text('Backup & Restore'),
         leading: IconButton(
           icon: const Icon(Broken.arrow_left),
           onPressed: () => Navigator.pop(context),
@@ -22,20 +21,20 @@ class BackupSettingsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          physics: const ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           children: [
             _BackupSettingsTile(
               icon: Broken.document_upload,
-              title: AppStrings.current.backupSettings,
-              subtitle: AppStrings.current.backupSettingsSub,
+              title: 'Backup Settings',
+              subtitle: 'Save all your current settings to NFile/Backups/Settings/',
               onTap: () => SettingsBackupService.backupSettings(context),
             ),
             const SizedBox(height: 8),
             _BackupSettingsTile(
               icon: Broken.document_download,
-              title: AppStrings.current.restoreSettings,
-              subtitle: AppStrings.current.restoreSettingsSub,
+              title: 'Restore Settings',
+              subtitle: 'Select and restore settings from a JSON backup file',
               onTap: () async {
                 final pickedPaths = await InternalFilePickerScreen.show(
                   context,
@@ -53,7 +52,7 @@ class BackupSettingsScreen extends StatelessWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(AppStrings.current.pleaseSelectValidBackup),
+                          content: const Text('Please select a valid .json settings backup file'),
                           behavior: SnackBarBehavior.floating,
                           backgroundColor: theme.colorScheme.error,
                         ),

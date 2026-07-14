@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
@@ -9,7 +9,6 @@ import 'package:flutter_avif/flutter_avif.dart';
 import '../../providers/media_provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 
-import '../../core/app_strings.dart';
 final Uint8List _kTransparentImage = Uint8List.fromList([
   0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
   0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
@@ -227,7 +226,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
               });
             },
             child: PhotoViewGallery.builder(
-              scrollPhysics: _isZoomed ? const NeverScrollableScrollPhysics() : const ClampingScrollPhysics(),
+              scrollPhysics: _isZoomed ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics(),
               pageController: _pageController,
               itemCount: totalCount,
               onPageChanged: (index) {
@@ -288,7 +287,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
                           Icon(Broken.image, size: 64, color: Colors.white.withOpacity(0.5)),
                           const SizedBox(height: 16),
                           Text(
-                            AppStrings.current.uiFailedToLoadImage,
+                            'Failed to load image',
                             style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                         ],

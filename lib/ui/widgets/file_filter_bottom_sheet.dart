@@ -1,9 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/file_filter_type.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
-import '../../core/app_strings.dart';
 
 class FileFilterBottomSheet extends StatelessWidget {
   const FileFilterBottomSheet({super.key});
@@ -30,43 +29,43 @@ class FileFilterBottomSheet extends StatelessWidget {
     final List<_FilterItem> items = [
       _FilterItem(
         type: FileFilterType.all,
-        label: AppStrings.current.allFiles,
-        subtitle: AppStrings.current.uiShowAllFilesAndFoldersInThisDirectory,
+        label: 'All Files',
+        subtitle: 'Show all files and folders in this directory',
         icon: Broken.category,
         color: theme.colorScheme.primary,
       ),
       _FilterItem(
         type: FileFilterType.documents,
-        label: AppStrings.current.documentsOnly,
-        subtitle: AppStrings.current.uiPdfsWordDocsSpreadsheetsTextsAndEbooks,
+        label: 'Documents only',
+        subtitle: 'PDFs, Word docs, spreadsheets, texts, and e-books',
         icon: Broken.document,
         color: Colors.blueAccent,
       ),
       _FilterItem(
         type: FileFilterType.images,
-        label: AppStrings.current.imagesOnly,
-        subtitle: AppStrings.current.uiJpegsPngsWebpsAndRawPhotoFormats,
+        label: 'Images only',
+        subtitle: 'JPEGs, PNGs, WebPs, and raw photo formats',
         icon: Broken.image,
         color: Colors.purpleAccent,
       ),
       _FilterItem(
         type: FileFilterType.audio,
-        label: AppStrings.current.audioOnly,
-        subtitle: AppStrings.current.uiMp3sWavsAacsAndHighfidelityAudios,
+        label: 'Audio only',
+        subtitle: 'MP3s, WAVs, AACs, and high-fidelity audios',
         icon: Broken.music,
         color: Colors.greenAccent,
       ),
       _FilterItem(
         type: FileFilterType.videos,
-        label: AppStrings.current.videosOnly,
-        subtitle: AppStrings.current.uiMp4sMkvsWebmsAndHighresVideoClips,
+        label: 'Videos only',
+        subtitle: 'MP4s, MKVs, WebMs, and high-res video clips',
         icon: Broken.video,
         color: Colors.redAccent,
       ),
       _FilterItem(
         type: FileFilterType.archives,
-        label: AppStrings.current.archivesOnly,
-        subtitle: AppStrings.current.uiZips7zsRarsAndOtherCompressedAssets,
+        label: 'Archives only',
+        subtitle: 'ZIPs, 7Zs, RARs, and other compressed assets',
         icon: Broken.archive,
         color: Colors.brown,
       ),
@@ -96,12 +95,12 @@ class FileFilterBottomSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppStrings.current.uiFilterFilesByType,
+                    'Filter Files By Type',
                     style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    AppStrings.current.uiSelectACategoryToDisplayMatching,
+                    'Select a category to display matching files only',
                     style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.55)),
                   ),
                 ],
@@ -111,7 +110,7 @@ class FileFilterBottomSheet extends StatelessWidget {
             Flexible(
               child: ListView.builder(
                 shrinkWrap: true,
-                physics: const ClampingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   final item = items[index];

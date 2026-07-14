@@ -46,5 +46,4 @@ app.*.map.json
 /android/app/build/
 /android/build/
 keystore_base64.txt
-graphify-out*
-*.txt*
+

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color seedColor = Color(0xFF6B7280);
+  static const Color seedColor = Color(0xFF369FE7);
   
   static ThemeData getAppTheme({
     required bool light,
@@ -21,28 +21,31 @@ class AppTheme {
       final baseScheme = ColorScheme.fromSeed(
         seedColor: rawColor,
         brightness: brightness,
-        contrastLevel: 0.0,
-        dynamicSchemeVariant: DynamicSchemeVariant.neutral,
+        contrastLevel: 0.05,
+        dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
       );
-      colorScheme = baseScheme;
+      colorScheme = baseScheme.copyWith(
+        primary: rawColor,
+      );
     }
 
-    final scaffoldBg = light 
-        ? const Color(0xFFFAFAFA) 
-        : (pitchBlack ? const Color(0xFF000000) : const Color(0xFF0D0D0D));
-    final cardBg = light 
-        ? const Color(0xFFFFFFFF) 
-        : (pitchBlack ? const Color(0xFF0A0A0A) : const Color(0xFF141414));
-    final surfaceBg = light 
-        ? const Color(0xFFF5F5F5) 
-        : (pitchBlack ? const Color(0xFF080808) : const Color(0xFF111111));
+    final effectivePrimary = colorScheme.primary;
+    final mainColorMultiplier = pitchBlack ? 0.1 : 0.8;
+    final pitchGrey = pitchBlack ? const Color.fromARGB(255, 20, 20, 20) : const Color.fromARGB(255, 35, 35, 35);
+    final pitchBlackColor = pitchBlack ? const Color.fromARGB(255, 0, 0, 0) : null;
 
-    final borderColor = light 
-        ? const Color(0xFFE5E5E5) 
-        : const Color(0xFF2A2A2A);
+    int getColorAlpha(int a) => (a * mainColorMultiplier).round();
+    Color getMainColorWithAlpha(int a) => effectivePrimary.withAlpha(getColorAlpha(a));
 
-    String? effectiveFontFamily;
+    final cardColor = Color.alphaBlend(
+      getMainColorWithAlpha(35),
+      light ? const Color.fromARGB(255, 255, 255, 255) : pitchGrey,
+    );
+
+    // Map font keys to actual font families/themes
     TextTheme? textTheme;
+    String? effectiveFontFamily;
+
     final baseTextTheme = ThemeData(brightness: brightness).textTheme;
 
     switch (fontFamily) {
@@ -83,12 +86,9 @@ class AppTheme {
         break;
       case 'default':
       default:
-        effectiveFontFamily = null;
+        effectiveFontFamily = 'LexendDeca';
         break;
     }
-
-    final textColor = light ? const Color(0xFF1A1A1A) : const Color(0xFFE8E8E8);
-    final mutedColor = light ? const Color(0xFF757575) : const Color(0xFF999999);
 
     return ThemeData(
       brightness: brightness,
@@ -97,107 +97,64 @@ class AppTheme {
       fontFamily: effectiveFontFamily,
       textTheme: textTheme,
       fontFamilyFallback: const ['sans-serif', 'Roboto'],
-      scaffoldBackgroundColor: scaffoldBg,
+      scaffoldBackgroundColor: pitchBlackColor ?? (light ? Color.alphaBlend(effectivePrimary.withAlpha(10), Colors.white) : null),
       splashColor: Colors.transparent,
-      splashFactory: NoSplash.splashFactory,
-      highlightColor: Colors.transparent,
+      highlightColor: light ? Colors.black.withAlpha(20) : Colors.white.withAlpha(pitchBlackColor == null ? 10 : 25),
+      disabledColor: light ? const Color.fromARGB(200, 160, 160, 160) : const Color.fromARGB(200, 60, 60, 60),
       applyElevationOverlayColor: false,
-      dividerColor: borderColor,
-      dividerTheme: DividerThemeData(
-        thickness: 1,
-        color: borderColor,
-        space: 0,
-      ),
       appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
-        backgroundColor: scaffoldBg,
-        iconTheme: IconThemeData(color: textColor),
-        actionsIconTheme: IconThemeData(color: textColor),
+        backgroundColor: pitchBlackColor ?? (light ? Color.alphaBlend(effectivePrimary.withAlpha(25), Colors.white) : null),
+        actionsIconTheme: IconThemeData(
+          color: light ? const Color.fromARGB(200, 40, 40, 40) : const Color.fromARGB(200, 233, 233, 233),
+        ),
+        iconTheme: IconThemeData(
+          color: light ? const Color.fromARGB(200, 40, 40, 40) : const Color.fromARGB(200, 233, 233, 233),
+        ),
         titleTextStyle: TextStyle(
-          color: textColor,
-          fontSize: 18,
+          color: light ? Colors.black.withAlpha(160) : Colors.white.withAlpha(210),
+          fontSize: 20,
           fontWeight: FontWeight.w600,
           fontFamily: effectiveFontFamily,
         ),
       ),
-      cardColor: cardBg,
+      secondaryHeaderColor: light ? const Color.fromARGB(200, 240, 240, 240) : const Color.fromARGB(222, 10, 10, 10),
+      iconTheme: IconThemeData(
+        color: light ? const Color.fromARGB(200, 40, 40, 40) : const Color.fromARGB(200, 233, 233, 233),
+      ),
+      shadowColor: light ? const Color.fromARGB(180, 100, 100, 100) : const Color.fromARGB(222, 10, 10, 10),
+      dividerTheme: const DividerThemeData(
+        thickness: 4,
+        indent: 0.0,
+        endIndent: 0.0,
+      ),
+      cardColor: cardColor,
       cardTheme: CardThemeData(
-        elevation: 0,
-        color: cardBg,
-        surfaceTintColor: Colors.transparent,
+        elevation: 12.0,
+        color: Color.alphaBlend(
+          getMainColorWithAlpha(45),
+          light ? const Color.fromARGB(255, 255, 255, 255) : pitchGrey,
+        ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: borderColor),
+          borderRadius: BorderRadius.circular(14.0 * 1.5),
         ),
       ),
       dialogTheme: DialogThemeData(
-        elevation: 0,
         surfaceTintColor: Colors.transparent,
-        backgroundColor: cardBg,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: BorderSide(color: borderColor),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0 * 1.5)),
+        backgroundColor: light
+            ? Color.alphaBlend(getMainColorWithAlpha(60), Colors.white)
+            : Color.alphaBlend(getMainColorWithAlpha(20), pitchBlackColor ?? const Color.fromARGB(255, 12, 12, 12)),
       ),
       popupMenuTheme: PopupMenuThemeData(
-        elevation: 0,
         surfaceTintColor: Colors.transparent,
-        color: cardBg,
+        elevation: 12.0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: borderColor),
+          borderRadius: BorderRadius.circular(16.0 * 1.5),
         ),
-      ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        elevation: 0,
-        backgroundColor: scaffoldBg,
-        selectedItemColor: textColor,
-        unselectedItemColor: mutedColor,
-      ),
-      navigationBarTheme: NavigationBarThemeData(
-        elevation: 0,
-        backgroundColor: scaffoldBg,
-        indicatorColor: borderColor,
-        labelTextStyle: WidgetStatePropertyAll(TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: textColor,
-        )),
-        iconTheme: WidgetStatePropertyAll(IconThemeData(color: mutedColor)),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: surfaceBg,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        isDense: true,
-      ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        elevation: 0,
-        backgroundColor: cardBg,
-        foregroundColor: textColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: borderColor),
-        ),
-      ),
-      iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(
-          foregroundColor: textColor,
-        ),
+        color: light ? Color.alphaBlend(cardColor.withAlpha(180), Colors.white) : Color.alphaBlend(cardColor.withAlpha(180), Colors.black),
       ),
     );
   }

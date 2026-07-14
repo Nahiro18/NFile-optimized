@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 
 class AboutNFileScreen extends StatelessWidget {
@@ -16,7 +15,7 @@ class AboutNFileScreen extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.current.couldNotOpenLink(urlString))),
+          SnackBar(content: Text('Could not open link: $urlString')),
         );
       }
     }
@@ -39,7 +38,7 @@ class AboutNFileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: scaffoldBg,
       body: CustomScrollView(
-        physics: const ClampingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         slivers: [
           // Elegant transparent App Bar
           SliverAppBar(
@@ -52,7 +51,7 @@ class AboutNFileScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                AppStrings.current.aboutNFile,
+                'About NFile',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -71,7 +70,7 @@ class AboutNFileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // â”€â”€ Beautiful App Icon with Double Ring Glowing Gradients â”€â”€
+                  // ── Beautiful App Icon with Double Ring Glowing Gradients ──
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -146,7 +145,7 @@ class AboutNFileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // â”€â”€ App Title & Dynamic Badges â”€â”€
+                  // ── App Title & Dynamic Badges ──
                   Text(
                     'NFile',
                     style: theme.textTheme.headlineMedium?.copyWith(
@@ -164,7 +163,7 @@ class AboutNFileScreen extends StatelessWidget {
                       border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2)),
                     ),
                     child: Text(
-                      AppStrings.current.aboutVersion,
+                      'v1.0.42 (Stable)',
                       style: TextStyle(
                         color: theme.colorScheme.primary,
                         fontSize: 12.5,
@@ -175,7 +174,7 @@ class AboutNFileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // â”€â”€ Description Card â”€â”€
+                  // ── Description Card ──
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
@@ -185,7 +184,7 @@ class AboutNFileScreen extends StatelessWidget {
                       border: Border.all(color: borderCol),
                     ),
                     child: Text(
-                      AppStrings.current.aboutDescription,
+                      'NFile is a beautiful, fluid, and open-source file manager and offline media hub built with Flutter. Designed for extreme performance, clean glassmorphic aesthetics, and seamless user experiences.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: theme.colorScheme.onSurface.withOpacity(0.85),
@@ -197,13 +196,13 @@ class AboutNFileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 28),
 
-                  // â”€â”€ Beautiful Features Grid â”€â”€
+                  // ── Beautiful Features Grid ──
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 4.0),
                       child: Text(
-                        AppStrings.current.uiCoreHighlights,
+                        'Core Highlights',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -226,38 +225,38 @@ class AboutNFileScreen extends StatelessWidget {
                       _buildFeatureTile(
                         context,
                         icon: Broken.flash,
-                        title: AppStrings.current.uiExtremeSpeed,
-                        subtitle: AppStrings.current.uiStatelessCachingAsyncScans,
+                        title: 'Extreme Speed',
+                        subtitle: 'Stateless caching & async scans',
                       ),
                       _buildFeatureTile(
                         context,
                         icon: Broken.lock,
-                        title: AppStrings.current.uiVaultSecure,
-                        subtitle: AppStrings.current.uiEncryptedSafeWorkspace,
+                        title: 'Vault Secure',
+                        subtitle: 'Encrypted safe workspace',
                       ),
                       _buildFeatureTile(
                         context,
                         icon: Broken.wifi_square,
-                        title: AppStrings.current.uiServersHub,
-                        subtitle: AppStrings.current.uiFtpLanSftpWebdav,
+                        title: 'Servers Hub',
+                        subtitle: 'FTP, LAN, SFTP & WebDAV',
                       ),
                       _buildFeatureTile(
                         context,
                         icon: Broken.magicpen,
-                        title: AppStrings.current.uiRichUi,
-                        subtitle: AppStrings.current.uiAmoledBlackBeautifulSeeds,
+                        title: 'Rich UI',
+                        subtitle: 'AMOLED Black & beautiful seeds',
                       ),
                     ],
                   ),
                   const SizedBox(height: 32),
 
-                  // â”€â”€ Socials / Actions Section â”€â”€
+                  // ── Socials / Actions Section ──
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 4.0),
                       child: Text(
-                        AppStrings.current.uiConnectShare,
+                        'Connect & Share',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -272,21 +271,21 @@ class AboutNFileScreen extends StatelessWidget {
                   _buildSocialAction(
                     context,
                     icon: Broken.magic_star,
-                    label: AppStrings.current.starOnRepository,
+                    label: 'Star on Repository',
                     onTap: () => _launchUrl(context, 'https://github.com/Senzme/NFile'),
                   ),
                   const SizedBox(height: 10),
                   _buildSocialAction(
                     context,
                     icon: Icons.send_rounded,
-                    label: AppStrings.current.joinTelegram,
+                    label: 'Join Telegram Channel',
                     onTap: () => _launchUrl(context, 'https://t.me/NFiley'),
                   ),
                   const SizedBox(height: 10),
                   _buildSocialAction(
                     context,
                     icon: Broken.send,
-                    label: AppStrings.current.shareAppWithFriends,
+                    label: 'Share App with Friends',
                     onTap: () {
                       Share.share(
                         'Check out NFile, a beautiful offline file manager and media hub: https://github.com/Senzme/NFile/releases',
@@ -298,15 +297,15 @@ class AboutNFileScreen extends StatelessWidget {
                   _buildSocialAction(
                     context,
                     icon: Icons.code_rounded,
-                    label: AppStrings.current.exploreGitHubSource,
+                    label: 'Explore GitHub Source Code',
                     onTap: () => _launchUrl(context, 'https://github.com/Senzme/NFile'),
                   ),
 
                   const SizedBox(height: 48),
 
-                  // â”€â”€ Elegant Footer Tribute â”€â”€
+                  // ── Elegant Footer Tribute ──
                   Text(
-                    'Made with â¤ï¸ by Rubex',
+                    'Made with ❤️ by Rubex',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -316,7 +315,7 @@ class AboutNFileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Copyright Â© 2026 NFile. All rights reserved.',
+                    'Copyright © 2026 NFile. All rights reserved.',
                     style: TextStyle(
                       fontSize: 11,
                       color: theme.colorScheme.onSurface.withOpacity(0.35),

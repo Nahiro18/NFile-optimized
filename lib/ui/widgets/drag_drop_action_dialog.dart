@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import '../../providers/file_manager_provider.dart';
 import '../../services/archive_service.dart';
 import '../../core/icon_fonts/broken_icons.dart';
-import '../../core/app_strings.dart';
 import '../../core/utils.dart';
 import 'create_archive_dialog.dart';
 import '../screens/internal_file_picker_screen.dart';
@@ -142,7 +141,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            AppStrings.current.uiDragDropOptions,
+                            'Drag & Drop Options',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w900,
                               fontSize: 20,
@@ -187,7 +186,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 const SizedBox(height: 20),
 
                 Text(
-                  AppStrings.current.uiDestinationLocation.toUpperCase(),
+                  'Destination Location'.toUpperCase(),
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                     fontSize: 11,
@@ -200,14 +199,14 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 if (showSelectedFolderOption)
                   _buildDestinationCard(
                     theme: theme,
-                    title: AppStrings.current.uiDroppedFolder,
+                    title: 'Dropped Folder',
                     subtitle: targetDirName.isEmpty ? 'Root' : targetDirName,
                     pathValue: widget.initialTargetPath,
                     icon: Broken.folder_connection,
                   ),
                 _buildDestinationCard(
                   theme: theme,
-                  title: AppStrings.current.uiCurrentFolder,
+                  title: 'Current Folder',
                   subtitle: currentDirName.isEmpty ? 'Root' : currentDirName,
                   pathValue: provider.currentPath,
                   icon: Broken.folder,
@@ -260,7 +259,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
 
                 const SizedBox(height: 24),
                 Text(
-                  AppStrings.current.uiChooseAction.toUpperCase(),
+                  'Choose Action'.toUpperCase(),
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                     fontSize: 11,
@@ -273,8 +272,8 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 _buildActionCard(
                   theme: theme,
                   action: 'move',
-                  title: AppStrings.current.uiMoveHere,
-                  subtitle: AppStrings.current.uiCutPasteItemIntoDestinationFolder,
+                  title: 'Move here',
+                  subtitle: 'Cut & paste item into destination folder',
                   icon: Broken.scissor,
                   color: Colors.orange,
                   isDisabled: widget.sourcePaths.every((path) => p.dirname(path) == _selectedDestPath),
@@ -282,16 +281,16 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 _buildActionCard(
                   theme: theme,
                   action: 'copy',
-                  title: AppStrings.current.uiCopyHere,
-                  subtitle: AppStrings.current.uiLeavesOriginalFileIntactAndDuplicatesHere,
+                  title: 'Copy here',
+                  subtitle: 'Leaves original file intact and duplicates here',
                   icon: Broken.document_copy,
                   color: Colors.blue,
                 ),
                 _buildActionCard(
                   theme: theme,
                   action: 'archive',
-                  title: AppStrings.current.archive,
-                  subtitle: AppStrings.current.uiCompressItemIntoAZiptarArchiveHere,
+                  title: 'Archive here',
+                  subtitle: 'Compress item into a zip/tar archive here',
                   icon: Broken.box_add,
                   color: Colors.teal,
                 ),
@@ -308,7 +307,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
                       child: Text(
-                          AppStrings.current.cancel,
+                        'Cancel',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.onSurface.withOpacity(0.55),
@@ -336,7 +335,8 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                         ),
                         onPressed: () => _executeAction(provider),
-                        child: Text(AppStrings.current.ok,
+                        child: const Text(
+                          'Apply',
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 14,
@@ -605,7 +605,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
       provider.clearSelection();
     } else if (_selectedAction == 'archive') {
       final isSingle = widget.sourcePaths.length == 1;
-      final initialName = isSingle ? p.basename(widget.sourcePaths.first) : AppStrings.current.archive;
+      final initialName = isSingle ? p.basename(widget.sourcePaths.first) : 'Archive';
       if (!stableContext.mounted) return;
       final res = await CreateArchiveDialog.show(stableContext, initialName: initialName, isMultiSelection: !isSingle);
 
@@ -629,7 +629,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
           if (stableContext.mounted) {
             ScaffoldMessenger.of(stableContext).showSnackBar(
               SnackBar(
-                content: Text(AppStrings.current.archiveCreatedSuccessfully(res.archiveName, res.format)),
+                content: Text('Archive "${res.archiveName}.${res.format}" created successfully!'),
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -639,7 +639,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
           if (stableContext.mounted) {
             ScaffoldMessenger.of(stableContext).showSnackBar(
               SnackBar(
-                content: Text(AppStrings.current.createArchiveFailed(e.toString())),
+                content: Text('Failed to create archive: $e'),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
               ),

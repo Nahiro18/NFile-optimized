@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../core/utils.dart';
 
-import '../../core/app_strings.dart';
 class StorageOverviewCard extends StatelessWidget {
   const StorageOverviewCard({super.key});
 
@@ -55,8 +54,8 @@ class StorageOverviewCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                AppStrings.current.uiInternalStorage,
+              const Text(
+                'Internal Storage',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,

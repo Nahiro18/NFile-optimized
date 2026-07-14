@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.44+44
 
 environment:
-  sdk: ^3.12.0
+  sdk: ^3.11.5
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -39,8 +39,6 @@ dependency_overrides:
 
 dependencies:
   flutter:
-    sdk: flutter
-  flutter_localizations:
     sdk: flutter
   flutter_avif: ^3.1.0
 
@@ -137,7 +135,6 @@ flutter:
   assets:
     - assets/ic_launcher.webp
     - assets/logo/
-    - assets/i18n/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

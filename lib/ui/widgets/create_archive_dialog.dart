@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 
 class ArchiveCreationResult {
@@ -94,9 +93,9 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
                     child: Icon(Broken.archive_add, color: theme.colorScheme.primary, size: 24),
                   ),
                   const SizedBox(width: 16),
-                    Text(
-                      AppStrings.current.createArchive,
-                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  Text(
+                    'Create Archive',
+                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -107,7 +106,7 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
                 TextField(
                   controller: _nameController,
                   decoration: InputDecoration(
-                    labelText: AppStrings.current.archiveName,
+                    labelText: 'Archive Name',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     prefixIcon: const Icon(Broken.box),
                   ),
@@ -119,7 +118,7 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
               DropdownButtonFormField<String>(
                 value: _format,
                 decoration: InputDecoration(
-                    labelText: AppStrings.current.archiveFormat,
+                  labelText: 'Archive Format',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   prefixIcon: const Icon(Broken.document_code),
                 ),
@@ -169,7 +168,7 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    labelText: AppStrings.current.passwordOptional,
+                    labelText: 'Password (Optional)',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     prefixIcon: const Icon(Broken.lock),
                     suffixIcon: IconButton(
@@ -186,8 +185,8 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
                 controller: _splitController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                    labelText: AppStrings.current.splitVolumeSize,
-                    helperText: AppStrings.current.leaveEmptyForSingle,
+                  labelText: 'Split Volume Size in MB (Optional)',
+                  helperText: 'Leave empty for single archive',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   prefixIcon: const Icon(Broken.scissor),
                 ),
@@ -197,7 +196,7 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
               // Checkbox: Delete Source Files
               CheckboxListTile(
                 value: _deleteSource,
-                    title: Text(AppStrings.current.deleteSourceFiles),
+                title: const Text('Delete source files after completion'),
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
                 onChanged: (val) {
@@ -211,7 +210,7 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
               if (widget.isMultiSelection)
                 CheckboxListTile(
                   value: _separateArchives,
-                    title: Text(AppStrings.current.createSeparateArchive),
+                  title: const Text('Create separate archive for each file'),
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
                   onChanged: (val) {
@@ -227,7 +226,7 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text(AppStrings.current.cancel),
+                    child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 12),
                   FilledButton(
@@ -251,7 +250,7 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
                         ),
                       );
                     },
-                    child: Text(AppStrings.current.createArchive),
+                    child: const Text('Create Archive'),
                   ),
                 ],
               ),

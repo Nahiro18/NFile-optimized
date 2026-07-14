@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../services/background_archive_service.dart';
-import '../../core/app_strings.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 
 class BackgroundOperationProgressDialog extends StatelessWidget {
@@ -147,7 +146,7 @@ class BackgroundOperationProgressDialog extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  AppStrings.current.uiOverallProgress,
+                                  'Overall Progress',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: theme.colorScheme.onSurface.withOpacity(0.55),
@@ -201,7 +200,7 @@ class BackgroundOperationProgressDialog extends StatelessWidget {
                                   service.cancelOperation();
                                 },
                                 icon: const Icon(Broken.close_square, size: 18),
-                                label: Text(AppStrings.current.cancel, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                label: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold)),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.redAccent,
                                   side: BorderSide(color: Colors.redAccent.withOpacity(0.4)),
@@ -222,7 +221,7 @@ class BackgroundOperationProgressDialog extends StatelessWidget {
                                   }
                                 },
                                 icon: const Icon(Broken.send, size: 18),
-                                label: Text(AppStrings.current.background, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                label: const Text('Background', style: TextStyle(fontWeight: FontWeight.bold)),
                                 style: FilledButton.styleFrom(
                                   backgroundColor: theme.colorScheme.primary,
                                   foregroundColor: theme.colorScheme.onPrimary,

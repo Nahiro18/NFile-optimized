@@ -7,7 +7,6 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:nfile/core/icon_fonts/broken_icons.dart';
 import 'package:nfile/services/preferences_service.dart';
-import '../../../core/app_strings.dart';
 import 'video_loading_indicator.dart';
 import 'video_seek_indicator.dart';
 import 'video_controls_overlay.dart';
@@ -569,7 +568,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       : _volume > 0.5
                           ? Broken.volume_high
                           : Broken.volume_low,
-                  label: AppStrings.current.volume,
+                  label: 'Volume',
                 ),
               ),
             ),
@@ -582,7 +581,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 child: VerticalSliderWidget(
                   value: _brightness,
                   icon: Broken.sun_1,
-                  label: AppStrings.current.brightness,
+                  label: 'Brightness',
                 ),
               ),
             ),
