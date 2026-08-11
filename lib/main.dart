@@ -207,13 +207,21 @@ class _NFileAppState extends State<NFileApp> {
         final sdk = info.version.sdkInt;
         bool granted = false;
 
-        if (sdk >= 33) {
-          final audio = await Permission.audio.isGranted;
-          final photos = await Permission.photos.isGranted;
-          final videos = await Permission.videos.isGranted;
-          granted = audio && photos && videos;
-        } else if (sdk >= 30) {
-          granted = await Permission.manageExternalStorage.isGranted || await Permission.storage.isGranted;
+        if (sdk >= 30) {
+          // Si tiene All Files Access concedido (como gestor de archivos), tiene acceso total
+          final manageGranted = await Permission.manageExternalStorage.isGranted;
+          if (manageGranted) {
+            granted = true;
+          } else {
+            if (sdk >= 33) {
+              final audio = await Permission.audio.isGranted;
+              final photos = await Permission.photos.isGranted;
+              final videos = await Permission.videos.isGranted;
+              granted = audio && photos && videos;
+            } else {
+              granted = await Permission.storage.isGranted;
+            }
+          }
         } else {
           // Android 10 o inferior
           granted = await Permission.storage.isGranted;
@@ -246,16 +254,21 @@ class _NFileAppState extends State<NFileApp> {
         final sdk = info.version.sdkInt;
         bool granted = false;
 
-        if (sdk >= 33) {
-          final audio = await Permission.audio.request().isGranted;
-          final photos = await Permission.photos.request().isGranted;
-          final videos = await Permission.videos.request().isGranted;
-          granted = audio && photos && videos;
-        } else if (sdk >= 30) {
-          granted = await Permission.manageExternalStorage.request().isGranted;
-          if (!granted) {
-            // Fallback a almacenamiento estándar en caso de denegación de manageExternalStorage
-            granted = await Permission.storage.request().isGranted;
+        if (sdk >= 30) {
+          // En Android 11+ siempre solicitamos primero All Files Access (para poder gestionar archivos)
+          final manageGranted = await Permission.manageExternalStorage.request().isGranted;
+          if (manageGranted) {
+            granted = true;
+          } else {
+            // Fallback si rechaza o si la app usa almacenamiento normal
+            if (sdk >= 33) {
+              final audio = await Permission.audio.request().isGranted;
+              final photos = await Permission.photos.request().isGranted;
+              final videos = await Permission.videos.request().isGranted;
+              granted = audio && photos && videos;
+            } else {
+              granted = await Permission.storage.request().isGranted;
+            }
           }
         } else {
           // Android 10 o inferior
