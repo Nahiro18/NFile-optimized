@@ -920,9 +920,8 @@ class MediaProvider extends ChangeNotifier {
             await Permission.audio.request();
           } else {
             PhotoManager.setIgnorePermissionCheck(true);
-            await Permission.accessMediaLocation.request();
             try {
-              ps = await PhotoManager.requestPermissionExtend();
+              await Permission.accessMediaLocation.request();
             } catch (_) {}
           }
         } catch (_) {}
