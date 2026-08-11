@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_avif/flutter_avif.dart';
+
 import 'nfile_icon.dart';
 import '../../models/file_item_model.dart';
 import '../../core/utils.dart';
@@ -392,7 +392,7 @@ class _MediaThumbnailState extends State<MediaThumbnail> {
 
     if (isImg && widget.file.size > 16) {
       if (widget.file.path.toLowerCase().endsWith('.avif')) {
-        return AvifImage.file(
+        return Image.file(
           File(widget.file.path),
           fit: BoxFit.cover,
           width: double.infinity,
