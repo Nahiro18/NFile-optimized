@@ -795,7 +795,7 @@ packages:
       path: "packages/on_audio_query"
       ref: HEAD
       resolved-ref: "28d5e98b96df5c7af29a62f81b6853712e99aadb"
-      url: "https://github.com/MSOB7YY/on_audio_query"
+      url: "https://github.com/Nahiro18/on_audio_query"
     source: git
     version: "2.9.2"
   on_audio_query_android:
@@ -821,7 +821,7 @@ packages:
       path: "packages/on_audio_query_platform_interface"
       ref: HEAD
       resolved-ref: "28d5e98b96df5c7af29a62f81b6853712e99aadb"
-      url: "https://github.com/MSOB7YY/on_audio_query"
+      url: "https://github.com/Nahiro18/on_audio_query"
     source: git
     version: "1.7.1"
   on_audio_query_web:

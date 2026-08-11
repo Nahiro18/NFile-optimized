@@ -291,7 +291,8 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
         final folders = <FileItemModel>[];
         final files = <FileItemModel>[];
 
-        final items = await Future.wait(entities.map((e) => FileItemModel.fromEntityAsync(e)));
+        // Mapeo rápido inicial sin I/O pesado de disco para cargado instantáneo
+        final items = entities.map((e) => FileItemModel.fromEntityFast(e)).toList();
 
         for (var item in items) {
           if (!_showHiddenFiles && item.isHidden) {
@@ -312,7 +313,11 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
         sortList(filteredFolders, path);
         sortList(filteredFiles, path);
 
-        activeTab.currentFiles = [...filteredFolders, ...filteredFiles];
+        final allItems = [...filteredFolders, ...filteredFiles];
+        activeTab.currentFiles = allItems;
+
+        // Cargar detalles completos (tamaño, fecha de modificación) en segundo plano
+        _loadDetailsInChunks(path, allItems);
       }
     } catch (e) {
       debugPrint('Error loading directory: $e. Fallback to restricted mode.');
@@ -360,6 +365,47 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     activeTab.isLoading = false;
     _persistTabs();
     notifyListeners();
+  }
+
+  void _loadDetailsInChunks(String directoryPath, List<FileItemModel> itemsToResolve) async {
+    final currentTargetTab = activeTab;
+    final tabId = currentTargetTab.id;
+
+    // Procesar en chunks de 50 elementos
+    const chunkSize = 50;
+    for (int i = 0; i < itemsToResolve.length; i += chunkSize) {
+      // Si el usuario ya cambió de pestaña o de carpeta, cancelamos el proceso
+      if (activeTab.id != tabId || currentPath != directoryPath) return;
+
+      final chunk = itemsToResolve.skip(i).take(chunkSize).toList();
+      
+      // Consultar I/O de disco para el lote de 50 archivos de forma asíncrona
+      final resolvedChunk = await Future.wait(chunk.map((item) async {
+        try {
+          final stat = await item.entity.stat();
+          return item.copyWith(size: stat.size, modified: stat.modified);
+        } catch (_) {
+          return item;
+        }
+      }));
+
+      // Volver a verificar desvío de navegación
+      if (activeTab.id != tabId || currentPath != directoryPath) return;
+
+      // Actualizar la lista en la pestaña activa
+      final updatedList = List<FileItemModel>.from(currentTargetTab.currentFiles);
+      for (int j = 0; j < chunk.length; j++) {
+        final originalIndex = updatedList.indexWhere((e) => e.path == chunk[j].path);
+        if (originalIndex != -1) {
+          updatedList[originalIndex] = resolvedChunk[j];
+        }
+      }
+      currentTargetTab.currentFiles = updatedList;
+      notifyListeners();
+
+      // Dar un respiro a la UI de Flutter (16ms = 1 frame a 60Hz)
+      await Future.delayed(const Duration(milliseconds: 16));
+    }
   }
 
   Future<bool> goBack() async {

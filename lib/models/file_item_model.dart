@@ -40,6 +40,31 @@ class FileItemModel {
     }
   }
 
+  factory FileItemModel.fromEntityFast(FileSystemEntity entity) {
+    return FileItemModel(
+      entity: entity,
+      name: entity.path.split(Platform.pathSeparator).last,
+      path: entity.path,
+      isDirectory: entity is Directory,
+      size: 0,
+      modified: DateTime.fromMillisecondsSinceEpoch(0),
+    );
+  }
+
+  FileItemModel copyWith({
+    int? size,
+    DateTime? modified,
+  }) {
+    return FileItemModel(
+      entity: entity,
+      name: name,
+      path: path,
+      isDirectory: isDirectory,
+      size: size ?? this.size,
+      modified: modified ?? this.modified,
+    );
+  }
+
   static Future<FileItemModel> fromEntityAsync(FileSystemEntity entity) async {
     try {
       final stat = await entity.stat();
