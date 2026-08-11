@@ -31,8 +31,6 @@ jobs:
       - name: Descargar dependencias
         run: flutter pub get
 
-        run: |
-
       - name: Compilar APK (arm64)
         run: flutter build apk --target-platform android-arm64
 
