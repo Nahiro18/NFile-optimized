@@ -986,28 +986,32 @@ class MediaProvider extends ChangeNotifier {
     futures.add(_loadDocuments());
     futures.add(_loadArchivesDownloadsAndApks());
 
-    await Future.wait(futures);
-    await _scanCustomCategories();
+    try {
+      await Future.wait(futures);
+      await _scanCustomCategories();
 
-    // Scan recent files after all media is loaded so it can merge from providers
-    await _scanRecentFiles();
+      // Scan recent files after all media is loaded so it can merge from providers
+      await _scanRecentFiles();
 
-    await _saveCache();
+      await _saveCache();
 
-    _applySort();
+      _applySort();
 
-    PreferencesService.saveCategoryCount('Images', images.length);
-    PreferencesService.saveCategoryCount('Videos', videos.length);
-    PreferencesService.saveCategoryCount('Audio', _audios.length);
-    PreferencesService.saveCategoryCount('Documents', _documents.length);
-    PreferencesService.saveCategoryCount('Archives', _archives.length);
-    PreferencesService.saveCategoryCount('Downloads', _downloads.length);
-    PreferencesService.saveCategoryCount('APKs', _apks.length);
-    PreferencesService.saveCategoryCount('Screenshots', screenshots.length);
-
-    _isLoading = false;
-    _isLoaded = true;
-    notifyListeners();
+      PreferencesService.saveCategoryCount('Images', images.length);
+      PreferencesService.saveCategoryCount('Videos', videos.length);
+      PreferencesService.saveCategoryCount('Audio', _audios.length);
+      PreferencesService.saveCategoryCount('Documents', _documents.length);
+      PreferencesService.saveCategoryCount('Archives', _archives.length);
+      PreferencesService.saveCategoryCount('Downloads', _downloads.length);
+      PreferencesService.saveCategoryCount('APKs', _apks.length);
+      PreferencesService.saveCategoryCount('Screenshots', screenshots.length);
+    } catch (e) {
+      debugPrint('[MediaProvider] Error during loadMedia scanners: $e');
+    } finally {
+      _isLoading = false;
+      _isLoaded = true;
+      notifyListeners();
+    }
   }
 
   Future<void> _loadImagesAndVideos() async {
@@ -1186,135 +1190,159 @@ class MediaProvider extends ChangeNotifier {
     String filterType,
     void Function(File file) onFound,
   ) async {
-    final resultPaths = await compute(_isolateDirectoryScan, {
+    List<String> resultPaths;
+    final params = {
       'startPath': startPath,
       'filterType': filterType,
       'docExts': _docExtensions,
       'archExts': _archiveExtensions,
       'apkExts': _apkExtensions,
-    });
+    };
+    try {
+      resultPaths = await compute(_isolateDirectoryScan, params);
+    } catch (e) {
+      debugPrint('[MediaProvider] Isolate compute failed, falling back to main-thread scan: $e');
+      try {
+        resultPaths = await _isolateDirectoryScan(params);
+      } catch (err) {
+        debugPrint('[MediaProvider] Main-thread scan fallback failed: $err');
+        resultPaths = [];
+      }
+    }
     for (final path in resultPaths) {
       onFound(File(path));
     }
   }
 
   Future<void> _loadDocuments() async {
-    final docs = <FileSystemEntity>[];
-    final searchDirs = await _getUserSearchDirs();
-    final excluded = _excludedDefaultPaths['Documents'] ?? [];
+    try {
+      final docs = <FileSystemEntity>[];
+      final searchDirs = await _getUserSearchDirs();
+      final excluded = _excludedDefaultPaths['Documents'] ?? [];
 
-    for (final dirPath in searchDirs) {
-      if (_isPathExcluded(dirPath, excluded)) continue;
-      await _scanDirectoryRecursively(
-        dirPath,
-        'doc',
-        (file) => docs.add(file),
-      );
-    }
-
-    final docPaths = _customCategoryPaths['Documents'] ?? [];
-    for (final dirPath in docPaths) {
-      if (await Directory(dirPath).exists()) {
+      for (final dirPath in searchDirs) {
+        if (_isPathExcluded(dirPath, excluded)) continue;
         await _scanDirectoryRecursively(
           dirPath,
           'doc',
-          (file) {
-            if (!docs.any((d) => d.path == file.path)) {
-              docs.add(file);
-            }
-          },
+          (file) => docs.add(file),
         );
       }
-    }
 
-    _documents = docs;
+      final docPaths = _customCategoryPaths['Documents'] ?? [];
+      for (final dirPath in docPaths) {
+        if (await Directory(dirPath).exists()) {
+          await _scanDirectoryRecursively(
+            dirPath,
+            'doc',
+            (file) {
+              if (!docs.any((d) => d.path == file.path)) {
+                docs.add(file);
+              }
+            },
+          );
+        }
+      }
+
+      _documents = docs;
+    } catch (e) {
+      debugPrint('[MediaProvider] Error in _loadDocuments: $e');
+      _documents = [];
+    }
   }
 
   static const List<String> _archiveExtensions = ['.zip', '.tar', '.gz', '.bz2', '.rar', '.7z'];
   static const List<String> _apkExtensions = ['.apk', '.xapk', '.apks', '.aab'];
 
   Future<void> _loadArchivesDownloadsAndApks() async {
-    final arch = <FileSystemEntity>[];
-    final dl = <FileSystemEntity>[];
-    final apkList = <FileSystemEntity>[];
+    try {
+      final arch = <FileSystemEntity>[];
+      final dl = <FileSystemEntity>[];
+      final apkList = <FileSystemEntity>[];
 
-    // For downloads
-    final dlDirs = ['/storage/emulated/0/Download', '/storage/emulated/0/Downloads'];
-    final customDlPaths = _customCategoryPaths['Downloads'] ?? [];
-    final allDlDirs = {...dlDirs, ...customDlPaths};
-    final excludedDl = _excludedDefaultPaths['Downloads'] ?? [];
-    for (final dirPath in allDlDirs) {
-      if (_isPathExcluded(dirPath, excludedDl)) continue;
-      final dir = Directory(dirPath);
-      if (await dir.exists()) {
-        try {
-          await for (final entity in dir.list(recursive: false)) {
-            if (entity is File) {
-              if (!dl.any((e) => e.path == entity.path)) {
-                dl.add(entity);
+      // For downloads
+      final dlDirs = ['/storage/emulated/0/Download', '/storage/emulated/0/Downloads'];
+      final customDlPaths = _customCategoryPaths['Downloads'] ?? [];
+      final allDlDirs = {...dlDirs, ...customDlPaths};
+      final excludedDl = _excludedDefaultPaths['Downloads'] ?? [];
+      for (final dirPath in allDlDirs) {
+        if (_isPathExcluded(dirPath, excludedDl)) continue;
+        final dir = Directory(dirPath);
+        if (await dir.exists()) {
+          try {
+            await for (final entity in dir.list(recursive: false)) {
+              if (entity is File) {
+                if (!dl.any((e) => e.path == entity.path)) {
+                  dl.add(entity);
+                }
               }
             }
-          }
-        } catch (_) {}
+          } catch (_) {}
+        }
       }
-    }
 
-    final searchDirs = await _getUserSearchDirs();
-    final excludedArch = _excludedDefaultPaths['Archives'] ?? [];
-    final excludedApk = _excludedDefaultPaths['APKs'] ?? [];
+      final searchDirs = await _getUserSearchDirs();
+      final excludedArch = _excludedDefaultPaths['Archives'] ?? [];
+      final excludedApk = _excludedDefaultPaths['APKs'] ?? [];
 
-    for (final dirPath in searchDirs) {
-      final isArchExcl = _isPathExcluded(dirPath, excludedArch);
-      final isApkExcl = _isPathExcluded(dirPath, excludedApk);
-      if (isArchExcl && isApkExcl) continue;
+      for (final dirPath in searchDirs) {
+        final isArchExcl = _isPathExcluded(dirPath, excludedArch);
+        final isApkExcl = _isPathExcluded(dirPath, excludedApk);
+        if (isArchExcl && isApkExcl) continue;
 
-      await _scanDirectoryRecursively(
-        dirPath,
-        'arch_and_apk',
-        (file) {
-          final ext = p.extension(file.path).toLowerCase();
-          if (_archiveExtensions.contains(ext) && !isArchExcl) {
-            arch.add(file);
-          } else if (_apkExtensions.contains(ext) && !isApkExcl) {
-            apkList.add(file);
-          }
-        },
-      );
-    }
-
-    final archPaths = _customCategoryPaths['Archives'] ?? [];
-    for (final dirPath in archPaths) {
-      if (await Directory(dirPath).exists()) {
         await _scanDirectoryRecursively(
           dirPath,
-          'arch',
+          'arch_and_apk',
           (file) {
-            if (!arch.any((d) => d.path == file.path)) {
+            final ext = p.extension(file.path).toLowerCase();
+            if (_archiveExtensions.contains(ext) && !isArchExcl) {
               arch.add(file);
-            }
-          },
-        );
-      }
-    }
-
-    final apkPaths = _customCategoryPaths['APKs'] ?? [];
-    for (final dirPath in apkPaths) {
-      if (await Directory(dirPath).exists()) {
-        await _scanDirectoryRecursively(
-          dirPath,
-          'apk',
-          (file) {
-            if (!apkList.any((d) => d.path == file.path)) {
+            } else if (_apkExtensions.contains(ext) && !isApkExcl) {
               apkList.add(file);
             }
           },
         );
       }
-    }
 
-    _downloads = dl;
-    _archives = arch;
-    _apks = apkList;
+      final archPaths = _customCategoryPaths['Archives'] ?? [];
+      for (final dirPath in archPaths) {
+        if (await Directory(dirPath).exists()) {
+          await _scanDirectoryRecursively(
+            dirPath,
+            'arch',
+            (file) {
+              if (!arch.any((d) => d.path == file.path)) {
+                arch.add(file);
+              }
+            },
+          );
+        }
+      }
+
+      final apkPaths = _customCategoryPaths['APKs'] ?? [];
+      for (final dirPath in apkPaths) {
+        if (await Directory(dirPath).exists()) {
+          await _scanDirectoryRecursively(
+            dirPath,
+            'apk',
+            (file) {
+              if (!apkList.any((d) => d.path == file.path)) {
+                apkList.add(file);
+              }
+            },
+          );
+        }
+      }
+
+      _downloads = dl;
+      _archives = arch;
+      _apks = apkList;
+    } catch (e) {
+      debugPrint('[MediaProvider] Error in _loadArchivesDownloadsAndApks: $e');
+      _downloads = [];
+      _archives = [];
+      _apks = [];
+    }
   }
 
   Future<void> _scanCustomCategories() async {
