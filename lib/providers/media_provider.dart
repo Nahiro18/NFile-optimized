@@ -920,6 +920,10 @@ class MediaProvider extends ChangeNotifier {
             await Permission.audio.request();
           } else {
             PhotoManager.setIgnorePermissionCheck(true);
+            await Permission.accessMediaLocation.request();
+            try {
+              ps = await PhotoManager.requestPermissionExtend();
+            } catch (_) {}
           }
         } catch (_) {}
       }
@@ -1127,10 +1131,15 @@ class MediaProvider extends ChangeNotifier {
     } catch (_) {}
     if (searchDirs.isEmpty) {
       searchDirs.addAll([
+        '/storage/emulated/0/DCIM',
+        '/storage/emulated/0/Pictures',
+        '/storage/emulated/0/Music',
+        '/storage/emulated/0/Movies',
         '/storage/emulated/0/Download',
         '/storage/emulated/0/Downloads',
         '/storage/emulated/0/Documents',
         '/storage/emulated/0/Telegram',
+        '/storage/emulated/0/WhatsApp',
         '/storage/emulated/0/WhatsApp/Media',
       ]);
     }
