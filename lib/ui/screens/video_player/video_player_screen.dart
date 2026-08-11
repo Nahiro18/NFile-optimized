@@ -414,16 +414,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         fit: StackFit.expand,
         children: [
           // Main Video Surface
-          Video(
-            controller: controller,
-            controls: NoVideoControls,
-            fit: BoxFit.contain,
+          Hero(
+            tag: 'media-${widget.videoPath}',
+            child: Video(
+              controller: controller,
+              controls: NoVideoControls,
+              fit: BoxFit.contain,
+            ),
           ),
 
           // Brightness Dimming Overlay
           IgnorePointer(
             child: Container(
-              color: Colors.black.withOpacity(1.0 - _brightness),
+              color: Colors.black.withValues(alpha: 1.0 - _brightness),
             ),
           ),
 
@@ -474,7 +477,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     gradient: RadialGradient(
                       center: Alignment.centerRight,
                       radius: 1.0,
-                      colors: [Colors.white.withOpacity(0.2), Colors.transparent],
+                      colors: [Colors.white.withValues(alpha: 0.2), Colors.transparent],
                     ),
                   ),
                 ),
@@ -492,7 +495,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     gradient: RadialGradient(
                       center: Alignment.centerLeft,
                       radius: 1.0,
-                      colors: [Colors.white.withOpacity(0.2), Colors.transparent],
+                      colors: [Colors.white.withValues(alpha: 0.2), Colors.transparent],
                     ),
                   ),
                 ),
@@ -535,9 +538,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.75),
+                    color: Colors.black.withValues(alpha: 0.75),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

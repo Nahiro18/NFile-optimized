@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -9,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:collection/collection.dart';
 import '../services/preferences_service.dart';
 import '../models/custom_shortcut_model.dart';
 import '../models/file_item_model.dart';
@@ -24,51 +27,74 @@ enum MediaSortOrder {
   sizeSmallest,
 }
 
+/// Cache LRU para thumbnails con límite de tamaño
 class ThumbnailCache {
-  static final Map<String, Uint8List?> _cache = {};
+  static final LinkedHashMap<String, Uint8List?> _cache = LinkedHashMap<String, Uint8List?>();
   static final Map<String, Future<Uint8List?>> _pending = {};
   static String? _cacheDir;
-
+  
+  static const int MAX_CACHE_SIZE = 100; // Máximo 100 thumbnails en memoria
+  static const int MAX_CACHE_SIZE_MB = 50; // Máximo 50MB
+  
   static Future<void> init() async {
     if (_cacheDir != null) return;
+
     try {
       final dir = await getTemporaryDirectory();
       final folder = Directory('${dir.path}/nfile_thumbnails');
+
       if (!await folder.exists()) {
         await folder.create(recursive: true);
       }
+
       _cacheDir = folder.path;
-      try {
-        final files = folder.listSync();
-        for (final f in files) {
-          if (f is File && f.path.endsWith('.thumb')) {
-            final key = f.path.split('/').last.split('\\').last.replaceAll('.thumb', '');
-            if (!_cache.containsKey(key)) {
-              _cache[key] = f.readAsBytesSync();
-            }
-          }
-        }
-      } catch (_) {}
-    } catch (_) {}
+      
+      // NO cargar todos los thumbnails al inicio - carga lazy
+      debugPrint('[ThumbnailCache] Initialized at: $_cacheDir');
+    } catch (e) {
+      debugPrint('[ThumbnailCache] Init error: $e');
+    }
   }
 
+  /// Elimina los items más antiguos si el cache excede el límite
+  static void _evictIfNeeded() {
+    while (_cache.length > MAX_CACHE_SIZE) {
+      final oldestKey = _cache.keys.first;
+      _cache.remove(oldestKey);
+      debugPrint('[ThumbnailCache] Evicted: $oldestKey');
+    }
+  }
+
+  /// Obtiene un thumbnail del cache o lo genera
   static Future<Uint8List?> get(AssetEntity asset) async {
     final key = asset.id;
-    if (_cache.containsKey(key) && _cache[key] != null) return _cache[key];
-    if (_pending.containsKey(key)) return _pending[key];
+
+    // Verificar cache en memoria
+    if (_cache.containsKey(key) && _cache[key] != null) {
+      return _cache[key];
+    }
+
+    // Verificar si ya hay una petición pendiente
+    if (_pending.containsKey(key)) {
+      return _pending[key];
+    }
 
     final completer = Completer<Uint8List?>();
     _pending[key] = completer.future;
 
     try {
       await init();
+
+      // Intentar cargar desde disco
       if (_cacheDir != null) {
         final sanitizedKey = key.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
         final file = File('$_cacheDir/$sanitizedKey.thumb');
+
         if (await file.exists()) {
           final bytes = await file.readAsBytes();
           if (bytes.isNotEmpty) {
             _cache[key] = bytes;
+            _evictIfNeeded();
             _pending.remove(key);
             completer.complete(bytes);
             return bytes;
@@ -76,19 +102,26 @@ class ThumbnailCache {
         }
       }
 
+      // Generar thumbnail
       final data = await asset.thumbnailDataWithSize(const ThumbnailSize.square(300));
+
       if (data != null && data.isNotEmpty) {
         _cache[key] = data;
+        _evictIfNeeded();
+
+        // Guardar en disco
         if (_cacheDir != null) {
           final sanitizedKey = key.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
           final file = File('$_cacheDir/$sanitizedKey.thumb');
           await file.writeAsBytes(data, flush: true);
         }
       }
+
       _pending.remove(key);
       completer.complete(data);
       return data;
     } catch (e) {
+      debugPrint('[ThumbnailCache] Error getting thumbnail: $e');
       _pending.remove(key);
       completer.complete(null);
       return null;
@@ -96,6 +129,7 @@ class ThumbnailCache {
   }
 
   static Uint8List? getCached(String id) => _cache[id];
+
   static bool hasCached(String id) => _cache.containsKey(id) && _cache[id] != null;
 
   static void clear() {
@@ -104,7 +138,10 @@ class ThumbnailCache {
     if (_cacheDir != null) {
       try {
         Directory(_cacheDir!).deleteSync(recursive: true);
-      } catch (_) {}
+        debugPrint('[ThumbnailCache] Cleared all thumbnails');
+      } catch (e) {
+        debugPrint('[ThumbnailCache] Error clearing: $e');
+      }
     }
   }
 }
@@ -735,28 +772,36 @@ class MediaProvider extends ChangeNotifier {
     try {
       final dir = await getTemporaryDirectory();
       final cacheFile = File('${dir.path}/media_meta_cache.json');
+      
+      // Limitar cache a últimos 1000 items por categoría para evitar archivos gigantes
       final map = {
         'categoryOrder': _categoryOrder,
         'activeCategories': _activeCategories,
-        'images': _images.map((a) => _assetToMap(a)).toList(),
-        'videos': _videos.map((a) => _assetToMap(a)).toList(),
-        'screenshots': _screenshots.map((a) => _assetToMap(a)).toList(),
-        'audios': _audios.map((s) => s.getMap).toList(),
-        'customImages': _customImages.map((e) => e.path).toList(),
-        'customVideos': _customVideos.map((e) => e.path).toList(),
-        'customScreenshots': _customScreenshots.map((e) => e.path).toList(),
-        'documents': _documents.map((e) => e.path).toList(),
-        'archives': _archives.map((e) => e.path).toList(),
-        'downloads': _downloads.map((e) => e.path).toList(),
-        'apks': _apks.map((e) => e.path).toList(),
+        'images': _images.take(1000).map((a) => _assetToMap(a)).toList(),
+        'videos': _videos.take(500).map((a) => _assetToMap(a)).toList(),
+        'screenshots': _screenshots.take(500).map((a) => _assetToMap(a)).toList(),
+        'audios': _audios.take(1000).map((s) => s.getMap).toList(),
+        'customImages': _customImages.take(500).map((e) => e.path).toList(),
+        'customVideos': _customVideos.take(500).map((e) => e.path).toList(),
+        'customScreenshots': _customScreenshots.take(500).map((e) => e.path).toList(),
+        'documents': _documents.take(1000).map((e) => e.path).toList(),
+        'archives': _archives.take(500).map((e) => e.path).toList(),
+        'downloads': _downloads.take(500).map((e) => e.path).toList(),
+        'apks': _apks.take(500).map((e) => e.path).toList(),
         'recentFiles': _recentFiles.take(30).map((e) => {
           'path': e.path,
           'size': e.size,
           'modified': e.modified.millisecondsSinceEpoch,
         }).toList(),
       };
-      await cacheFile.writeAsString(jsonEncode(map), flush: true);
-    } catch (_) {}
+      
+      final jsonStr = jsonEncode(map);
+      await cacheFile.writeAsString(jsonStr, flush: true);
+      
+      debugPrint('[MediaProvider] Cache saved successfully');
+    } catch (e) {
+      debugPrint('[MediaProvider] Error saving cache: $e');
+    }
   }
 
   Future<void> refreshMediaBackground() async {
@@ -1055,32 +1100,68 @@ class MediaProvider extends ChangeNotifier {
     return searchDirs;
   }
 
+Future<List<String>> _isolateDirectoryScan(Map<String, dynamic> params) async {
+  final startPath = params['startPath'] as String;
+  final filterType = params['filterType'] as String;
+  final docExts = params['docExts'] as List<String>? ?? [];
+  final archExts = params['archExts'] as List<String>? ?? [];
+  final apkExts = params['apkExts'] as List<String>? ?? [];
+  
+  final result = <String>[];
+  final queue = <String>[startPath];
+  
+  bool shouldInclude(String path) {
+    final ext = p.extension(path).toLowerCase();
+    switch (filterType) {
+      case 'doc': return docExts.contains(ext);
+      case 'arch_and_apk': return archExts.contains(ext) || apkExts.contains(ext);
+      case 'arch': return archExts.contains(ext);
+      case 'apk': return apkExts.contains(ext);
+      case 'image': return ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.heic', '.heif', '.svg'].contains(ext);
+      case 'video': return ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.3gp'].contains(ext);
+      case 'audio': return ['.mp3', '.wav', '.ogg', '.m4a', '.flac', '.aac', '.wma', '.amr', '.opus'].contains(ext);
+      default: return false;
+    }
+  }
+
+  while (queue.isNotEmpty) {
+    final currentPath = queue.removeAt(0);
+    final dir = Directory(currentPath);
+    try {
+      final entities = dir.listSync(recursive: false);
+      for (final entity in entities) {
+        try {
+          if (entity is Directory) {
+            final name = p.basename(entity.path);
+            if (!name.startsWith('.') && name != 'Android') {
+              queue.add(entity.path);
+            }
+          } else if (entity is File) {
+            if (shouldInclude(entity.path)) {
+              result.add(entity.path);
+            }
+          }
+        } catch (_) {}
+      }
+    } catch (_) {}
+  }
+  return result;
+}
+
   Future<void> _scanDirectoryRecursively(
     String startPath,
-    bool Function(String ext) shouldInclude,
+    String filterType,
     void Function(File file) onFound,
   ) async {
-    final queue = <String>[startPath];
-    while (queue.isNotEmpty) {
-      final currentPath = queue.removeAt(0);
-      final dir = Directory(currentPath);
-      try {
-        await for (final entity in dir.list(recursive: false)) {
-          try {
-            if (entity is Directory) {
-              final name = p.basename(entity.path);
-              if (!name.startsWith('.') && name != 'Android') {
-                queue.add(entity.path);
-              }
-            } else if (entity is File) {
-              final ext = p.extension(entity.path).toLowerCase();
-              if (shouldInclude(ext)) {
-                onFound(entity);
-              }
-            }
-          } catch (_) {}
-        }
-      } catch (_) {}
+    final resultPaths = await compute(_isolateDirectoryScan, {
+      'startPath': startPath,
+      'filterType': filterType,
+      'docExts': _docExtensions,
+      'archExts': _archiveExtensions,
+      'apkExts': _apkExtensions,
+    });
+    for (final path in resultPaths) {
+      onFound(File(path));
     }
   }
 
@@ -1093,7 +1174,7 @@ class MediaProvider extends ChangeNotifier {
       if (_isPathExcluded(dirPath, excluded)) continue;
       await _scanDirectoryRecursively(
         dirPath,
-        (ext) => _docExtensions.contains(ext),
+        'doc',
         (file) => docs.add(file),
       );
     }
@@ -1103,7 +1184,7 @@ class MediaProvider extends ChangeNotifier {
       if (await Directory(dirPath).exists()) {
         await _scanDirectoryRecursively(
           dirPath,
-          (ext) => _docExtensions.contains(ext),
+          'doc',
           (file) {
             if (!docs.any((d) => d.path == file.path)) {
               docs.add(file);
@@ -1156,7 +1237,7 @@ class MediaProvider extends ChangeNotifier {
 
       await _scanDirectoryRecursively(
         dirPath,
-        (ext) => _archiveExtensions.contains(ext) || _apkExtensions.contains(ext),
+        'arch_and_apk',
         (file) {
           final ext = p.extension(file.path).toLowerCase();
           if (_archiveExtensions.contains(ext) && !isArchExcl) {
@@ -1173,7 +1254,7 @@ class MediaProvider extends ChangeNotifier {
       if (await Directory(dirPath).exists()) {
         await _scanDirectoryRecursively(
           dirPath,
-          (ext) => _archiveExtensions.contains(ext),
+          'arch',
           (file) {
             if (!arch.any((d) => d.path == file.path)) {
               arch.add(file);
@@ -1188,7 +1269,7 @@ class MediaProvider extends ChangeNotifier {
       if (await Directory(dirPath).exists()) {
         await _scanDirectoryRecursively(
           dirPath,
-          (ext) => _apkExtensions.contains(ext),
+          'apk',
           (file) {
             if (!apkList.any((d) => d.path == file.path)) {
               apkList.add(file);
@@ -1205,16 +1286,16 @@ class MediaProvider extends ChangeNotifier {
 
   Future<void> _scanCustomCategories() async {
     final imagePaths = _customCategoryPaths['Images'] ?? [];
-    _customImages = await _scanCustomPaths(imagePaths, FileUtils.isImage);
+    _customImages = await _scanCustomPaths(imagePaths, 'image');
 
     final videoPaths = _customCategoryPaths['Videos'] ?? [];
-    _customVideos = await _scanCustomPaths(videoPaths, FileUtils.isVideo);
+    _customVideos = await _scanCustomPaths(videoPaths, 'video');
 
     final screenshotPaths = _customCategoryPaths['Screenshots'] ?? [];
-    _customScreenshots = await _scanCustomPaths(screenshotPaths, FileUtils.isImage);
+    _customScreenshots = await _scanCustomPaths(screenshotPaths, 'image');
 
     final audioPaths = _customCategoryPaths['Audio'] ?? [];
-    final customAudFiles = await _scanCustomPaths(audioPaths, FileUtils.isAudio);
+    final customAudFiles = await _scanCustomPaths(audioPaths, 'audio');
     _audios.removeWhere((song) => song.id >= 900000);
     final existingAudioPaths = _audios.map((s) => s.data).toSet();
     for (int i = 0; i < customAudFiles.length; i++) {
@@ -1241,7 +1322,7 @@ class MediaProvider extends ChangeNotifier {
 
     // Documents custom path scan and merge
     final docPaths = _customCategoryPaths['Documents'] ?? [];
-    final customDocs = await _scanCustomPaths(docPaths, (ext) => _docExtensions.contains(ext));
+    final customDocs = await _scanCustomPaths(docPaths, 'doc');
     _documents.removeWhere((entity) {
       final isInCustomPath = docPaths.any((dir) => p.isWithin(dir, entity.path));
       if (isInCustomPath) {
@@ -1257,7 +1338,7 @@ class MediaProvider extends ChangeNotifier {
 
     // Archives custom path scan and merge
     final archPaths = _customCategoryPaths['Archives'] ?? [];
-    final customArch = await _scanCustomPaths(archPaths, (ext) => _archiveExtensions.contains(ext));
+    final customArch = await _scanCustomPaths(archPaths, 'arch');
     _archives.removeWhere((entity) {
       final isInCustomPath = archPaths.any((dir) => p.isWithin(dir, entity.path));
       if (isInCustomPath) {
@@ -1273,7 +1354,7 @@ class MediaProvider extends ChangeNotifier {
 
     // APKs custom path scan and merge
     final apkPaths = _customCategoryPaths['APKs'] ?? [];
-    final customApks = await _scanCustomPaths(apkPaths, (ext) => _apkExtensions.contains(ext));
+    final customApks = await _scanCustomPaths(apkPaths, 'apk');
     _apks.removeWhere((entity) {
       final isInCustomPath = apkPaths.any((dir) => p.isWithin(dir, entity.path));
       if (isInCustomPath) {
@@ -1316,13 +1397,13 @@ class MediaProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<File>> _scanCustomPaths(List<String> paths, bool Function(String path) filter) async {
+  Future<List<File>> _scanCustomPaths(List<String> paths, String filterType) async {
     final files = <File>[];
     for (final path in paths) {
       if (await Directory(path).exists()) {
         await _scanDirectoryRecursively(
           path,
-          filter,
+          filterType,
           (file) => files.add(file),
         );
       }

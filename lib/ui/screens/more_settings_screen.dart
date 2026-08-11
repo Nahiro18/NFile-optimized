@@ -60,17 +60,17 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 6),
-      color: theme.colorScheme.surface.withOpacity(0.5),
+      color: theme.colorScheme.surface.withValues(alpha: 0.5),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.outline.withOpacity(0.1)),
+        side: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.1)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: theme.colorScheme.primary, size: 22),
@@ -83,10 +83,10 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
           padding: const EdgeInsets.only(top: 4.0),
           child: Text(
             subtitle,
-            style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withOpacity(0.6)),
+            style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
           ),
         ),
-        trailing: Icon(Icons.chevron_right_rounded, color: theme.colorScheme.onSurface.withOpacity(0.4), size: 22),
+        trailing: Icon(Icons.chevron_right_rounded, color: theme.colorScheme.onSurface.withValues(alpha: 0.4), size: 22),
         onTap: () {
           Navigator.push(
             context,
@@ -232,7 +232,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     hintText: 'Search settings...',
                     border: InputBorder.none,
                     hintStyle: TextStyle(
-                      color: theme.colorScheme.onSurface.withOpacity(0.4),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                     ),
                   ),
                   onChanged: (val) {
@@ -294,7 +294,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     'Settings Categories',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface.withOpacity(0.8),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                     ),
                   ),
                 ),
@@ -372,7 +372,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withOpacity(0.08),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.08),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -393,7 +393,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                         Text(
                           'Try searching for another keyword',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.55),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
                           ),
                         ),
                       ],
@@ -1023,7 +1023,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
       child: Text(
         title.toUpperCase(),
         style: TextStyle(
-          color: theme.colorScheme.primary.withOpacity(0.8),
+          color: theme.colorScheme.primary.withValues(alpha: 0.8),
           fontSize: 12,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.2,
@@ -1058,23 +1058,23 @@ class SettingsTile extends StatelessWidget {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 4),
-      color: theme.colorScheme.surface.withOpacity(0.5),
+      color: theme.colorScheme.surface.withValues(alpha: 0.5),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.outline.withOpacity(0.1)),
+        side: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.1)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: NfileIcon(icon, color: theme.colorScheme.primary, size: 22),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-        subtitle: Text(subtitle, style: TextStyle(fontSize: 13, color: theme.colorScheme.onSurface.withOpacity(0.6))),
+        subtitle: Text(subtitle, style: TextStyle(fontSize: 13, color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
         trailing: trailing != null ? IgnorePointer(child: trailing) : null,
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -1933,7 +1933,7 @@ void _showTrailingInfoTypePickerDialog(BuildContext context, FileManagerProvider
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
+                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2))),
                   ),
                   const SizedBox(height: 16),
                   Padding(
@@ -1945,7 +1945,7 @@ void _showTrailingInfoTypePickerDialog(BuildContext context, FileManagerProvider
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
                       'Choose what is displayed on the right side of files and folders when the 3-dot action buttons are hidden.',
-                      style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 13),
+                      style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -1967,7 +1967,7 @@ void _showTrailingInfoTypePickerDialog(BuildContext context, FileManagerProvider
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.primary.withOpacity(0.1),
+                            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
@@ -1981,10 +1981,10 @@ void _showTrailingInfoTypePickerDialog(BuildContext context, FileManagerProvider
                           ),
                         ),
                         title: Text(name, style: TextStyle(fontWeight: isSelected ? FontWeight.bold : FontWeight.w600)),
-                        subtitle: Text(desc, style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withOpacity(0.5))),
+                        subtitle: Text(desc, style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.5))),
                         trailing: isSelected
                             ? Icon(Icons.radio_button_checked_rounded, color: theme.colorScheme.primary)
-                            : Icon(Icons.radio_button_off_rounded, color: theme.colorScheme.onSurface.withOpacity(0.3)),
+                            : Icon(Icons.radio_button_off_rounded, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
                         onTap: () {
                           fileManager.setTrailingInfoType(key);
                           Navigator.pop(ctx);
@@ -2029,7 +2029,7 @@ void _showExitOptionPickerDialog(BuildContext context, FileManagerProvider fileM
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
+                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2))),
                   ),
                   const SizedBox(height: 16),
                   Padding(
@@ -2053,7 +2053,7 @@ void _showExitOptionPickerDialog(BuildContext context, FileManagerProvider fileM
                         subtitle: Text(desc, style: const TextStyle(fontSize: 12)),
                         trailing: isSelected 
                             ? Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary) 
-                            : Icon(Icons.circle_outlined, color: theme.colorScheme.onSurface.withOpacity(0.4)),
+                            : Icon(Icons.circle_outlined, color: theme.colorScheme.onSurface.withValues(alpha: 0.4)),
                         onTap: () {
                           fileManager.setExitOption(key);
                           Navigator.pop(ctx);
@@ -2107,7 +2107,7 @@ void _showThemePickerDialog(BuildContext context, FileManagerProvider fileManage
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
+                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2))),
                   ),
                   const SizedBox(height: 16),
                   Padding(
@@ -2188,7 +2188,7 @@ void _showFolderIconPickerDialog(BuildContext context, FileManagerProvider fileM
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
+                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2))),
                   ),
                   const SizedBox(height: 16),
                   Padding(
@@ -2212,7 +2212,7 @@ void _showFolderIconPickerDialog(BuildContext context, FileManagerProvider fileM
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.primary.withOpacity(0.1),
+                            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(icon, color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.primary, size: 20),
@@ -2263,7 +2263,7 @@ void _showMenuIconStylePickerDialog(BuildContext context, FileManagerProvider fi
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
+                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2))),
                   ),
                   const SizedBox(height: 16),
                   Padding(
@@ -2287,7 +2287,7 @@ void _showMenuIconStylePickerDialog(BuildContext context, FileManagerProvider fi
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.primary.withOpacity(0.1),
+                            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(icon, color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.primary, size: 20),
@@ -2316,7 +2316,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
     context: context,
     barrierDismissible: true,
     barrierLabel: 'App Icon Picker',
-    barrierColor: Colors.black.withOpacity(0.55),
+    barrierColor: Colors.black.withValues(alpha: 0.55),
     transitionDuration: const Duration(milliseconds: 250),
     pageBuilder: (context, anim1, anim2) => const SizedBox.shrink(),
     transitionBuilder: (context, anim1, anim2, child) {
@@ -2425,12 +2425,12 @@ Widget _buildIconOptionCard(
   final isSelected = fileManager.activeAppIcon == id;
 
   return Card(
-    color: isSelected ? theme.colorScheme.primaryContainer.withOpacity(0.4) : theme.colorScheme.surfaceVariant.withOpacity(0.15),
+    color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4) : theme.colorScheme.surfaceVariant.withValues(alpha: 0.15),
     elevation: 0,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(16),
       side: BorderSide(
-        color: isSelected ? theme.colorScheme.primary : theme.dividerColor.withOpacity(0.08),
+        color: isSelected ? theme.colorScheme.primary : theme.dividerColor.withValues(alpha: 0.08),
         width: isSelected ? 2.0 : 1.0,
       ),
     ),
@@ -2461,7 +2461,7 @@ Widget _buildIconOptionCard(
                 errorBuilder: (_, __, ___) => Container(
                   width: 56,
                   height: 56,
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   child: const Icon(Icons.broken_image, size: 24),
                 ),
               ),
@@ -2516,7 +2516,7 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
+                    child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2))),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -2526,7 +2526,7 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                   const SizedBox(height: 6),
                   Text(
                     'Select a beautiful typeface to customize NFile\'s overall visual theme',
-                    style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 13, fontFamily: 'LexendDeca'),
+                    style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13, fontFamily: 'LexendDeca'),
                   ),
                   const SizedBox(height: 16),
                   ...options.map((opt) {
@@ -2546,13 +2546,13 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                         opt['desc']!,
                         style: TextStyle(
                           fontSize: 12,
-                          color: theme.colorScheme.onSurface.withOpacity(0.5),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                           fontFamily: 'LexendDeca',
                         ),
                       ),
                       trailing: isSelected
                           ? Icon(Icons.radio_button_checked_rounded, color: theme.colorScheme.primary)
-                          : Icon(Icons.radio_button_off_rounded, color: theme.colorScheme.onSurface.withOpacity(0.3)),
+                          : Icon(Icons.radio_button_off_rounded, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
                       onTap: () {
                         fileManager.setFontFamilyOption(opt['key']!);
                         Navigator.pop(ctx);
@@ -2571,7 +2571,7 @@ void _showFontFamilyPickerDialog(BuildContext context, FileManagerProvider fileM
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(46),
                       foregroundColor: theme.colorScheme.primary,
-                      side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.5)),
+                      side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.5)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                     onPressed: () async {
@@ -2674,7 +2674,7 @@ void _showAutoDeleteDaysPickerDialog(BuildContext context, ThemeData theme, Void
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.onSurface.withOpacity(0.2),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -2692,7 +2692,7 @@ void _showAutoDeleteDaysPickerDialog(BuildContext context, ThemeData theme, Void
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
                   'Items in the Recycle Bin will be permanently deleted after this duration.',
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -2702,10 +2702,10 @@ void _showAutoDeleteDaysPickerDialog(BuildContext context, ThemeData theme, Void
                 final isSelected = current == days;
 
                 return Card(
-                  color: isSelected ? theme.colorScheme.primary.withOpacity(0.12) : theme.colorScheme.surface,
+                  color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.12) : theme.colorScheme.surface,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: isSelected ? theme.colorScheme.primary : theme.dividerColor.withOpacity(0.08)),
+                    side: BorderSide(color: isSelected ? theme.colorScheme.primary : theme.dividerColor.withValues(alpha: 0.08)),
                   ),
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   child: InkWell(
@@ -2719,7 +2719,7 @@ void _showAutoDeleteDaysPickerDialog(BuildContext context, ThemeData theme, Void
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       child: Row(
                         children: [
-                          Icon(Icons.access_time_rounded, color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.6)),
+                          Icon(Icons.access_time_rounded, color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface.withValues(alpha: 0.6)),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Text(

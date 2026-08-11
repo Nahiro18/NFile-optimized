@@ -9,6 +9,8 @@ import '../../core/icon_fonts/broken_icons.dart';
 import '../../core/utils.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../services/vault_service.dart';
+import '../../services/app_lock_service.dart';
+import '../../services/secure_delete_service.dart';
 import 'image_viewer_screen.dart';
 import 'video_player/video_player_screen.dart';
 import 'audio_player/audio_player_screen.dart';
@@ -107,7 +109,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Lock Option',
-      barrierColor: Colors.black.withOpacity(0.6),
+      barrierColor: Colors.black.withValues(alpha: 0.6),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) => const SizedBox.shrink(),
       transitionBuilder: (context, anim1, anim2, child) {
@@ -126,7 +128,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.12),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -177,7 +179,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: theme.colorScheme.primary,
                         minimumSize: const Size(double.maxFinite, 52),
-                        side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.4)),
+                        side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.4)),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                       onPressed: () => Navigator.pop(context, false), // false = In-place scramble
@@ -328,9 +330,8 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
 
     try {
       final file = File(record.scrambledPath);
-      if (await file.exists()) {
-        await file.delete();
-      }
+      await SecureDeleteService.deleteSecurely(file);
+      
       final records = await VaultService.loadRecords();
       records.removeWhere((e) => e.id == record.id);
       await VaultService.saveRecords(records);
@@ -482,7 +483,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               letterSpacing: 0.8,
             ),
           ),
@@ -496,7 +497,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          Divider(color: theme.colorScheme.onSurface.withOpacity(0.08)),
+          Divider(color: theme.colorScheme.onSurface.withValues(alpha: 0.08)),
         ],
       ),
     );
@@ -513,7 +514,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
           gradient: LinearGradient(
             colors: isDark
                 ? [const Color(0xFF0B0F19), const Color(0xFF111827), const Color(0xFF030712)]
-                : [theme.colorScheme.primaryContainer.withOpacity(0.3), theme.colorScheme.surface, theme.colorScheme.surface],
+                : [theme.colorScheme.primaryContainer.withValues(alpha: 0.3), theme.colorScheme.surface, theme.colorScheme.surface],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -539,10 +540,43 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                       ),
                     ),
                     const Spacer(),
+                    // Biometric Toggle
+                    FutureBuilder<bool>(
+                      future: AppLockService.hasBiometrics(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data == true) {
+                          final isEnabled = AppLockService.isBiometricEnabled();
+                          return IconButton(
+                            icon: Icon(
+                              isEnabled ? Broken.finger_cricle : Icons.fingerprint_rounded,
+                              color: isEnabled ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                            tooltip: 'Biometric Unlock',
+                            onPressed: () async {
+                              final newState = !isEnabled;
+                              if (newState) {
+                                // Try to authenticate before enabling
+                                final auth = await AppLockService.authenticate(reason: 'Activar biometría para el baúl');
+                                if (auth) {
+                                  await AppLockService.setBiometricEnabled(true);
+                                  // Cache the password we currently have in memory
+                                  await AppLockService.cacheVaultPassword(widget.password);
+                                  if (mounted) setState(() {});
+                                }
+                              } else {
+                                await AppLockService.setBiometricEnabled(false);
+                                if (mounted) setState(() {});
+                              }
+                            },
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.12),
+                        color: Colors.green.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Row(
@@ -587,18 +621,18 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                         : null,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                      borderSide: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.1)),
+                      borderSide: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.1)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.5),
                     ),
                     filled: true,
-                    fillColor: isDark ? Colors.white.withOpacity(0.02) : Colors.black.withOpacity(0.01),
+                    fillColor: isDark ? Colors.white.withValues(alpha: 0.02) : Colors.black.withValues(alpha: 0.01),
                     contentPadding: const EdgeInsets.symmetric(vertical: 0),
                   ),
                 ),
@@ -642,19 +676,19 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
         gradient: LinearGradient(
           colors: isDark
               ? [const Color(0xFF1E293B), const Color(0xFF0F172A)]
-              : [theme.colorScheme.primary.withOpacity(0.04), theme.colorScheme.primary.withOpacity(0.12)],
+              : [theme.colorScheme.primary.withValues(alpha: 0.04), theme.colorScheme.primary.withValues(alpha: 0.12)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: theme.colorScheme.primary.withOpacity(isDark ? 0.15 : 0.2),
+          color: theme.colorScheme.primary.withValues(alpha: isDark ? 0.15 : 0.2),
           width: 1.5,
         ),
         boxShadow: isDark
             ? [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 16,
                   offset: const Offset(0, 4),
                 )
@@ -690,7 +724,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w500,
-                  color: theme.colorScheme.onSurface.withOpacity(0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ],
@@ -698,7 +732,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withOpacity(0.1),
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -717,7 +751,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -740,7 +774,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
             Container(
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.08),
+                color: theme.colorScheme.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -762,7 +796,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 height: 1.5,
               ),
             ),
@@ -789,10 +823,10 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 5.0),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withOpacity(0.02) : Colors.black.withOpacity(0.01),
+            color: isDark ? Colors.white.withValues(alpha: 0.02) : Colors.black.withValues(alpha: 0.01),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.05),
+              color: theme.colorScheme.outline.withValues(alpha: 0.05),
               width: 1.2,
             ),
           ),
@@ -803,7 +837,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: fileColor.withOpacity(0.12),
+                color: fileColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
@@ -830,7 +864,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -838,7 +872,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                     width: 4,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.onSurface.withOpacity(0.3),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -863,7 +897,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
             trailing: PopupMenuButton<String>(
               icon: Icon(
                 Icons.more_vert_rounded,
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               onSelected: (val) {

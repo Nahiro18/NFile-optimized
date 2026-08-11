@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqflite/sqflite.dart';
 import 'root_shizuku_service.dart';
 
 class RecycleBinItem {
@@ -42,7 +43,10 @@ class RecycleBinItem {
 
 class RecycleBinService {
   static SharedPreferences? _prefs;
-  static const String _keyRecycleBinItems = 'recycle_bin_items';
+  static Database? _database;
+  static const String _tableName = 'recycle_bin_items';
+  static const String _keyRecycleBinItems = 'recycle_bin_items'; // For migration
+  
   static const String _keyEnableRecycleBin = 'enable_recycle_bin';
   static const String _keyRecycleBinAutoDeleteDays = 'recycle_bin_auto_delete_days';
 
@@ -52,13 +56,89 @@ class RecycleBinService {
 
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
-    final list = _prefs?.getStringList(_keyRecycleBinItems) ?? [];
-    _trashItems = list
-        .map((itemStr) => RecycleBinItem.fromJson(jsonDecode(itemStr)))
-        .toList();
+    
+    // Configurar SQLite
+    final dbPath = await getDatabasesPath();
+    final path = p.join(dbPath, 'recycle_bin.db');
+    
+    _database = await openDatabase(
+      path,
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''
+          CREATE TABLE $_tableName (
+            id TEXT PRIMARY KEY,
+            original_path TEXT NOT NULL,
+            name TEXT NOT NULL,
+            deleted_at TEXT NOT NULL,
+            size INTEGER NOT NULL,
+            is_directory INTEGER NOT NULL
+          )
+        ''');
+      },
+    );
+    
+    // Cargar items desde BD
+    await _loadFromDatabase();
+    
+    // Migrar items antiguos si existen en SharedPreferences
+    await _migrateFromPrefs();
     
     // Automatically trigger background cleanup of expired items on launch
     await autoCleanupExpired();
+  }
+
+  static Future<void> _migrateFromPrefs() async {
+    final list = _prefs?.getStringList(_keyRecycleBinItems);
+    if (list != null && list.isNotEmpty) {
+      for (final itemStr in list) {
+        try {
+          final item = RecycleBinItem.fromJson(jsonDecode(itemStr));
+          // Verificar que no exista ya
+          if (!_trashItems.any((x) => x.id == item.id)) {
+            await _saveItem(item);
+            _trashItems.add(item);
+          }
+        } catch (_) {}
+      }
+      // Limpiar prefs para no volver a migrar
+      await _prefs?.remove(_keyRecycleBinItems);
+    }
+  }
+
+  static Future<void> _loadFromDatabase() async {
+    final maps = await _database!.query(_tableName);
+    _trashItems = maps.map((map) => RecycleBinItem(
+      id: map['id'] as String,
+      originalPath: map['original_path'] as String,
+      name: map['name'] as String,
+      deletedAt: DateTime.parse(map['deleted_at'] as String),
+      size: map['size'] as int,
+      isDirectory: (map['is_directory'] as int) == 1,
+    )).toList();
+  }
+  
+  static Future<void> _saveItem(RecycleBinItem item) async {
+    await _database!.insert(
+      _tableName,
+      {
+        'id': item.id,
+        'original_path': item.originalPath,
+        'name': item.name,
+        'deleted_at': item.deletedAt.toIso8601String(),
+        'size': item.size,
+        'is_directory': item.isDirectory ? 1 : 0,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+  
+  static Future<void> _deleteItem(String id) async {
+    await _database!.delete(
+      _tableName,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   static bool isEnabled() {
@@ -144,8 +224,9 @@ class RecycleBinService {
       size: size,
       isDirectory: isDirectory,
     );
+    
+    await _saveItem(newItem);
     _trashItems.add(newItem);
-    await _saveToPrefs();
   }
 
   static Future<void> restoreItem(RecycleBinItem item, {bool useRoot = false}) async {
@@ -181,8 +262,8 @@ class RecycleBinService {
       }
     }
 
+    await _deleteItem(item.id);
     _trashItems.removeWhere((x) => x.id == item.id);
-    await _saveToPrefs();
   }
 
   static Future<void> deletePermanently(RecycleBinItem item, {bool useRoot = false}) async {
@@ -202,8 +283,8 @@ class RecycleBinService {
       } catch (_) {}
     }
 
+    await _deleteItem(item.id);
     _trashItems.removeWhere((x) => x.id == item.id);
-    await _saveToPrefs();
   }
 
   static Future<void> emptyBin({bool useRoot = false}) async {
@@ -213,8 +294,11 @@ class RecycleBinService {
         await trashDir.delete(recursive: true);
       } catch (_) {}
     }
+    
+    for (var item in _trashItems) {
+        await _deleteItem(item.id);
+    }
     _trashItems.clear();
-    await _saveToPrefs();
   }
 
   static Future<void> autoCleanupExpired({bool useRoot = false}) async {
@@ -233,11 +317,6 @@ class RecycleBinService {
   }
 
   // --- Internals & Helpers ---
-
-  static Future<void> _saveToPrefs() async {
-    final list = _trashItems.map((item) => jsonEncode(item.toJson())).toList();
-    await _prefs?.setStringList(_keyRecycleBinItems, list);
-  }
 
   static Future<int> _getFolderSize(String path) async {
     int totalSize = 0;

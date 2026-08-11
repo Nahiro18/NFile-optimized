@@ -19,18 +19,27 @@ import 'services/intent_handler_service.dart';
 import 'services/pin_service.dart';
 import 'services/recycle_bin_service.dart';
 import 'services/audio_background_handler.dart';
+import 'services/app_lock_service.dart';
 import 'package:audio_service/audio_service.dart';
 import 'ui/screens/home_screen.dart';
 
+import 'core/service_locator.dart';
+import 'core/events/app_event_bus.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setupServiceLocator();
   MediaKit.ensureInitialized();
   await PreferencesService.init();
   await PinService.init();
   await NetworkConnectionsService.init();
   await RecycleBinService.init();
+  await AppLockService.init();
 
   // Load custom font dynamically if configured
   try {
@@ -122,6 +131,8 @@ class _NFileAppState extends State<NFileApp> {
   bool _sharingObserverSetup = false;
   bool _isResolvingIntent = false;
   StreamSubscription<List<SharedMediaFile>>? _sharingIntentSubscription;
+  StreamSubscription<FileOperationSuccessEvent>? _successEventSubscription;
+  StreamSubscription<FileOperationErrorEvent>? _errorEventSubscription;
 
   @override
   void initState() {
@@ -156,10 +167,31 @@ class _NFileAppState extends State<NFileApp> {
     // Setup sharing observer immediately to catch incoming intents at the earliest possible frame!
     _setupSharingIntentObserver();
     _initializeApplication();
+
+    _successEventSubscription = AppEventBus.instance.on<FileOperationSuccessEvent>().listen((event) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(event.message),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    });
+
+    _errorEventSubscription = AppEventBus.instance.on<FileOperationErrorEvent>().listen((event) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(event.errorMessage),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    });
   }
 
   @override
   void dispose() {
+    _successEventSubscription?.cancel();
+    _errorEventSubscription?.cancel();
     _sharingIntentSubscription?.cancel();
     super.dispose();
   }
@@ -316,11 +348,22 @@ class _NFileAppState extends State<NFileApp> {
 
             return MaterialApp(
               navigatorKey: navigatorKey,
+              scaffoldMessengerKey: scaffoldMessengerKey,
               title: 'NFile',
               debugShowCheckedModeBanner: false,
               theme: AppTheme.getAppTheme(light: true, seed: baseSeedColor, customScheme: activeLightScheme, fontFamily: fileManager.fontFamilyOption),
               darkTheme: AppTheme.getAppTheme(light: false, pitchBlack: fileManager.amoledMode, seed: baseSeedColor, customScheme: activeDarkScheme, fontFamily: fileManager.fontFamilyOption),
               themeMode: activeThemeMode,
+              supportedLocales: const [
+                Locale('en', ''),
+                Locale('es', ''),
+              ],
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
               builder: (context, child) {
                 final isDark = activeThemeMode == ThemeMode.system
                     ? (MediaQuery.platformBrightnessOf(context) == Brightness.dark)
@@ -397,7 +440,7 @@ class _IntentLoadingScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.08),
+                color: theme.colorScheme.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -411,7 +454,7 @@ class _IntentLoadingScreen extends StatelessWidget {
               width: 48,
               child: LinearProgressIndicator(
                 minHeight: 3,
-                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
                 color: theme.colorScheme.primary,
                 borderRadius: const BorderRadius.all(Radius.circular(2)),
               ),
@@ -421,14 +464,14 @@ class _IntentLoadingScreen extends StatelessWidget {
               'Opening shared document...',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface.withOpacity(0.8),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'Resolving secure content stream',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -456,7 +499,7 @@ class _StoragePermissionShield extends StatelessWidget {
                 Icon(
                   Broken.folder_cross,
                   size: 72,
-                  color: Theme.of(context).colorScheme.error.withOpacity(0.8),
+                  color: Theme.of(context).colorScheme.error.withValues(alpha: 0.8),
                 ),
                 const SizedBox(height: 24),
                 Text(

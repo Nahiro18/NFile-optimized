@@ -2,8 +2,9 @@ import 'dart:io';
 import 'package:ftpconnect/ftpconnect.dart';
 import 'package:path/path.dart' as p;
 import 'remote_client.dart';
+import 'retry_mixin.dart';
 
-class FtpRemoteClient implements RemoteClient {
+class FtpRemoteClient with RetryMixin implements RemoteClient {
   final String host;
   final int port;
   final String username;
@@ -20,17 +21,19 @@ class FtpRemoteClient implements RemoteClient {
 
   @override
   Future<void> connect() async {
-    _ftpConnect = FTPConnect(
-      host,
-      port: port,
-      user: username.isEmpty ? 'anonymous' : username,
-      pass: password.isEmpty ? 'anonymous@' : password,
-      timeout: 15,
-    );
-    final success = await _ftpConnect!.connect();
-    if (!success) {
-      throw Exception('FTP connection failed: could not connect to $host:$port');
-    }
+    return withRetry(() async {
+      _ftpConnect = FTPConnect(
+        host,
+        port: port,
+        user: username.isEmpty ? 'anonymous' : username,
+        pass: password.isEmpty ? 'anonymous@' : password,
+        timeout: 15,
+      );
+      final success = await _ftpConnect!.connect();
+      if (!success) {
+        throw Exception('FTP connection failed: could not connect to $host:$port');
+      }
+    });
   }
 
   @override
@@ -110,35 +113,37 @@ class FtpRemoteClient implements RemoteClient {
     String localPath,
     Function(double progress) onProgress,
   ) async {
-    if (_ftpConnect == null) throw Exception('FTP not connected');
+    return withRetry(() async {
+      if (_ftpConnect == null) throw Exception('FTP not connected');
 
-    final fileName = p.basename(remotePath);
-    final parentPath = p.dirname(remotePath);
+      final fileName = p.basename(remotePath);
+      final parentPath = p.dirname(remotePath);
 
-    // Navigate to the parent directory of the file
-    if (parentPath.isNotEmpty && parentPath != '/') {
-      final ok = await _ftpConnect!.changeDirectory(parentPath);
-      if (!ok) throw Exception('Cannot open directory: $parentPath');
-    }
+      // Navigate to the parent directory of the file
+      if (parentPath.isNotEmpty && parentPath != '/') {
+        final ok = await _ftpConnect!.changeDirectory(parentPath);
+        if (!ok) throw Exception('Cannot open directory: $parentPath');
+      }
 
-    final localFile = File(localPath);
-    if (localFile.existsSync()) {
-      localFile.deleteSync();
-    }
+      final localFile = File(localPath);
+      if (localFile.existsSync()) {
+        localFile.deleteSync();
+      }
 
-    onProgress(0.0);
+      onProgress(0.0);
 
-    final ok = await _ftpConnect!.downloadFile(
-      fileName,
-      localFile,
-      onProgress: (progressPercent, received, fileSize) {
-        // ftpconnect gives progress as 0-100 percent
-        onProgress((progressPercent / 100.0).clamp(0.0, 1.0));
-      },
-    );
+      final ok = await _ftpConnect!.downloadFile(
+        fileName,
+        localFile,
+        onProgress: (progressPercent, received, fileSize) {
+          // ftpconnect gives progress as 0-100 percent
+          onProgress((progressPercent / 100.0).clamp(0.0, 1.0));
+        },
+      );
 
-    if (!ok) throw Exception('Download failed for: $remotePath');
-    onProgress(1.0);
+      if (!ok) throw Exception('Download failed for: $remotePath');
+      onProgress(1.0);
+    });
   }
 
   @override
@@ -147,32 +152,34 @@ class FtpRemoteClient implements RemoteClient {
     String remotePath,
     Function(double progress) onProgress,
   ) async {
-    if (_ftpConnect == null) throw Exception('FTP not connected');
+    return withRetry(() async {
+      if (_ftpConnect == null) throw Exception('FTP not connected');
 
-    final localFile = File(localPath);
-    if (!localFile.existsSync()) throw Exception('Local file not found: $localPath');
+      final localFile = File(localPath);
+      if (!localFile.existsSync()) throw Exception('Local file not found: $localPath');
 
-    final remoteFileName = p.basename(remotePath);
-    final remoteDir = p.dirname(remotePath);
+      final remoteFileName = p.basename(remotePath);
+      final remoteDir = p.dirname(remotePath);
 
-    // Navigate to the destination directory
-    if (remoteDir.isNotEmpty && remoteDir != '/') {
-      await _ftpConnect!.createFolderIfNotExist(remoteDir);
-      final ok = await _ftpConnect!.changeDirectory(remoteDir);
-      if (!ok) throw Exception('Cannot open remote directory: $remoteDir');
-    }
+      // Navigate to the destination directory
+      if (remoteDir.isNotEmpty && remoteDir != '/') {
+        await _ftpConnect!.createFolderIfNotExist(remoteDir);
+        final ok = await _ftpConnect!.changeDirectory(remoteDir);
+        if (!ok) throw Exception('Cannot open remote directory: $remoteDir');
+      }
 
-    onProgress(0.0);
+      onProgress(0.0);
 
-    final ok = await _ftpConnect!.uploadFile(
-      localFile,
-      sRemoteName: remoteFileName,
-      onProgress: (progressPercent, sent, fileSize) {
-        onProgress((progressPercent / 100.0).clamp(0.0, 1.0));
-      },
-    );
+      final ok = await _ftpConnect!.uploadFile(
+        localFile,
+        sRemoteName: remoteFileName,
+        onProgress: (progressPercent, sent, fileSize) {
+          onProgress((progressPercent / 100.0).clamp(0.0, 1.0));
+        },
+      );
 
-    if (!ok) throw Exception('Upload failed for: $localPath');
-    onProgress(1.0);
+      if (!ok) throw Exception('Upload failed for: $localPath');
+      onProgress(1.0);
+    });
   }
 }

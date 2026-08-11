@@ -12,6 +12,8 @@ import '../../services/app_manager_service.dart';
 import '../../providers/media_provider.dart';
 import '../../providers/file_manager_provider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import '../../core/haptics.dart';
+import '../../core/accessibility.dart';
 
 class FileGridItem extends StatelessWidget {
   final FileItemModel file;
@@ -45,19 +47,32 @@ class FileGridItem extends StatelessWidget {
     );
 
     final child = Card(
-      color: isSelected ? theme.colorScheme.primaryContainer.withOpacity(0.4) : theme.colorScheme.surface,
+      color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4) : theme.colorScheme.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: isSelected ? theme.colorScheme.primary : theme.dividerColor.withOpacity(0.1),
+          color: isSelected ? theme.colorScheme.primary : theme.dividerColor.withValues(alpha: 0.1),
           width: isSelected ? 1.5 : 1.0,
         ),
       ),
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(16),
+      child: AccessibleSemantics(
+        label: 'Archivo ${file.name}',
+        hint: isSelected ? 'Toca para deseleccionar' : 'Toca para abrir',
+        onTap: () {
+          NFileHaptics.light();
+          onTap();
+        },
+        child: InkWell(
+          onTap: () {
+            NFileHaptics.light();
+            onTap();
+          },
+          onLongPress: onLongPress != null ? () {
+            NFileHaptics.medium();
+            onLongPress!();
+          } : null,
+          borderRadius: BorderRadius.circular(16),
         child: Stack(
           children: [
             Center(
@@ -77,16 +92,19 @@ class FileGridItem extends StatelessWidget {
                           width: 48 * iconScale,
                           height: 48 * iconScale,
                           decoration: BoxDecoration(
-                            color: isSelected ? theme.colorScheme.primary : iconColor.withOpacity(0.1),
+                            color: isSelected ? theme.colorScheme.primary : iconColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16),
-                            child: _MediaThumbnail(
-                              file: file,
-                              iconScale: iconScale,
-                              isSelected: isSelected,
-                              iconColor: iconColor,
+                            child: Hero(
+                              tag: 'media-${file.path}',
+                              child: _MediaThumbnail(
+                                file: file,
+                                iconScale: iconScale,
+                                isSelected: isSelected,
+                                iconColor: iconColor,
+                              ),
                             ),
                           ),
                         ),
@@ -122,7 +140,7 @@ class FileGridItem extends StatelessWidget {
                       Text(
                         FileUtils.formatBytes(file.size, 1),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+                          color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
@@ -150,7 +168,7 @@ class FileGridItem extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.9),
+                    color: Colors.orange.withValues(alpha: 0.9),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.push_pin_rounded, size: 12, color: Colors.white),
@@ -185,6 +203,7 @@ class FileGridItem extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
 
     return Stack(
@@ -198,10 +217,10 @@ class FileGridItem extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.all(4.0),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.06),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: theme.colorScheme.primary.withOpacity(0.25),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.25),
                     width: 1.5,
                   ),
                 ),
@@ -420,7 +439,7 @@ class _MediaThumbnailState extends State<_MediaThumbnail> {
           Center(
             child: Container(
               padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: Colors.black.withOpacity(0.6), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6), shape: BoxShape.circle),
               child: Icon(FileUtils.getAdaptiveIcon(Broken.video, useMaterialIcons), color: Colors.white, size: 16 * widget.iconScale),
             ),
           ),
@@ -442,7 +461,7 @@ class _MediaThumbnailState extends State<_MediaThumbnail> {
           Center(
             child: Container(
               padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: Colors.black.withOpacity(0.6), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6), shape: BoxShape.circle),
               child: Icon(FileUtils.getAdaptiveIcon(Broken.music, useMaterialIcons), color: Colors.white, size: 16 * widget.iconScale),
             ),
           ),

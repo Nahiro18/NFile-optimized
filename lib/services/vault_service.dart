@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:archive/archive.dart';
+import 'package:flutter/foundation.dart';
 
+/// Registro de archivo en la bóveda
 class VaultFileRecord {
   final String id;
   final String originalName;
@@ -47,39 +51,59 @@ class VaultFileRecord {
     size: json['size'] as int,
     lockedAt: json['lockedAt'] as String,
     isInPlace: json['isInPlace'] as bool,
-    isFolder: json['isFolder'] as bool? ?? false,
+    isFolder: json['isFolder'] as bool ?? false,
   );
 }
 
+/// Servicio de bóveda segura con cifrado AES-256-GCM
 class VaultService {
-  static const String _magicTag = 'NFILE_VAULT_V1';
+  static const String _magicTag = 'NFILE_VAULT_V2';
   static const int _scrambleSize = 8192; // 8 KB
+  static const int _keyLength = 32; // 256 bits
+  static const int _ivLength = 16; // 128 bits
+  static const int _saltLength = 32; // 256 bits
+  static const int _pbkdf2Iterations = 100000;
 
-  // Hashing and Password Management
+  /// Verifica si hay una contraseña configurada
   static Future<bool> isPasswordSet() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey('vault_password_hash');
   }
 
+  /// Configura una nueva contraseña para la bóveda
   static Future<void> setPassword(String password) async {
     final prefs = await SharedPreferences.getInstance();
-    final salt = DateTime.now().microsecondsSinceEpoch.toString();
-    final saltedPassword = password + salt;
-    final hash = sha256.convert(utf8.encode(saltedPassword)).toString();
-    await prefs.setString('vault_salt', salt);
-    await prefs.setString('vault_password_hash', hash);
+    
+    // Generar salt aleatorio de 32 bytes
+    final salt = _generateSecureRandom(_saltLength);
+    
+    // Derivar hash con PBKDF2 (100,000 iteraciones)
+    final hash = _hashPasswordWithPBKDF2(password, salt);
+    
+    await prefs.setString('vault_salt', base64.encode(salt));
+    await prefs.setString('vault_password_hash', base64.encode(hash));
+    
+    debugPrint('[VaultService] Password set successfully');
   }
 
+  /// Verifica si la contraseña proporcionada es correcta
   static Future<bool> verifyPassword(String password) async {
     final prefs = await SharedPreferences.getInstance();
-    final salt = prefs.getString('vault_salt');
-    final hash = prefs.getString('vault_password_hash');
-    if (salt == null || hash == null) return false;
-    final checkHash = sha256.convert(utf8.encode(password + salt)).toString();
-    return hash == checkHash;
+    final saltBase64 = prefs.getString('vault_salt');
+    final hashBase64 = prefs.getString('vault_password_hash');
+    
+    if (saltBase64 == null || hashBase64 == null) return false;
+    
+    final salt = base64.decode(saltBase64);
+    final storedHash = base64.decode(hashBase64);
+    
+    final checkHash = _hashPasswordWithPBKDF2(password, salt);
+    
+    // Comparación constante en tiempo para evitar timing attacks
+    return _constantTimeEquals(storedHash, checkHash);
   }
 
-  // Get Vault Directory
+  /// Obtiene el directorio de la bóveda
   static Future<Directory> getVaultDir() async {
     final docDir = await getApplicationDocumentsDirectory();
     final vaultDir = Directory(p.join(docDir.path, 'vault'));
@@ -89,52 +113,35 @@ class VaultService {
     return vaultDir;
   }
 
-  // Get Metadata JSON File path
+  /// Obtiene el archivo de metadatos
   static Future<File> getMetadataFile() async {
     final vaultDir = await getVaultDir();
     return File(p.join(vaultDir.path, 'metadata.json'));
   }
 
-  // Load locked file records
+  /// Carga todos los registros de archivos cifrados
   static Future<List<VaultFileRecord>> loadRecords() async {
     final file = await getMetadataFile();
     if (!await file.exists()) return [];
+    
     try {
       final str = await file.readAsString();
       final list = jsonDecode(str) as List;
       return list.map((e) => VaultFileRecord.fromJson(e as Map<String, dynamic>)).toList();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[VaultService] Error loading records: $e');
       return [];
     }
   }
 
-  // Save locked file records
+  /// Guarda los registros de archivos cifrados
   static Future<void> saveRecords(List<VaultFileRecord> records) async {
     final file = await getMetadataFile();
     final str = jsonEncode(records.map((e) => e.toJson()).toList());
-    await file.writeAsString(str);
+    await file.writeAsString(str, flush: true);
   }
 
-  // Derives the repeating XOR key from the password
-  static List<int> _deriveKey(String password, int length) {
-    final hash = sha256.convert(utf8.encode(password)).bytes;
-    final key = List<int>.filled(length, 0);
-    for (int i = 0; i < length; i++) {
-      key[i] = hash[i % hash.length] ^ (i & 0xFF);
-    }
-    return key;
-  }
-
-  // Obfuscates/Deobfuscates a list of bytes using XOR
-  static List<int> _xorBytes(List<int> bytes, List<int> key) {
-    final result = List<int>.from(bytes);
-    for (int i = 0; i < bytes.length; i++) {
-      result[i] = bytes[i] ^ key[i % key.length];
-    }
-    return result;
-  }
-
-  // Locks and obfuscates a file
+  /// Bloquea y cifra un archivo o carpeta
   static Future<VaultFileRecord> lockFile({
     required File file,
     required String password,
@@ -152,31 +159,35 @@ class VaultService {
     final size = await file.length();
     final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
 
-    // Determine target scrambled path
+    // Determinar ruta de destino
     String scrambledPath;
     if (inPlace) {
-      // Scramble in the same directory, starting with a dot (hidden on Linux/Android)
       final dir = isFolder ? originalPath : p.dirname(originalPath);
       scrambledPath = p.join(dir, '.vault_$timestamp.nfv');
     } else {
-      // Isolate inside app's private documents vault folder
       final vaultDir = await getVaultDir();
       scrambledPath = p.join(vaultDir.path, 'vault_$timestamp.nfv');
     }
 
-    // Read file bytes
+    // Leer bytes del archivo
     final fileBytes = await file.readAsBytes();
 
-    // Partition bytes
+    // Generar salt e IV únicos para este archivo
+    final salt = _generateSecureRandom(_saltLength);
+    final iv = _generateSecureRandom(_ivLength);
+    
+    // Derivar clave de cifrado
+    final key = _deriveEncryptionKey(password, salt);
+
+    // Dividir archivo: primeros 8KB (firma) + resto
     final scrambleLen = min(_scrambleSize, fileBytes.length);
     final scrambleBytes = fileBytes.sublist(0, scrambleLen);
     final restBytes = fileBytes.sublist(scrambleLen);
 
-    // Encrypt the signature part
-    final key = _deriveKey(password, scrambleLen);
-    final obfuscatedBytes = _xorBytes(scrambleBytes, key);
+    // Cifrar la firma con AES-256-GCM
+    final encryptedScramble = _encryptAESGCM(scrambleBytes, key, iv);
 
-    // Build metadata payload
+    // Preparar metadata
     final metadata = {
       'name': originalName,
       'path': originalPath,
@@ -184,43 +195,39 @@ class VaultService {
       'timestamp': timestamp,
       'isFolder': isFolder,
     };
-    final metadataStr = jsonEncode(metadata);
-    final metadataBytes = utf8.encode(metadataStr);
+    final metadataBytes = utf8.encode(jsonEncode(metadata));
+    
+    // Cifrar metadata
+    final encryptedMetadata = _encryptAESGCM(metadataBytes, key, iv);
 
-    // Obfuscate metadata payload too so it's fully private
-    final metaKey = _deriveKey(password, metadataBytes.length);
-    final obfuscatedMetadata = _xorBytes(metadataBytes, metaKey);
-
-    // Create the scrambled file format:
-    // [MAGIC_TAG] (14 bytes)
-    // [METADATA_LENGTH] (4 bytes int)
-    // [OBFUSCATED_METADATA]
-    // [OBFUSCATED_SIGNATURE]
-    // [REST_OF_FILE]
+    // Construir archivo final:
+    // [MAGIC_TAG][SALT][IV][METADATA_LEN][ENCRYPTED_METADATA][ENCRYPTED_SCRAMBLE][REST]
     final headerBytes = BytesBuilder();
     headerBytes.add(utf8.encode(_magicTag)); // 14 bytes
-    
-    // Add metadata length as 4-byte big endian int
-    final metaLen = obfuscatedMetadata.length;
+    headerBytes.add(salt); // 32 bytes
+    headerBytes.add(iv); // 16 bytes
+
+    // Metadata length (4 bytes big-endian)
+    final metaLen = encryptedMetadata.length;
     headerBytes.add([
       (metaLen >> 24) & 0xFF,
       (metaLen >> 16) & 0xFF,
       (metaLen >> 8) & 0xFF,
       metaLen & 0xFF,
     ]);
-    
-    headerBytes.add(obfuscatedMetadata);
-    headerBytes.add(obfuscatedBytes);
+
+    headerBytes.add(encryptedMetadata);
+    headerBytes.add(encryptedScramble);
     headerBytes.add(restBytes);
 
-    // Write to the scrambled target path
+    // Escribir archivo cifrado
     final targetFile = File(scrambledPath);
-    await targetFile.writeAsBytes(headerBytes.toBytes());
+    await targetFile.writeAsBytes(headerBytes.toBytes(), flush: true);
 
-    // Clean up original file
+    // Eliminar archivo original
     await file.delete();
 
-    // Create record
+    // Crear registro
     final record = VaultFileRecord(
       id: timestamp,
       originalName: originalName,
@@ -232,15 +239,16 @@ class VaultService {
       isFolder: isFolder,
     );
 
-    // Save record to metadata.json
+    // Guardar registro
     final records = await loadRecords();
     records.add(record);
     await saveRecords(records);
 
+    debugPrint('[VaultService] File encrypted: ${record.originalName}');
     return record;
   }
 
-  // Unlocks and restores an obfuscated file
+  /// Desbloquea y descifra un archivo
   static Future<File> unlockFile({
     required VaultFileRecord record,
     required String password,
@@ -251,103 +259,118 @@ class VaultService {
     }
 
     final bytes = await scrambledFile.readAsBytes();
-    
-    // Verify magic tag
-    if (bytes.length < _magicTag.length + 4) {
+
+    // Verificar magic tag
+    if (bytes.length < _magicTag.length + _saltLength + _ivLength + 4) {
       throw Exception('Invalid vault file format (Too short)');
     }
+
     final magicBytes = bytes.sublist(0, _magicTag.length);
     final magic = utf8.decode(magicBytes);
     if (magic != _magicTag) {
       throw Exception('Invalid vault file format (Magic tag mismatch)');
     }
 
-    // Read metadata length
-    final lenBytes = bytes.sublist(_magicTag.length, _magicTag.length + 4);
-    final metaLen = (lenBytes[0] << 24) | (lenBytes[1] << 16) | (lenBytes[2] << 8) | lenBytes[3];
+    // Extraer salt e IV
+    final saltStart = _magicTag.length;
+    final ivStart = saltStart + _saltLength;
+    final metaLenStart = ivStart + _ivLength;
 
-    // Extract obfuscated metadata
-    final metaStart = _magicTag.length + 4;
+    final salt = bytes.sublist(saltStart, ivStart);
+    final iv = bytes.sublist(ivStart, metaLenStart);
+
+    // Extraer longitud de metadata
+    final metaLen = (bytes[metaLenStart] << 24) |
+                    (bytes[metaLenStart + 1] << 16) |
+                    (bytes[metaLenStart + 2] << 8) |
+                    bytes[metaLenStart + 3];
+
+    final metaStart = metaLenStart + 4;
     final metaEnd = metaStart + metaLen;
+
     if (bytes.length < metaEnd) {
       throw Exception('Invalid vault file format (Corrupted header)');
     }
-    final obfuscatedMetadata = bytes.sublist(metaStart, metaEnd);
 
-    // Decrypt metadata
-    final metaKey = _deriveKey(password, obfuscatedMetadata.length);
-    final decryptedMetadataBytes = _xorBytes(obfuscatedMetadata, metaKey);
-    
-    Map<String, dynamic> metadata;
+    // Derivar clave de descifrado
+    final key = _deriveEncryptionKey(password, salt);
+
+    // Descifrar metadata
+    final encryptedMetadata = bytes.sublist(metaStart, metaEnd);
+    List<int> decryptedMetadataBytes;
     try {
-      final decryptedMetadataStr = utf8.decode(decryptedMetadataBytes);
-      metadata = jsonDecode(decryptedMetadataStr) as Map<String, dynamic>;
-    } catch (_) {
+      decryptedMetadataBytes = _decryptAESGCM(encryptedMetadata, key, iv);
+    } catch (e) {
       throw Exception('Incorrect password or corrupted file');
     }
 
-    // Extract scrambled signature bytes
-    final fileDataStart = metaEnd;
+    final metadataStr = utf8.decode(decryptedMetadataBytes);
+    final metadata = jsonDecode(metadataStr) as Map<String, dynamic>;
+
+    // Extraer bytes cifrados de la firma
     final originalSize = metadata['size'] as int;
     final scrambleLen = min(_scrambleSize, originalSize);
-    
-    if (bytes.length < fileDataStart + scrambleLen) {
+    final encryptedScrambleLen = scrambleLen + 16; // AES-GCM SIEMPRE añade un MAC de 16 bytes, incluso si está vacío
+    final fileDataStart = metaEnd;
+
+    if (bytes.length < fileDataStart + encryptedScrambleLen) {
       throw Exception('Invalid vault file format (Corrupted payload)');
     }
-    final obfuscatedSignature = bytes.sublist(fileDataStart, fileDataStart + scrambleLen);
-    final restBytes = bytes.sublist(fileDataStart + scrambleLen);
 
-    // Decrypt signature bytes
-    final key = _deriveKey(password, scrambleLen);
-    final decryptedSignature = _xorBytes(obfuscatedSignature, key);
+    // Descifrar firma
+    final encryptedScramble = bytes.sublist(fileDataStart, fileDataStart + encryptedScrambleLen);
+    final decryptedScramble = _decryptAESGCM(encryptedScramble, key, iv);
+    
+    final restBytes = bytes.sublist(fileDataStart + encryptedScrambleLen);
 
-    // Reconstruct original file bytes
+    // Reconstruir archivo original
     final originalBytes = BytesBuilder();
-    originalBytes.add(decryptedSignature);
+    originalBytes.add(decryptedScramble);
     originalBytes.add(restBytes);
 
     final originalFile = File(record.originalPath);
 
     if (record.isFolder) {
-      // Reconstruct folder structure recursively
+      // Reconstruir estructura de carpeta
       final archive = ZipDecoder().decodeBytes(originalBytes.toBytes());
       final destinationDir = p.dirname(record.originalPath);
 
       for (final file in archive) {
         final filename = file.name;
         final fullPath = p.join(destinationDir, filename);
+
         if (file.isFile) {
           final data = file.content as List<int>;
           final destFile = File(fullPath);
           await destFile.parent.create(recursive: true);
-          await destFile.writeAsBytes(data);
+          await destFile.writeAsBytes(data, flush: true);
         } else {
           await Directory(fullPath).create(recursive: true);
         }
       }
     } else {
-      // Recreate original parent folder if deleted
+      // Recrear carpeta padre si fue eliminada
       final originalDir = originalFile.parent;
       if (!await originalDir.exists()) {
         await originalDir.create(recursive: true);
       }
 
-      // Write original bytes back to original path
-      await originalFile.writeAsBytes(originalBytes.toBytes());
+      await originalFile.writeAsBytes(originalBytes.toBytes(), flush: true);
     }
 
-    // Clean up scrambled nfv file
+    // Limpiar archivo cifrado
     await scrambledFile.delete();
 
-    // Remove record from metadata
+    // Actualizar registros
     final records = await loadRecords();
     records.removeWhere((e) => e.id == record.id);
     await saveRecords(records);
 
+    debugPrint('[VaultService] File decrypted: ${record.originalName}');
     return originalFile;
   }
 
-  // Locks and obfuscates a directory by zipping it recursively first
+  /// Bloquea una carpeta completa comprimiéndola primero
   static Future<VaultFileRecord> lockDirectory({
     required Directory directory,
     required String password,
@@ -360,34 +383,32 @@ class VaultService {
     final originalPath = directory.path;
     final originalName = p.basename(originalPath);
 
-    // List all files recursively
+    // Listar todos los archivos recursivamente
     final list = directory.listSync(recursive: true);
     final archive = Archive();
 
     for (final entity in list) {
       if (entity is File) {
-        // Calculate relative path from the parent of the directory being zipped
-        // So that the zipped file path starts with the folder name itself (e.g. "myfolder/file.txt")
         final relPath = p.relative(entity.path, from: p.dirname(originalPath)).replaceAll('\\', '/');
         final bytes = await entity.readAsBytes();
         archive.addFile(ArchiveFile(relPath, bytes.length, bytes));
       }
     }
 
-    // Encode the archive as a ZIP
+    // Codificar como ZIP
     final zipEncoder = ZipEncoder();
     final zipBytes = zipEncoder.encode(archive);
     if (zipBytes == null) {
       throw Exception('Failed to zip directory contents');
     }
 
-    // Write zip to a temporary file
+    // Escribir ZIP temporal
     final tempDir = await getTemporaryDirectory();
     final tempZipFile = File(p.join(tempDir.path, 'temp_vault_zip_${DateTime.now().millisecondsSinceEpoch}.zip'));
-    await tempZipFile.writeAsBytes(zipBytes);
+    await tempZipFile.writeAsBytes(zipBytes, flush: true);
 
     try {
-      // Call lockFile on the temporary zip file, flag it as isFolder: true
+      // Cifrar el ZIP
       final record = await lockFile(
         file: tempZipFile,
         password: password,
@@ -397,7 +418,7 @@ class VaultService {
         isFolder: true,
       );
 
-      // Clean up original directory contents (or keep folder for in-place)
+      // Limpiar carpeta original
       if (inPlace) {
         final children = directory.listSync();
         for (final child in children) {
@@ -411,14 +432,13 @@ class VaultService {
 
       return record;
     } finally {
-      // Always ensure the temporary zip is deleted
       if (await tempZipFile.exists()) {
         await tempZipFile.delete();
       }
     }
   }
 
-  // Temporarily decrypts a vault file to cache directory for in-app viewing
+  /// Descifra temporalmente un archivo para visualización
   static Future<File> decryptTemporary({
     required VaultFileRecord record,
     required String password,
@@ -429,40 +449,113 @@ class VaultService {
     }
 
     final bytes = await scrambledFile.readAsBytes();
-    
-    // Read metadata
-    final lenBytes = bytes.sublist(_magicTag.length, _magicTag.length + 4);
-    final metaLen = (lenBytes[0] << 24) | (lenBytes[1] << 16) | (lenBytes[2] << 8) | lenBytes[3];
-    
-    final metaStart = _magicTag.length + 4;
+
+    // Extraer componentes
+    final saltStart = _magicTag.length;
+    final ivStart = saltStart + _saltLength;
+    final metaLenStart = ivStart + _ivLength;
+
+    final salt = bytes.sublist(saltStart, ivStart);
+    final iv = bytes.sublist(ivStart, metaLenStart);
+
+    final metaLen = (bytes[metaLenStart] << 24) |
+                    (bytes[metaLenStart + 1] << 16) |
+                    (bytes[metaLenStart + 2] << 8) |
+                    bytes[metaLenStart + 3];
+
+    final metaStart = metaLenStart + 4;
     final metaEnd = metaStart + metaLen;
-    final obfuscatedMetadata = bytes.sublist(metaStart, metaEnd);
-    final metaKey = _deriveKey(password, obfuscatedMetadata.length);
-    final decryptedMetadataBytes = _xorBytes(obfuscatedMetadata, metaKey);
+
+    final key = _deriveEncryptionKey(password, salt);
+
+    // Descifrar metadata
+    final encryptedMetadata = bytes.sublist(metaStart, metaEnd);
+    final decryptedMetadataBytes = _decryptAESGCM(encryptedMetadata, key, iv);
     final decryptedMetadataStr = utf8.decode(decryptedMetadataBytes);
     final metadata = jsonDecode(decryptedMetadataStr) as Map<String, dynamic>;
 
     final originalSize = metadata['size'] as int;
     final scrambleLen = min(_scrambleSize, originalSize);
-    
     final fileDataStart = metaEnd;
-    final obfuscatedSignature = bytes.sublist(fileDataStart, fileDataStart + scrambleLen);
+
+    final encryptedScramble = bytes.sublist(fileDataStart, fileDataStart + scrambleLen);
+    final decryptedScramble = _decryptAESGCM(encryptedScramble, key, iv);
     final restBytes = bytes.sublist(fileDataStart + scrambleLen);
 
-    final key = _deriveKey(password, scrambleLen);
-    final decryptedSignature = _xorBytes(obfuscatedSignature, key);
-
     final originalBytes = BytesBuilder();
-    originalBytes.add(decryptedSignature);
+    originalBytes.add(decryptedScramble);
     originalBytes.add(restBytes);
 
-    // Write to a temporary file in cache directory
+    // Escribir en cache temporal
     final cacheDir = await getTemporaryDirectory();
     final extension = record.isFolder ? '.zip' : '';
     final tempFilePath = p.join(cacheDir.path, 'temp_vault_${record.id}_${record.originalName}$extension');
     final tempFile = File(tempFilePath);
-    
-    await tempFile.writeAsBytes(originalBytes.toBytes());
+    await tempFile.writeAsBytes(originalBytes.toBytes(), flush: true);
+
     return tempFile;
+  }
+
+  // ============ MÉTODOS PRIVADOS DE CIFRADO ============
+
+  /// Genera bytes aleatorios seguros
+  static List<int> _generateSecureRandom(int length) {
+    final random = Random.secure();
+    return List<int>.generate(length, (_) => random.nextInt(256));
+  }
+
+  /// Deriva clave de cifrado usando PBKDF2
+  static List<int> _deriveEncryptionKey(String password, List<int> salt) {
+    final passwordBytes = utf8.encode(password);
+    
+    final hmac = Hmac(sha256, salt);
+    var block = List<int>.from(passwordBytes);
+    var result = List<int>.filled(_keyLength, 0);
+    
+    for (int i = 0; i < _pbkdf2Iterations; i++) {
+      block = hmac.convert(block).bytes;
+      for (int j = 0; j < _keyLength; j++) {
+        result[j] ^= block[j];
+      }
+    }
+    
+    return result;
+  }
+
+  /// Hashea contraseña con PBKDF2 para almacenamiento
+  static List<int> _hashPasswordWithPBKDF2(String password, List<int> salt) {
+    return _deriveEncryptionKey(password, salt);
+  }
+
+  /// Cifra datos con AES-256-GCM
+  static List<int> _encryptAESGCM(List<int> data, List<int> key, List<int> iv) {
+    final keyObj = encrypt.Key(Uint8List.fromList(key));
+    final ivObj = encrypt.IV(Uint8List.fromList(iv));
+    final encrypter = encrypt.Encrypter(encrypt.AES(keyObj, mode: encrypt.AESMode.gcm));
+    
+    final encrypted = encrypter.encryptBytes(data, iv: ivObj);
+    return encrypted.bytes;
+  }
+
+  /// Descifra datos con AES-256-GCM
+  static List<int> _decryptAESGCM(List<int> encryptedData, List<int> key, List<int> iv) {
+    final keyObj = encrypt.Key(Uint8List.fromList(key));
+    final ivObj = encrypt.IV(Uint8List.fromList(iv));
+    final encrypter = encrypt.Encrypter(encrypt.AES(keyObj, mode: encrypt.AESMode.gcm));
+    
+    final encrypted = encrypt.Encrypted(Uint8List.fromList(encryptedData));
+    final decrypted = encrypter.decryptBytes(encrypted, iv: ivObj);
+    return decrypted;
+  }
+
+  /// Comparación constante en tiempo para evitar timing attacks
+  static bool _constantTimeEquals(List<int> a, List<int> b) {
+    if (a.length != b.length) return false;
+    
+    int result = 0;
+    for (int i = 0; i < a.length; i++) {
+      result |= a[i] ^ b[i];
+    }
+    return result == 0;
   }
 }

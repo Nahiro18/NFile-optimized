@@ -2,8 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:dartssh2/dartssh2.dart';
 import 'remote_client.dart';
+import 'retry_mixin.dart';
 
-class SftpRemoteClient implements RemoteClient {
+class SftpRemoteClient with RetryMixin implements RemoteClient {
   final String host;
   final int port;
   final String username;
@@ -21,13 +22,15 @@ class SftpRemoteClient implements RemoteClient {
 
   @override
   Future<void> connect() async {
-    final socket = await SSHSocket.connect(host, port, timeout: const Duration(seconds: 15));
-    _sshClient = SSHClient(
-      socket,
-      username: username,
-      onPasswordRequest: () => password,
-    );
-    _sftpClient = await _sshClient!.sftp();
+    return withRetry(() async {
+      final socket = await SSHSocket.connect(host, port, timeout: const Duration(seconds: 15));
+      _sshClient = SSHClient(
+        socket,
+        username: username,
+        onPasswordRequest: () => password,
+      );
+      _sftpClient = await _sshClient!.sftp();
+    });
   }
 
   @override
@@ -84,33 +87,35 @@ class SftpRemoteClient implements RemoteClient {
 
   @override
   Future<void> downloadFile(String remotePath, String localPath, Function(double progress) onProgress) async {
-    if (_sftpClient == null) throw Exception('SFTP not connected');
-    
-    final file = await _sftpClient!.open(remotePath);
-    final stat = await _sftpClient!.stat(remotePath);
-    final totalSize = stat.size ?? 0;
-    
-    final localFile = File(localPath);
-    if (localFile.existsSync()) {
-      localFile.deleteSync();
-    }
-    final sink = localFile.openWrite();
-    
-    int downloaded = 0;
-    try {
-      final stream = file.read();
-      await for (final chunk in stream) {
-        sink.add(chunk);
-        downloaded += chunk.length;
-        if (totalSize > 0) {
-          onProgress(downloaded / totalSize);
-        }
+    return withRetry(() async {
+      if (_sftpClient == null) throw Exception('SFTP not connected');
+      
+      final file = await _sftpClient!.open(remotePath);
+      final stat = await _sftpClient!.stat(remotePath);
+      final totalSize = stat.size ?? 0;
+      
+      final localFile = File(localPath);
+      if (localFile.existsSync()) {
+        localFile.deleteSync();
       }
-    } finally {
-      await sink.flush();
-      await sink.close();
-      await file.close();
-    }
+      final sink = localFile.openWrite();
+      
+      int downloaded = 0;
+      try {
+        final stream = file.read();
+        await for (final chunk in stream) {
+          sink.add(chunk);
+          downloaded += chunk.length;
+          if (totalSize > 0) {
+            onProgress(downloaded / totalSize);
+          }
+        }
+      } finally {
+        await sink.flush();
+        await sink.close();
+        await file.close();
+      }
+    });
   }
 
   @override
@@ -119,35 +124,37 @@ class SftpRemoteClient implements RemoteClient {
     String remotePath,
     Function(double progress) onProgress,
   ) async {
-    if (_sftpClient == null) throw Exception('SFTP not connected');
+    return withRetry(() async {
+      if (_sftpClient == null) throw Exception('SFTP not connected');
 
-    final localFile = File(localPath);
-    if (!localFile.existsSync()) throw Exception('Local file not found: $localPath');
+      final localFile = File(localPath);
+      if (!localFile.existsSync()) throw Exception('Local file not found: $localPath');
 
-    final totalSize = await localFile.length();
+      final totalSize = await localFile.length();
 
-    // Open remote file for writing
-    final remoteFile = await _sftpClient!.open(
-      remotePath,
-      mode: SftpFileOpenMode.create | SftpFileOpenMode.truncate | SftpFileOpenMode.write,
-    );
-
-    onProgress(0.0);
-
-    try {
-      final writer = remoteFile.write(
-        localFile.openRead().map((chunk) => Uint8List.fromList(chunk)),
-        onProgress: (bytesWritten) {
-          if (totalSize > 0) {
-            onProgress((bytesWritten / totalSize).clamp(0.0, 1.0));
-          }
-        },
+      // Open remote file for writing
+      final remoteFile = await _sftpClient!.open(
+        remotePath,
+        mode: SftpFileOpenMode.create | SftpFileOpenMode.truncate | SftpFileOpenMode.write,
       );
-      await writer.done;
-    } finally {
-      await remoteFile.close();
-    }
 
-    onProgress(1.0);
+      onProgress(0.0);
+
+      try {
+        final writer = remoteFile.write(
+          localFile.openRead().map((chunk) => Uint8List.fromList(chunk)),
+          onProgress: (bytesWritten) {
+            if (totalSize > 0) {
+              onProgress((bytesWritten / totalSize).clamp(0.0, 1.0));
+            }
+          },
+        );
+        await writer.done;
+      } finally {
+        await remoteFile.close();
+      }
+
+      onProgress(1.0);
+    });
   }
 }

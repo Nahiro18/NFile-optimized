@@ -1,0 +1,42 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # Permite compilar manualmente desde la página
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Descargar dependencias
+        run: flutter pub get
+
+      - name: Compilar APK (arm64)
+        run: flutter build apk --target-platform android-arm64
+
+      - name: Subir APK final
+        uses: actions/upload-artifact@v4
+        with:
+          name: NFile-APK-arm64
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7

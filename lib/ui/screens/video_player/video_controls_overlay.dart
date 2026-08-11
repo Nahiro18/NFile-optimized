@@ -75,7 +75,7 @@ class VideoControlsOverlay extends StatelessWidget {
     final maxMs = duration.inMilliseconds.toDouble();
     final safeMax = maxMs > 0 ? maxMs : 1.0;
     final safeVal = sliderValue.clamp(0.0, safeMax);
-    final itemsColor = Colors.white.withOpacity(0.9);
+    final itemsColor = Colors.white.withValues(alpha: 0.9);
 
     if (isLocked) {
       return Positioned(
@@ -87,11 +87,11 @@ class VideoControlsOverlay extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.75),
+                color: Colors.black.withValues(alpha: 0.75),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.25), width: 1.5),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1.5),
                 boxShadow: [
-                  BoxShadow(color: accentColor.withOpacity(0.4), blurRadius: 16),
+                  BoxShadow(color: accentColor.withValues(alpha: 0.4), blurRadius: 16),
                 ],
               ),
               child: Row(
@@ -116,7 +116,7 @@ class VideoControlsOverlay extends StatelessWidget {
         // Darkened Background Mask for better visibility of controls
         Positioned.fill(
           child: IgnorePointer(
-            child: Container(color: Colors.black.withOpacity(0.35)),
+            child: Container(color: Colors.black.withValues(alpha: 0.35)),
           ),
         ),
 
@@ -159,7 +159,7 @@ class VideoControlsOverlay extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: accentColor.withOpacity(0.3),
+                                color: accentColor.withValues(alpha: 0.3),
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: accentColor, width: 0.8),
                               ),
@@ -171,7 +171,7 @@ class VideoControlsOverlay extends StatelessWidget {
                             const SizedBox(width: 8),
                             Text(
                               'AVC / AAC • 1080p',
-                              style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
+                              style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12),
                             ),
                           ],
                         ),
@@ -184,9 +184,9 @@ class VideoControlsOverlay extends StatelessWidget {
                     icon: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -239,7 +239,7 @@ class VideoControlsOverlay extends StatelessWidget {
                 Opacity(
                   opacity: onPrevious != null ? 1.0 : 0.4,
                   child: Container(
-                    decoration: BoxDecoration(color: Colors.black.withOpacity(0.35), shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.35), shape: BoxShape.circle),
                     child: IconButton(
                       iconSize: 32,
                       padding: const EdgeInsets.all(14),
@@ -254,12 +254,12 @@ class VideoControlsOverlay extends StatelessWidget {
                 // Play / Pause Premium Circle
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.55),
+                    color: Colors.black.withValues(alpha: 0.55),
                     shape: BoxShape.circle,
                     boxShadow: [
-                      BoxShadow(color: accentColor.withOpacity(isPlaying ? 0.5 : 0.2), blurRadius: 28, spreadRadius: 4),
+                      BoxShadow(color: accentColor.withValues(alpha: isPlaying ? 0.5 : 0.2), blurRadius: 28, spreadRadius: 4),
                     ],
-                    border: Border.all(color: Colors.white.withOpacity(0.15), width: 1.5),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.5),
                   ),
                   child: IconButton(
                     iconSize: 52,
@@ -275,7 +275,7 @@ class VideoControlsOverlay extends StatelessWidget {
                 Opacity(
                   opacity: onNext != null ? 1.0 : 0.4,
                   child: Container(
-                    decoration: BoxDecoration(color: Colors.black.withOpacity(0.35), shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.35), shape: BoxShape.circle),
                     child: IconButton(
                       iconSize: 32,
                       padding: const EdgeInsets.all(14),
@@ -320,9 +320,9 @@ class VideoControlsOverlay extends StatelessWidget {
                         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
                         overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
                         activeTrackColor: accentColor,
-                        inactiveTrackColor: Colors.white.withOpacity(0.25),
+                        inactiveTrackColor: Colors.white.withValues(alpha: 0.25),
                         thumbColor: accentColor,
-                        overlayColor: accentColor.withOpacity(0.3),
+                        overlayColor: accentColor.withValues(alpha: 0.3),
                       ),
                       child: Slider(
                         value: safeVal,
@@ -348,9 +348,9 @@ class VideoControlsOverlay extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1),
                         ),
                         child: Text(
                           '${_formatDuration(position)} / ${_formatDuration(duration)}',
@@ -368,7 +368,7 @@ class VideoControlsOverlay extends StatelessWidget {
                                   : repeatMode == 1
                                       ? Icons.repeat_one_rounded
                                       : Icons.repeat_rounded,
-                              color: repeatMode != 0 ? accentColor : itemsColor.withOpacity(0.7),
+                              color: repeatMode != 0 ? accentColor : itemsColor.withValues(alpha: 0.7),
                               size: 22,
                             ),
                             tooltip: 'Repeat Mode',

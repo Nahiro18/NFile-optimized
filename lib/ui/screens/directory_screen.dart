@@ -18,7 +18,7 @@ import '../widgets/create_archive_dialog.dart';
 import '../widgets/batch_rename_dialog.dart';
 import '../widgets/selection_action_bar.dart';
 import '../widgets/selection_context_bottom_sheet.dart';
-import '../widgets/file_operation_progress_dialog.dart';
+import '../widgets/file_operation_progress_minibar.dart';
 import '../widgets/nfile_drawer.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import 'global_search_screen.dart';
@@ -32,6 +32,7 @@ import '../widgets/nfile_address_bar.dart';
 import '../../services/network_connections_service.dart';
 import 'network_connection_wizard_screen.dart';
 import 'remote_explorer_screen.dart';
+import '../widgets/skeletons/skeleton_loader.dart';
 
 class DirectoryScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -318,7 +319,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.3),
+                  color: Colors.grey.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -330,7 +331,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -347,7 +348,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                   'Create a new directory',
                   style: TextStyle(
                     fontSize: 12,
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 onTap: () {
@@ -363,7 +364,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -380,7 +381,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                   'Create a new empty text document',
                   style: TextStyle(
                     fontSize: 12,
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 onTap: () {
@@ -396,7 +397,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -413,7 +414,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                   'Compress current folder contents',
                   style: TextStyle(
                     fontSize: 12,
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 onTap: () {
@@ -567,12 +568,12 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         data: theme.copyWith(dividerColor: Colors.transparent),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceVariant.withOpacity(
+                            color: theme.colorScheme.surfaceVariant.withValues(alpha: 
                               0.5,
                             ),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: theme.dividerColor.withOpacity(0.1),
+                              color: theme.dividerColor.withValues(alpha: 0.1),
                             ),
                           ),
                           child: ExpansionTile(
@@ -728,15 +729,15 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: provider.showHiddenFiles
-                              ? theme.colorScheme.primary.withOpacity(0.08)
-                              : theme.colorScheme.surfaceVariant.withOpacity(
+                              ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                              : theme.colorScheme.surfaceVariant.withValues(alpha: 
                                   0.4,
                                 ),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: provider.showHiddenFiles
-                                ? theme.colorScheme.primary.withOpacity(0.25)
-                                : theme.dividerColor.withOpacity(0.08),
+                                ? theme.colorScheme.primary.withValues(alpha: 0.25)
+                                : theme.dividerColor.withValues(alpha: 0.08),
                             width: 1.5,
                           ),
                         ),
@@ -748,7 +749,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                   : Icons.visibility_off_rounded,
                               color: provider.showHiddenFiles
                                   ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurface.withOpacity(
+                                  : theme.colorScheme.onSurface.withValues(alpha: 
                                       0.65,
                                     ),
                               size: 24,
@@ -771,7 +772,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                     'Display system files and folders starting with a dot (.)',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.onSurface
-                                          .withOpacity(0.55),
+                                          .withValues(alpha: 0.55),
                                       fontSize: 11,
                                     ),
                                   ),
@@ -797,8 +798,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                               provider.isFolderOverrideEnabled(
                                 provider.currentPath,
                               )
-                              ? theme.colorScheme.primary.withOpacity(0.08)
-                              : theme.colorScheme.surfaceVariant.withOpacity(
+                              ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                              : theme.colorScheme.surfaceVariant.withValues(alpha: 
                                   0.4,
                                 ),
                           borderRadius: BorderRadius.circular(20),
@@ -807,8 +808,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                 provider.isFolderOverrideEnabled(
                                   provider.currentPath,
                                 )
-                                ? theme.colorScheme.primary.withOpacity(0.25)
-                                : theme.dividerColor.withOpacity(0.08),
+                                ? theme.colorScheme.primary.withValues(alpha: 0.25)
+                                : theme.dividerColor.withValues(alpha: 0.08),
                             width: 1.5,
                           ),
                         ),
@@ -821,7 +822,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                     provider.currentPath,
                                   )
                                   ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurface.withOpacity(
+                                  : theme.colorScheme.onSurface.withValues(alpha: 
                                       0.65,
                                     ),
                               size: 24,
@@ -844,7 +845,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                     'Enable custom sorting specific to this folder',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.onSurface
-                                          .withOpacity(0.55),
+                                          .withValues(alpha: 0.55),
                                       fontSize: 11,
                                     ),
                                   ),
@@ -939,7 +940,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.3),
+                        color: Colors.grey.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -1003,7 +1004,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         height: 42,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? theme.colorScheme.primary.withOpacity(0.2)
+                              ? theme.colorScheme.primary.withValues(alpha: 0.2)
                               : theme.colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -1030,7 +1031,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         vol.path,
                         style: TextStyle(
                           fontSize: 12,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       trailing: isSelected
@@ -1052,7 +1053,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                       height: 42,
                       decoration: BoxDecoration(
                         color: provider.rootPath == '/'
-                            ? theme.colorScheme.primary.withOpacity(0.2)
+                            ? theme.colorScheme.primary.withValues(alpha: 0.2)
                             : theme.colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -1077,7 +1078,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                       '/',
                       style: TextStyle(
                         fontSize: 12,
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                     trailing: provider.rootPath == '/'
@@ -1102,7 +1103,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         height: 42,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? theme.colorScheme.primary.withOpacity(0.2)
+                              ? theme.colorScheme.primary.withValues(alpha: 0.2)
                               : theme.colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -1127,7 +1128,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         item.path,
                         style: TextStyle(
                           fontSize: 12,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       trailing: Row(
@@ -1240,7 +1241,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           width: 42,
                           height: 42,
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withOpacity(0.12),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
@@ -1260,7 +1261,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           '${conn.type} • ${conn.host}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                         trailing: IconButton(
@@ -1791,7 +1792,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 if (provider.isLoading && provider.currentFiles.isNotEmpty)
                   LinearProgressIndicator(
                     minHeight: 2.5,
-                    backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                    backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
                     valueColor: AlwaysStoppedAnimation<Color>(
                       theme.colorScheme.primary,
                     ),
@@ -1865,18 +1866,26 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                   Expanded(child: PaneBrowser(tabIndex: 1)),
                                 ],
                               )
-                            : (provider.isLoading &&
-                                  provider.currentFiles.isEmpty)
-                            ? const Center(child: CircularProgressIndicator())
-                            : provider.needsPermission
-                            ? RestrictedFolderBanner(
-                                onEnableRoot: () => provider.enableRootMode(),
-                                onEnableShizuku: () =>
-                                    provider.enableShizukuMode(),
-                                isRootAvailable: provider.isRootAvailable,
-                              )
-                            : CustomScrollView(
-                                controller: _scrollController,
+                            : AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                child: (provider.isLoading &&
+                                        provider.currentFiles.isEmpty)
+                                    ? SkeletonLoader(
+                                        key: const ValueKey('skeleton'),
+                                        isGridView: provider.isGridView,
+                                      )
+                                    : provider.needsPermission
+                                        ? RestrictedFolderBanner(
+                                            key: const ValueKey('restricted'),
+                                            onEnableRoot: () => provider.enableRootMode(),
+                                            onEnableShizuku: () =>
+                                                provider.enableShizukuMode(),
+                                            isRootAvailable: provider.isRootAvailable,
+                                          )
+                                        : CustomScrollView(
+                                            key: const ValueKey('content'),
+                                            controller: _scrollController,
+                                cacheExtent: 1500.0, // Virtualización para Listas Largas
                                 physics: const BouncingScrollPhysics(
                                   parent: AlwaysScrollableScrollPhysics(),
                                 ),
@@ -1900,13 +1909,13 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .surfaceVariant
-                                              .withOpacity(0.4),
+                                              .withValues(alpha: 0.4),
                                           border: Border(
                                             bottom: BorderSide(
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .outline
-                                                  .withOpacity(0.1),
+                                                  .withValues(alpha: 0.1),
                                             ),
                                           ),
                                         ),
@@ -1918,7 +1927,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .onSurface
-                                                  .withOpacity(0.7),
+                                                  .withValues(alpha: 0.7),
                                             ),
                                             const SizedBox(width: 6),
                                             Text(
@@ -1929,7 +1938,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .onSurface
-                                                    .withOpacity(0.8),
+                                                    .withValues(alpha: 0.8),
                                               ),
                                             ),
                                             const SizedBox(width: 20),
@@ -1939,7 +1948,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .onSurface
-                                                  .withOpacity(0.7),
+                                                  .withValues(alpha: 0.7),
                                             ),
                                             const SizedBox(width: 6),
                                             Text(
@@ -1950,7 +1959,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .onSurface
-                                                    .withOpacity(0.8),
+                                                    .withValues(alpha: 0.8),
                                               ),
                                             ),
                                           ],
@@ -1989,7 +1998,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                       )
                                                                       .colorScheme
                                                                       .primary
-                                                                      .withOpacity(
+                                                                      .withValues(alpha: 
                                                                         0.08,
                                                                       ),
                                                               shape: BoxShape
@@ -2005,7 +2014,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                       )
                                                                       .colorScheme
                                                                       .primary
-                                                                      .withOpacity(
+                                                                      .withValues(alpha: 
                                                                         0.6,
                                                                       ),
                                                             ),
@@ -2063,7 +2072,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                   color: Theme.of(context)
                                                                       .colorScheme
                                                                       .onSurface
-                                                                      .withOpacity(0.55),
+                                                                      .withValues(alpha: 0.55),
                                                                 ),
                                                           ),
                                                         ],
@@ -2085,7 +2094,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                       )
                                                                       .colorScheme
                                                                       .primary
-                                                                      .withOpacity(
+                                                                      .withValues(alpha: 
                                                                         0.08,
                                                                       ),
                                                               shape: BoxShape
@@ -2101,7 +2110,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                       )
                                                                       .colorScheme
                                                                       .primary
-                                                                      .withOpacity(
+                                                                      .withValues(alpha: 
                                                                         0.6,
                                                                       ),
                                                             ),
@@ -2137,7 +2146,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                   color: Theme.of(context)
                                                                       .colorScheme
                                                                       .onSurface
-                                                                      .withOpacity(0.55),
+                                                                      .withValues(alpha: 0.55),
                                                                 ),
                                                           ),
                                                         ],
@@ -2155,7 +2164,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                         color: Theme.of(context)
                                                             .colorScheme
                                                             .primary
-                                                            .withOpacity(0.08),
+                                                            .withValues(alpha: 0.08),
                                                         shape: BoxShape.circle,
                                                       ),
                                                       child: Icon(
@@ -2164,7 +2173,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                         color: Theme.of(context)
                                                             .colorScheme
                                                             .primary
-                                                            .withOpacity(0.6),
+                                                            .withValues(alpha: 0.6),
                                                       ),
                                                     ),
                                                     const SizedBox(height: 24),
@@ -2199,7 +2208,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                     )
                                                                     .colorScheme
                                                                     .onSurface
-                                                                    .withOpacity(
+                                                                    .withValues(alpha: 
                                                                       0.55,
                                                                     ),
                                                           ),
@@ -2501,9 +2510,14 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                     ),
                                 ],
                               ),
+                            ),
                       );
                     },
                   ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: FileOperationProgressMinibar(provider: provider),
                 ),
               ],
             ),
@@ -2529,7 +2543,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                       );
                     },
                     onDoubleTap: () async {
-                      FileOperationProgressDialog.show(context, provider);
                       await provider.pasteFile(context, clearAfterPaste: false);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -2544,7 +2557,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                     },
                     child: FloatingActionButton.extended(
                       onPressed: () async {
-                        FileOperationProgressDialog.show(context, provider);
                         await provider.pasteFile(
                           context,
                           clearAfterPaste: true,
@@ -2682,9 +2694,9 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.12),
+          color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.25), width: 1.5),
+          border: Border.all(color: color.withValues(alpha: 0.25), width: 1.5),
         ),
         child: Row(
           children: [
@@ -2696,7 +2708,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 13.5,
-                  color: theme.colorScheme.onSurface.withOpacity(0.9),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.9),
                 ),
               ),
             ),
@@ -2706,7 +2718,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                   horizontal: 10,
                   vertical: 4,
                 ),
-                backgroundColor: color.withOpacity(0.15),
+                backgroundColor: color.withValues(alpha: 0.15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -2735,7 +2747,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Broken.close_square, color: color, size: 16),
@@ -2868,8 +2880,8 @@ class _AnimatedTitleButtonState extends State<_AnimatedTitleButton>
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(14),
-            splashColor: theme.colorScheme.primary.withOpacity(0.3),
-            highlightColor: theme.colorScheme.primary.withOpacity(0.15),
+            splashColor: theme.colorScheme.primary.withValues(alpha: 0.3),
+            highlightColor: theme.colorScheme.primary.withValues(alpha: 0.15),
             onTapDown: (_) => _controller.forward(),
             onTapCancel: () => _controller.reverse(),
             onTap: () {
@@ -2896,7 +2908,7 @@ class _AnimatedTitleButtonState extends State<_AnimatedTitleButton>
                   Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.15),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
