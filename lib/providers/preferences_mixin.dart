@@ -1,10 +1,5 @@
 part of 'file_manager_provider.dart';
 mixin PreferencesMixin on ChangeNotifier {
-  String get currentPath;
-  List<FileItemModel> get currentFiles;
-  FolderTab get activeTab;
-  List<FolderTab> get tabs;
-  void sortList(List<FileItemModel> list, String path);
   Future<void> loadDirectory(String path, {bool showLoading = false, bool clearCache = false});
   List<CustomShortcutModel> _pinnedFolderShortcuts = [];
   List<CustomShortcutModel> get pinnedFolderShortcuts => _pinnedFolderShortcuts;
@@ -725,7 +720,7 @@ mixin PreferencesMixin on ChangeNotifier {
   int _activeTabIndex = 0;
   final Map<String, StreamSubscription<FileSystemEntity>?> _searchSubscriptions = {};
 
-  List<FolderTab> get tabs => tabs;
+
   int get activeTabIndex => _activeTabIndex;
 
   FolderTab get activeTab {

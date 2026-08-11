@@ -94,8 +94,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
   
   @override
   List<FolderTab> get tabs => _tabs;
-  @override
-  void sortList(List<FileItemModel> list, String path) => sortList(list, path);
+
   FileManagerProvider() {
     _sortType = PreferencesService.getSortType();
     _isGridView = PreferencesService.getIsGridView();
