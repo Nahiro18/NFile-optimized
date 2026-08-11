@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../models/file_item_model.dart';
 import '../../services/recycle_bin_service.dart';
 import '../../core/utils.dart';
 import '../../core/icon_fonts/broken_icons.dart';
-import 'package:path/path.dart' as p;
 
 class RecycleBinScreen extends StatefulWidget {
   const RecycleBinScreen({super.key});
@@ -223,7 +221,6 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

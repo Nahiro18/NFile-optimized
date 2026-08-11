@@ -360,10 +360,7 @@ class _CustomizeCategoriesSheet extends StatelessWidget {
                       final cat = categoriesMap[label];
                       if (cat == null) return const SizedBox.shrink(key: ValueKey('empty'));
 
-                      final icon = cat['icon'] as IconData;
-                      final color = cat['color'] as Color;
                       final isEnabled = activeCats.contains(label);
-                      final isCustom = cat['isCustom'] == true;
 
                       return CategoryItemWidget(
                         key: ValueKey(label),

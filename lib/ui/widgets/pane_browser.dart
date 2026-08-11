@@ -16,8 +16,6 @@ import 'drag_drop_action_dialog.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../../services/app_manager_service.dart';
 import '../../core/utils.dart';
-import 'file_item.dart';
-import 'folder_item.dart';
 import 'file_grid_item.dart';
 import 'folder_grid_item.dart';
 import 'drag_drop_handler.dart';
@@ -39,7 +37,6 @@ class _PaneBrowserState extends State<PaneBrowser> {
   final ScrollController _scrollController = ScrollController();
   late final TextEditingController _searchController;
   late final FocusNode _searchFocusNode;
-  String _lastSearchQuery = '';
 
   final List<String> _filters = [
     'All',
@@ -186,7 +183,6 @@ class _PaneBrowserState extends State<PaneBrowser> {
 
     if (_searchController.text != tab.searchQuery && !_searchFocusNode.hasFocus) {
       _searchController.text = tab.searchQuery;
-      _lastSearchQuery = tab.searchQuery;
     }
 
     return GestureDetector(
@@ -853,7 +849,6 @@ class _PaneBrowserState extends State<PaneBrowser> {
     final theme = Theme.of(context);
     final isHighlighted = provider.forceHighlightedPaths.contains(file.path) || (provider.enableFolderHighlight && provider.highlightedPaths.contains(file.path));
     final iconColor = FileUtils.getColorForFile(file.path, context);
-    final isArchive = FileUtils.isArchive(file.path);
 
     final itemLongPress = () {
       _activatePane(provider);

@@ -51,7 +51,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
       setState(() {
         _isPasswordSet = isSet;
         _checkingPasswordStatus = false;
-        _message = isSet ? 'Enter PIN to Unlock Wallet' : 'Set your 4-digit Wallet PIN';
+        _message = isSet ? 'Enter PIN to Unlock Vault' : 'Set your 4-digit Vault PIN';
       });
     }
     
@@ -239,7 +239,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Private Wallet',
+                    'Private Vault',
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,

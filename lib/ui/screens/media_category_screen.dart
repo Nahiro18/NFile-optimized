@@ -2251,7 +2251,6 @@ class FolderGridItem extends StatefulWidget {
 class _FolderGridItemState extends State<FolderGridItem> {
   AssetEntity? _firstAsset;
   int _count = 0;
-  bool _loading = true;
 
   @override
   void initState() {
@@ -2268,15 +2267,11 @@ class _FolderGridItemState extends State<FolderGridItem> {
           setState(() {
             _firstAsset = assets.first;
             _count = count;
-            _loading = false;
           });
           return;
         }
       }
     } catch (_) {}
-    if (mounted) {
-      setState(() => _loading = false);
-    }
   }
 
   @override

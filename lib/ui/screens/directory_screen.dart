@@ -21,7 +21,6 @@ import '../widgets/selection_context_bottom_sheet.dart';
 import '../widgets/file_operation_progress_minibar.dart';
 import '../widgets/nfile_drawer.dart';
 import '../../core/icon_fonts/broken_icons.dart';
-import 'global_search_screen.dart';
 import 'internal_file_picker_screen.dart';
 import '../widgets/restricted_folder_banner.dart';
 import '../widgets/directory_tab_bar.dart';

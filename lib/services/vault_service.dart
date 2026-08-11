@@ -51,7 +51,7 @@ class VaultFileRecord {
     size: json['size'] as int,
     lockedAt: json['lockedAt'] as String,
     isInPlace: json['isInPlace'] as bool,
-    isFolder: json['isFolder'] as bool ?? false,
+    isFolder: json['isFolder'] as bool? ?? false,
   );
 }
 
@@ -476,11 +476,12 @@ class VaultService {
 
     final originalSize = metadata['size'] as int;
     final scrambleLen = min(_scrambleSize, originalSize);
+    final encryptedScrambleLen = scrambleLen + 16; // AES-GCM adds a 16-byte MAC tag
     final fileDataStart = metaEnd;
 
-    final encryptedScramble = bytes.sublist(fileDataStart, fileDataStart + scrambleLen);
+    final encryptedScramble = bytes.sublist(fileDataStart, fileDataStart + encryptedScrambleLen);
     final decryptedScramble = _decryptAESGCM(encryptedScramble, key, iv);
-    final restBytes = bytes.sublist(fileDataStart + scrambleLen);
+    final restBytes = bytes.sublist(fileDataStart + encryptedScrambleLen);
 
     final originalBytes = BytesBuilder();
     originalBytes.add(decryptedScramble);

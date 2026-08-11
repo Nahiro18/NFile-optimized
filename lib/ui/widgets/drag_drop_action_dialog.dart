@@ -611,7 +611,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
 
       if (res != null) {
         provider.activeTab.isLoading = true;
-        provider.notifyListeners();
+        provider.requestNotify();
 
         try {
           await ArchiveService.createArchive(

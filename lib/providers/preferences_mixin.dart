@@ -716,9 +716,10 @@ mixin PreferencesMixin on ChangeNotifier {
   }
 
   // --- Tab Management ---
-  List<FolderTab> tabs = [];
+  List<FolderTab> tabs = [FolderTab(id: 'default', currentPath: Platform.isAndroid ? '/storage/emulated/0' : '/')];
   int _activeTabIndex = 0;
   final Map<String, StreamSubscription<FileSystemEntity>?> _searchSubscriptions = {};
+  final Map<String, int> _searchGenerations = {};
 
 
   int get activeTabIndex => _activeTabIndex;
@@ -854,6 +855,8 @@ mixin PreferencesMixin on ChangeNotifier {
     // Cancel existing search for this tab
     _searchSubscriptions[tab.id]?.cancel();
     _searchSubscriptions[tab.id] = null;
+    _searchGenerations[tab.id] = (_searchGenerations[tab.id] ?? 0) + 1;
+    final generation = _searchGenerations[tab.id]!;
 
     tab.searchQuery = query.trim();
     tab.searchFilter = filter;
@@ -868,9 +871,31 @@ mixin PreferencesMixin on ChangeNotifier {
     tab.isSearching = true;
     notifyListeners();
 
-    final Set<String> seenPaths = {};
-    final List<FileItemModel> currentBatch = [];
     final qLower = tab.searchQuery.toLowerCase();
+    // If the query is a bare extension like ".pdf" or ".py", match by extension
+    final extMode = _isExtensionQuery(qLower);
+    final extName = extMode ? qLower.substring(1) : '';
+
+    final Set<String> seenPaths = {};
+    final List<FileItemModel> pending = [];
+
+    void flushPending() {
+      if (generation != _searchGenerations[tab.id]) return;
+      if (tabIndex < tabs.length && tabs[tabIndex].id == tab.id && pending.isNotEmpty) {
+        tabs[tabIndex].searchResults = [...tabs[tabIndex].searchResults, ...pending];
+        notifyListeners();
+      }
+      pending.clear();
+    }
+
+    bool matchesQuery(String name) {
+      final lower = name.toLowerCase();
+      if (lower.contains(qLower)) return true;
+      if (extMode) {
+        return p.extension(lower).replaceFirst('.', '') == extName;
+      }
+      return false;
+    }
 
     // Resolve search scope: if starting search path is root or external storage, it's global
     final isGlobal = tab.currentPath == '/storage/emulated/0' ||
@@ -887,16 +912,17 @@ mixin PreferencesMixin on ChangeNotifier {
       for (final doc in mediaProvider.documents) {
         if (!isGlobal && !doc.path.startsWith(rootPath)) continue;
         final name = p.basename(doc.path);
-        if (name.toLowerCase().contains(qLower) && !seenPaths.contains(doc.path)) {
+        if (matchesQuery(name) && !seenPaths.contains(doc.path)) {
           seenPaths.add(doc.path);
           matchingDocs.add(doc);
         }
       }
       if (matchingDocs.isNotEmpty) {
         Future.wait(matchingDocs.map((doc) => FileItemModel.fromEntityAsync(doc))).then((resolvedDocs) {
+          if (generation != _searchGenerations[tab.id]) return;
           if (tabIndex < tabs.length && tabs[tabIndex].id == tab.id) {
-            tabs[tabIndex].searchResults = [...(tabs[tabIndex].searchResults ?? []), ...resolvedDocs];
-            notifyListeners();
+            pending.addAll(resolvedDocs);
+            flushPending();
           }
         });
       }
@@ -907,9 +933,9 @@ mixin PreferencesMixin on ChangeNotifier {
         final path = song.data;
         if (!isGlobal && !path.startsWith(rootPath)) continue;
         final name = p.basename(path);
-        if (name.toLowerCase().contains(qLower) && !seenPaths.contains(path)) {
+        if (matchesQuery(name) && !seenPaths.contains(path)) {
           seenPaths.add(path);
-          currentBatch.add(FileItemModel(
+          pending.add(FileItemModel(
             entity: File(path),
             name: song.title,
             path: path,
@@ -919,14 +945,10 @@ mixin PreferencesMixin on ChangeNotifier {
           ));
         }
       }
+      if (pending.isNotEmpty) flushPending();
     }
 
-    if (currentBatch.isNotEmpty) {
-      tab.searchResults = List.from(currentBatch);
-      notifyListeners();
-    }
-
-    // 2. Stream across filesystem for full coverage (Folders and other files)
+    // 2. Robust traversal across filesystem (per-directory error isolation)
     final rootDir = Directory(rootPath);
     if (!rootDir.existsSync()) {
       tab.isSearching = false;
@@ -954,48 +976,69 @@ mixin PreferencesMixin on ChangeNotifier {
       return ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv'].contains(ext);
     };
 
-    final subscription = rootDir.list(recursive: true, followLinks: false).listen(
-      (entity) {
-        final name = p.basename(entity.path);
-        if (name.toLowerCase().contains(qLower)) {
-          final isDir = entity is Directory;
-          
-          bool matchFilter = false;
-          if (filter == 'All') {
-            matchFilter = true;
-          } else if (filter == 'Folders' && isDir) {
-            matchFilter = true;
-          } else if (filter == 'Images' && !isDir && isImage(name)) {
-            matchFilter = true;
-          } else if (filter == 'Videos' && !isDir && isVideo(name)) {
-            matchFilter = true;
-          } else if (filter == 'Audio' && !isDir && isAudio(name)) {
-            matchFilter = true;
-          } else if (filter == 'Docs' && !isDir && isDoc(name)) {
-            matchFilter = true;
-          }
+    bool matchFilter(String name, bool isDirEntity) {
+      if (filter == 'All') return true;
+      if (filter == 'Folders') return isDirEntity;
+      if (filter == 'Images') return !isDirEntity && isImage(name);
+      if (filter == 'Videos') return !isDirEntity && isVideo(name);
+      if (filter == 'Audio') return !isDirEntity && isAudio(name);
+      if (filter == 'Docs') {
+        // Extension queries bypass the category whitelist so ".py", ".c", etc. are found
+        if (extMode) return !isDirEntity;
+        return !isDirEntity && isDoc(name);
+      }
+      return true;
+    }
 
-          if (matchFilter && !seenPaths.contains(entity.path)) {
-            seenPaths.add(entity.path);
-            FileItemModel.fromEntityAsync(entity).then((item) {
-              if (tabIndex < tabs.length && tabs[tabIndex].id == tab.id) {
-                tabs[tabIndex].searchResults = [...(tabs[tabIndex].searchResults ?? []), item];
-                notifyListeners();
-              }
-            });
+    const int maxResults = 500;
+    const int flushThreshold = 100;
+
+    Future<void> walk(Directory start) async {
+      final queue = <Directory>[start];
+      while (queue.isNotEmpty) {
+        if (generation != _searchGenerations[tab.id]) return;
+        final dir = queue.removeAt(0);
+        List<FileSystemEntity> entities;
+        try {
+          entities = await dir.list(followLinks: false).toList();
+        } catch (_) {
+          continue;
+        }
+        for (final entity in entities) {
+          if (entity is Link) continue;
+          final isDirEntity = entity is Directory;
+          if (isDirEntity) queue.add(entity);
+          final name = p.basename(entity.path);
+          if (!matchesQuery(name) || !matchFilter(name, isDirEntity)) continue;
+          if (!seenPaths.add(entity.path)) continue;
+          pending.add(FileItemModel.fromEntity(entity));
+          if (pending.length >= flushThreshold) {
+            flushPending();
+          }
+          if (generation == _searchGenerations[tab.id] &&
+              tabIndex < tabs.length &&
+              tabs[tabIndex].searchResults.length >= maxResults) {
+            return;
           }
         }
-      },
-      onError: (_) {},
-      onDone: () {
-        if (tabIndex < tabs.length && tabs[tabIndex].id == tab.id) {
-          tabs[tabIndex].isSearching = false;
-          notifyListeners();
-        }
-      },
-    );
+      }
+    }
 
-    _searchSubscriptions[tab.id] = subscription;
+    walk(rootDir).then((_) {
+      flushPending();
+      if (generation != _searchGenerations[tab.id]) return;
+      if (tabIndex < tabs.length && tabs[tabIndex].id == tab.id) {
+        tabs[tabIndex].isSearching = false;
+        notifyListeners();
+      }
+    });
+  }
+
+  bool _isExtensionQuery(String qLower) {
+    if (!qLower.startsWith('.')) return false;
+    final inner = qLower.substring(1);
+    if (inner.isEmpty || inner.contains('.')) return false;
+    return RegExp(r'^[a-z0-9]+$').hasMatch(inner);
   }
 
   void toggleSearchForTab(int index) {

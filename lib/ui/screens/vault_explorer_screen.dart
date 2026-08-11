@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import '../../core/icon_fonts/broken_icons.dart';
@@ -389,7 +388,6 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
         );
       } else {
         final mimeType = lookupMimeType(path) ?? '';
-        final ext = p.extension(path).toLowerCase();
 
         if (mimeType.startsWith('image/')) {
           await Navigator.push(context, MaterialPageRoute(builder: (_) => ImageViewerScreen(imagePath: path)));
@@ -533,7 +531,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Private Wallet',
+                      'Private Vault',
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5,

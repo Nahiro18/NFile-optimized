@@ -8,8 +8,6 @@ import '../../core/utils.dart';
 import '../../services/pin_service.dart';
 import 'file_action_dialogs.dart';
 import 'create_archive_dialog.dart';
-import 'file_operation_progress_dialog.dart';
-import 'package:share_plus/share_plus.dart';
 import 'batch_rename_dialog.dart';
 import '../../services/folder_share_service.dart';
 

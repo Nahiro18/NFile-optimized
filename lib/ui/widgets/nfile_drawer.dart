@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../providers/file_manager_provider.dart';
-import '../screens/global_search_screen.dart';
 import '../screens/more_settings_screen.dart';
 import '../screens/vault_lock_screen.dart';
 import '../screens/ftp_server_screen.dart';
@@ -139,7 +138,7 @@ class NFileDrawer extends StatelessWidget {
                             _buildDrawerTile(
                               context,
                               icon: Broken.lock,
-                              title: 'Private Wallet',
+                              title: 'Private Vault',
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => const VaultLockScreen()));

@@ -78,22 +78,6 @@ Future<int> calculateDirectorySize(String path) async {
 }
 
 class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
-  int _activeTabIndex = 0;
-  List<FolderTab> _tabs = [FolderTab(id: 'default', currentPath: '/storage/emulated/0')];
-
-  int get activeTabIndex => _activeTabIndex;
-  
-  @override
-  FolderTab get activeTab => _tabs[_activeTabIndex];
-  
-  @override
-  List<FileItemModel> get currentFiles => activeTab.currentFiles;
-  
-  @override
-  String get currentPath => activeTab.currentPath;
-  
-  @override
-  List<FolderTab> get tabs => _tabs;
 
   FileManagerProvider() {
     _sortType = PreferencesService.getSortType();
@@ -1201,7 +1185,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
       if (await file.exists()) {
         final stat = await file.stat();
         bool updated = false;
-        for (var tab in _tabs) {
+        for (var tab in tabs) {
           final index = tab.currentFiles.indexWhere((item) => item.path == filePath);
           if (index != -1) {
             final oldItem = tab.currentFiles[index];
@@ -1545,7 +1529,6 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     notifyListeners();
 
     try {
-      final isDir = FileSystemEntity.isDirectorySync(sourcePath);
       if (isRestrictedPath(sourcePath) || isRestrictedPath(destFolderPath)) {
         await RootShizukuService.moveItem(sourcePath, destPath, useRoot: activeTab.useRootMode);
       } else {
@@ -1571,18 +1554,6 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     await loadDirectory(currentPath, showLoading: false, clearCache: true);
   }
 
-  Future<void> _copyDirectory(Directory source, Directory destination) async {
-    await for (var entity in source.list(recursive: false)) {
-      if (entity is Directory) {
-        final newDirectory = Directory(p.join(destination.absolute.path, p.basename(entity.path)));
-        await newDirectory.create();
-        await _copyDirectory(entity.absolute, newDirectory);
-      } else if (entity is File) {
-        await entity.copy(p.join(destination.path, p.basename(entity.path)));
-      }
-    }
-  }
-
   Future<void> copyItem(BuildContext context, String sourcePath, String destFolderPath, {bool showToast = true}) async {
     final name = p.basename(sourcePath);
     final destPath = p.join(destFolderPath, name);
@@ -1605,7 +1576,6 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     notifyListeners();
 
     try {
-      final isDir = FileSystemEntity.isDirectorySync(sourcePath);
       if (isRestrictedPath(sourcePath) || isRestrictedPath(destFolderPath)) {
         await RootShizukuService.copyItem(sourcePath, destPath, useRoot: activeTab.useRootMode);
       } else {
@@ -1630,6 +1600,8 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
 
     await loadDirectory(currentPath, showLoading: false, clearCache: true);
   }
+
+  void requestNotify() => notifyListeners();
 }
 
 

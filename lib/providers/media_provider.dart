@@ -11,11 +11,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:collection/collection.dart';
 import '../services/preferences_service.dart';
 import '../models/custom_shortcut_model.dart';
 import '../models/file_item_model.dart';
-import '../core/utils.dart';
 
 enum MediaSortOrder {
   newest,
@@ -32,9 +30,10 @@ class ThumbnailCache {
   static final LinkedHashMap<String, Uint8List?> _cache = LinkedHashMap<String, Uint8List?>();
   static final Map<String, Future<Uint8List?>> _pending = {};
   static String? _cacheDir;
+  static int _currentCacheSizeBytes = 0; // Cumulative in-memory cache size in bytes
   
-  static const int MAX_CACHE_SIZE = 100; // Máximo 100 thumbnails en memoria
-  static const int MAX_CACHE_SIZE_MB = 50; // Máximo 50MB
+  static const int MAX_CACHE_SIZE = 100; // Max 100 thumbnails in memory
+  static const int MAX_CACHE_SIZE_BYTES = 50 * 1024 * 1024; // Max 50MB in memory
   
   static Future<void> init() async {
     if (_cacheDir != null) return;
@@ -48,33 +47,36 @@ class ThumbnailCache {
       }
 
       _cacheDir = folder.path;
-      
-      // NO cargar todos los thumbnails al inicio - carga lazy
       debugPrint('[ThumbnailCache] Initialized at: $_cacheDir');
     } catch (e) {
       debugPrint('[ThumbnailCache] Init error: $e');
     }
   }
 
-  /// Elimina los items más antiguos si el cache excede el límite
+  /// Evicts the oldest items if the cache exceeds count or size limits (LRU)
   static void _evictIfNeeded() {
-    while (_cache.length > MAX_CACHE_SIZE) {
+    while (_cache.isNotEmpty && (_cache.length > MAX_CACHE_SIZE || _currentCacheSizeBytes > MAX_CACHE_SIZE_BYTES)) {
       final oldestKey = _cache.keys.first;
-      _cache.remove(oldestKey);
-      debugPrint('[ThumbnailCache] Evicted: $oldestKey');
+      final oldestVal = _cache.remove(oldestKey);
+      if (oldestVal != null) {
+        _currentCacheSizeBytes -= oldestVal.length;
+      }
+      debugPrint('[ThumbnailCache] Evicted (LRU): $oldestKey, remaining memory size: ${(_currentCacheSizeBytes / (1024 * 1024)).toStringAsFixed(2)} MB');
     }
   }
 
-  /// Obtiene un thumbnail del cache o lo genera
+  /// Gets a thumbnail from the cache, promotes it if found, or generates it
   static Future<Uint8List?> get(AssetEntity asset) async {
     final key = asset.id;
 
-    // Verificar cache en memoria
+    // In-memory cache hit (LRU: Promote key to end by removing and re-inserting)
     if (_cache.containsKey(key) && _cache[key] != null) {
-      return _cache[key];
+      final value = _cache.remove(key);
+      _cache[key] = value;
+      return value;
     }
 
-    // Verificar si ya hay una petición pendiente
+    // Check if there is already a pending load request
     if (_pending.containsKey(key)) {
       return _pending[key];
     }
@@ -85,7 +87,7 @@ class ThumbnailCache {
     try {
       await init();
 
-      // Intentar cargar desde disco
+      // Try loading from disk cache
       if (_cacheDir != null) {
         final sanitizedKey = key.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
         final file = File('$_cacheDir/$sanitizedKey.thumb');
@@ -94,6 +96,7 @@ class ThumbnailCache {
           final bytes = await file.readAsBytes();
           if (bytes.isNotEmpty) {
             _cache[key] = bytes;
+            _currentCacheSizeBytes += bytes.length;
             _evictIfNeeded();
             _pending.remove(key);
             completer.complete(bytes);
@@ -102,14 +105,15 @@ class ThumbnailCache {
         }
       }
 
-      // Generar thumbnail
+      // Generate new thumbnail
       final data = await asset.thumbnailDataWithSize(const ThumbnailSize.square(300));
 
       if (data != null && data.isNotEmpty) {
         _cache[key] = data;
+        _currentCacheSizeBytes += data.length;
         _evictIfNeeded();
 
-        // Guardar en disco
+        // Save to disk cache asynchronously
         if (_cacheDir != null) {
           final sanitizedKey = key.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
           final file = File('$_cacheDir/$sanitizedKey.thumb');
@@ -128,13 +132,22 @@ class ThumbnailCache {
     }
   }
 
-  static Uint8List? getCached(String id) => _cache[id];
+  /// Get from memory cache and promote if hit
+  static Uint8List? getCached(String id) {
+    if (_cache.containsKey(id) && _cache[id] != null) {
+      final value = _cache.remove(id);
+      _cache[id] = value;
+      return value;
+    }
+    return null;
+  }
 
   static bool hasCached(String id) => _cache.containsKey(id) && _cache[id] != null;
 
   static void clear() {
     _cache.clear();
     _pending.clear();
+    _currentCacheSizeBytes = 0;
     if (_cacheDir != null) {
       try {
         Directory(_cacheDir!).deleteSync(recursive: true);
