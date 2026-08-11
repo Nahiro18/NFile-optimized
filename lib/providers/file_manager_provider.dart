@@ -79,12 +79,12 @@ Future<int> calculateDirectorySize(String path) async {
 
 class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
   int _activeTabIndex = 0;
-  List<FolderTabModel> _tabs = [FolderTabModel(currentPath: '/storage/emulated/0')];
+  List<FolderTab> _tabs = [FolderTab(id: 'default', currentPath: '/storage/emulated/0')];
 
   int get activeTabIndex => _activeTabIndex;
   
   @override
-  FolderTabModel get activeTab => _tabs[_activeTabIndex];
+  FolderTab get activeTab => _tabs[_activeTabIndex];
   
   @override
   List<FileItemModel> get currentFiles => activeTab.currentFiles;
@@ -93,7 +93,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
   String get currentPath => activeTab.currentPath;
   
   @override
-  List<FolderTabModel> get tabs => _tabs;
+  List<FolderTab> get tabs => _tabs;
   @override
   void sortList(List<FileItemModel> list, String path) => sortList(list, path);
   FileManagerProvider() {

@@ -36,7 +36,7 @@ class FileOperationProgressMinibar extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${progress.operation} (${progress.currentItemIndex}/${progress.totalItems})',
+                            '${progress.currentFileName} (${progress.currentFileIndex}/${progress.totalFiles})',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -45,7 +45,7 @@ class FileOperationProgressMinibar extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           LinearProgressIndicator(
-                            value: progress.progress,
+                            value: progress.percentage,
                             backgroundColor: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(4),
                           ),
@@ -54,7 +54,7 @@ class FileOperationProgressMinibar extends StatelessWidget {
                     ),
                     const SizedBox(width: 16),
                     Text(
-                      '${(progress.progress * 100).toStringAsFixed(0)}%',
+                      '${(progress.percentage * 100).toStringAsFixed(0)}%',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],

@@ -205,6 +205,7 @@ class FileItem extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
 
     return Stack(

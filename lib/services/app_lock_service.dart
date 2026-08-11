@@ -57,10 +57,6 @@ class AppLockService {
       
       final authenticated = await _localAuth.authenticate(
         localizedReason: reason,
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-          biometricOnly: false, // Permite PIN como fallback
-        ),
       );
       
       return authenticated;
