@@ -4,9 +4,30 @@ import 'dart:math';
 class SecureDeleteService {
   static final Random _random = Random.secure();
 
-  /// Borra un archivo de forma segura sobreescribiéndolo con bytes aleatorios
-  /// y luego con ceros antes de eliminarlo del sistema de archivos.
-  static Future<void> deleteSecurely(File file) async {
+  /// Borra un archivo o directorio de forma segura.
+  /// Si es un directorio, sobreescribe recursivamente todos los archivos internos antes de eliminarlo.
+  static Future<void> deleteSecurely(FileSystemEntity entity) async {
+    if (!await entity.exists()) return;
+
+    if (entity is Directory) {
+      try {
+        final list = entity.listSync(recursive: true);
+        for (final child in list) {
+          if (child is File) {
+            await _deleteFileSecurely(child);
+          }
+        }
+      } catch (_) {}
+      try {
+        await entity.delete(recursive: true);
+      } catch (_) {}
+    } else if (entity is File) {
+      await _deleteFileSecurely(entity);
+    }
+  }
+
+  /// Borra un archivo sobreescribiéndolo con bytes aleatorios y ceros
+  static Future<void> _deleteFileSecurely(File file) async {
     if (!await file.exists()) return;
 
     try {

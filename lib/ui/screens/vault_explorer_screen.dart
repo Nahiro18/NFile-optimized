@@ -42,6 +42,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    VaultService.clearDecryptedTempFiles();
     super.dispose();
   }
 

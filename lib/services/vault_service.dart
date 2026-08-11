@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
+import 'secure_delete_service.dart';
 
 /// Registro de archivo en la bóveda
 class VaultFileRecord {
@@ -224,8 +225,8 @@ class VaultService {
     final targetFile = File(scrambledPath);
     await targetFile.writeAsBytes(headerBytes.toBytes(), flush: true);
 
-    // Eliminar archivo original
-    await file.delete();
+    // Eliminar archivo original de forma segura
+    await SecureDeleteService.deleteSecurely(file);
 
     // Crear registro
     final record = VaultFileRecord(
@@ -418,16 +419,16 @@ class VaultService {
         isFolder: true,
       );
 
-      // Limpiar carpeta original
+      // Limpiar carpeta original de forma segura
       if (inPlace) {
         final children = directory.listSync();
         for (final child in children) {
           if (child.path != record.scrambledPath) {
-            await child.delete(recursive: true);
+            await SecureDeleteService.deleteSecurely(child);
           }
         }
       } else {
-        await directory.delete(recursive: true);
+        await SecureDeleteService.deleteSecurely(directory);
       }
 
       return record;
@@ -558,5 +559,35 @@ class VaultService {
       result |= a[i] ^ b[i];
     }
     return result == 0;
+  }
+
+  /// Limpia los archivos desencriptados temporales del caché para mayor seguridad
+  static Future<void> clearDecryptedTempFiles() async {
+    try {
+      final cacheDir = await getTemporaryDirectory();
+      if (await cacheDir.exists()) {
+        await for (final entity in cacheDir.list(recursive: false)) {
+          if (entity is File) {
+            final name = p.basename(entity.path);
+            if (name.startsWith('temp_vault_')) {
+              try {
+                // Sobreescribir con ceros antes de borrar
+                final len = entity.lengthSync();
+                if (len > 0) {
+                  final randomBytes = List<int>.generate(len, (_) => Random.secure().nextInt(256));
+                  await entity.writeAsBytes(randomBytes, flush: true);
+                  final zeroBytes = List<int>.filled(len, 0);
+                  await entity.writeAsBytes(zeroBytes, flush: true);
+                }
+              } catch (_) {}
+              await entity.delete();
+            }
+          }
+        }
+        debugPrint('[VaultService] Temporary decrypted files cleared successfully');
+      }
+    } catch (e) {
+      debugPrint('[VaultService] Error clearing temp files: $e');
+    }
   }
 }
