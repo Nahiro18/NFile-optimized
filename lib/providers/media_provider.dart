@@ -1113,7 +1113,7 @@ class MediaProvider extends ChangeNotifier {
     return searchDirs;
   }
 
-Future<List<String>> _isolateDirectoryScan(Map<String, dynamic> params) async {
+  static Future<List<String>> _isolateDirectoryScan(Map<String, dynamic> params) async {
   final startPath = params['startPath'] as String;
   final filterType = params['filterType'] as String;
   final docExts = params['docExts'] as List<String>? ?? [];

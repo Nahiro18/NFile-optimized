@@ -788,6 +788,15 @@ class MainActivity : AudioServiceFragmentActivity() {
     private fun installSplitApks(apkPaths: List<String>, result: MethodChannel.Result) {
         executor.execute {
             try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !packageManager.canRequestPackageInstalls()) {
+                    runOnUiThread {
+                        val intent = Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName"))
+                        startActivity(intent)
+                        result.success(false)
+                    }
+                    return@execute
+                }
+
                 val pm = packageManager
                 val packageInstaller = pm.packageInstaller
                 val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
