@@ -32,7 +32,8 @@ jobs:
         run: flutter pub get
 
       - name: Parchear error de flutter_avif
-        run: find /home/runner/.pub-cache/hosted/pub.dev/flutter_avif_android-*/android/src/main/kotlin -name "FlutterAvifPlugin.kt" -exec sed -i 's/ : Any, / : /g' {} +
+        run: |
+          find /home/runner/.pub-cache/hosted/pub.dev/flutter_avif_android-*/android/src/main/kotlin -name "FlutterAvifPlugin.kt" -exec sed -i 's/ : Any, / : /g' {} +
 
       - name: Compilar APK (arm64)
         run: flutter build apk --target-platform android-arm64
