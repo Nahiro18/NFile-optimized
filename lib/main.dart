@@ -202,21 +202,35 @@ class _NFileAppState extends State<NFileApp> {
 
   Future<void> _checkStoragePermission() async {
     if (Platform.isAndroid) {
-      final manageStorageGranted = await Permission.manageExternalStorage.isGranted;
-      final standardStorageGranted = await Permission.storage.isGranted;
-      bool audioGranted = true;
       try {
         final info = await DeviceInfoPlugin().androidInfo;
         final sdk = info.version.sdkInt;
-        if (sdk >= 33) {
-          audioGranted = await Permission.audio.isGranted;
-        }
-      } catch (_) {}
+        bool granted = false;
 
-      if (mounted) {
-        setState(() {
-          _hasPermission = manageStorageGranted || (standardStorageGranted && audioGranted);
-        });
+        if (sdk >= 33) {
+          final audio = await Permission.audio.isGranted;
+          final photos = await Permission.photos.isGranted;
+          final videos = await Permission.videos.isGranted;
+          granted = audio && photos && videos;
+        } else if (sdk >= 30) {
+          granted = await Permission.manageExternalStorage.isGranted || await Permission.storage.isGranted;
+        } else {
+          // Android 10 o inferior
+          granted = await Permission.storage.isGranted;
+        }
+
+        if (mounted) {
+          setState(() {
+            _hasPermission = granted;
+          });
+        }
+      } catch (_) {
+        final standard = await Permission.storage.isGranted;
+        if (mounted) {
+          setState(() {
+            _hasPermission = standard;
+          });
+        }
       }
     } else {
       if (mounted) {
@@ -227,23 +241,39 @@ class _NFileAppState extends State<NFileApp> {
 
   Future<void> _requestStoragePermission() async {
     if (Platform.isAndroid) {
-      final manageStorageGranted = await Permission.manageExternalStorage.request().isGranted;
-      bool standardStorageGranted = false;
-      bool audioGranted = true;
       try {
         final info = await DeviceInfoPlugin().androidInfo;
         final sdk = info.version.sdkInt;
-        if (sdk >= 33) {
-          audioGranted = await Permission.audio.request().isGranted;
-        } else {
-          standardStorageGranted = await Permission.storage.request().isGranted;
-        }
-      } catch (_) {}
+        bool granted = false;
 
-      if (mounted) {
-        setState(() {
-          _hasPermission = manageStorageGranted || (standardStorageGranted && audioGranted);
-        });
+        if (sdk >= 33) {
+          final audio = await Permission.audio.request().isGranted;
+          final photos = await Permission.photos.request().isGranted;
+          final videos = await Permission.videos.request().isGranted;
+          granted = audio && photos && videos;
+        } else if (sdk >= 30) {
+          granted = await Permission.manageExternalStorage.request().isGranted;
+          if (!granted) {
+            // Fallback a almacenamiento estándar en caso de denegación de manageExternalStorage
+            granted = await Permission.storage.request().isGranted;
+          }
+        } else {
+          // Android 10 o inferior
+          granted = await Permission.storage.request().isGranted;
+        }
+
+        if (mounted) {
+          setState(() {
+            _hasPermission = granted;
+          });
+        }
+      } catch (_) {
+        final standard = await Permission.storage.request().isGranted;
+        if (mounted) {
+          setState(() {
+            _hasPermission = standard;
+          });
+        }
       }
     } else {
       if (mounted) {

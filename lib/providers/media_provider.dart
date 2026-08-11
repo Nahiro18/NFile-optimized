@@ -836,6 +836,14 @@ class MediaProvider extends ChangeNotifier {
     } catch (_) {}
 
     if (ps.isAuth || isStorageGranted) {
+      if (Platform.isAndroid) {
+        try {
+          final info = await DeviceInfoPlugin().androidInfo;
+          if (info.version.sdkInt < 33) {
+            PhotoManager.setIgnorePermissionCheck(true);
+          }
+        } catch (_) {}
+      }
       futures.add(_loadImagesAndVideos());
     }
     if (hasAudioPermission || isStorageGranted) {
@@ -907,8 +915,11 @@ class MediaProvider extends ChangeNotifier {
       if (Platform.isAndroid) {
         try {
           final info = await DeviceInfoPlugin().androidInfo;
-          if (info.version.sdkInt >= 33) {
+          final sdk = info.version.sdkInt;
+          if (sdk >= 33) {
             await Permission.audio.request();
+          } else {
+            PhotoManager.setIgnorePermissionCheck(true);
           }
         } catch (_) {}
       }
@@ -950,6 +961,15 @@ class MediaProvider extends ChangeNotifier {
 
     final futures = <Future<void>>[];
     if (ps.isAuth || isStorageGranted) {
+      if (Platform.isAndroid) {
+        try {
+          final info = await DeviceInfoPlugin().androidInfo;
+          final sdk = info.version.sdkInt;
+          if (sdk < 33) {
+            PhotoManager.setIgnorePermissionCheck(true);
+          }
+        } catch (_) {}
+      }
       if (isStorageGranted && !ps.isAuth) {
         try {
           PhotoManager.setIgnorePermissionCheck(true);
