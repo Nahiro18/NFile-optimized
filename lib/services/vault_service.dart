@@ -170,9 +170,6 @@ class VaultService {
       scrambledPath = p.join(vaultDir.path, 'vault_$timestamp.nfv');
     }
 
-    // Leer bytes del archivo
-    final fileBytes = await file.readAsBytes();
-
     // Generar salt e IV únicos para este archivo
     final salt = _generateSecureRandom(_saltLength);
     final iv = _generateSecureRandom(_ivLength);
@@ -180,10 +177,10 @@ class VaultService {
     // Derivar clave de cifrado
     final key = _deriveEncryptionKey(password, salt);
 
-    // Dividir archivo: primeros 8KB (firma) + resto
-    final scrambleLen = min(_scrambleSize, fileBytes.length);
-    final scrambleBytes = fileBytes.sublist(0, scrambleLen);
-    final restBytes = fileBytes.sublist(scrambleLen);
+    // Leer solo la firma (primeros 8KB o el tamaño del archivo si es menor) para evitar cargar todo en memoria
+    final scrambleLen = min(_scrambleSize, size);
+    final raf = await file.open(mode: FileMode.read);
+    final scrambleBytes = await raf.read(scrambleLen);
 
     // Cifrar la firma con AES-256-GCM
     final encryptedScramble = _encryptAESGCM(scrambleBytes, key, iv);
@@ -201,8 +198,7 @@ class VaultService {
     // Cifrar metadata
     final encryptedMetadata = _encryptAESGCM(metadataBytes, key, iv);
 
-    // Construir archivo final:
-    // [MAGIC_TAG][SALT][IV][METADATA_LEN][ENCRYPTED_METADATA][ENCRYPTED_SCRAMBLE][REST]
+    // Construir archivo final usando un Stream/Sink para no sobrecargar la RAM
     final headerBytes = BytesBuilder();
     headerBytes.add(utf8.encode(_magicTag)); // 14 bytes
     headerBytes.add(salt); // 32 bytes
@@ -219,11 +215,24 @@ class VaultService {
 
     headerBytes.add(encryptedMetadata);
     headerBytes.add(encryptedScramble);
-    headerBytes.add(restBytes);
 
-    // Escribir archivo cifrado
+    // Escribir el archivo cifrado destino en streaming
     final targetFile = File(scrambledPath);
-    await targetFile.writeAsBytes(headerBytes.toBytes(), flush: true);
+    final sink = targetFile.openWrite();
+    sink.add(headerBytes.toBytes());
+
+    // Si el archivo es mayor a la firma, transferimos el resto en chunks de 64KB
+    if (size > scrambleLen) {
+      await raf.setPosition(scrambleLen);
+      while (true) {
+        final chunk = await raf.read(64 * 1024);
+        if (chunk.isEmpty) break;
+        sink.add(chunk);
+      }
+    }
+    await sink.flush();
+    await sink.close();
+    await raf.close();
 
     // Eliminar archivo original de forma segura
     await SecureDeleteService.deleteSecurely(file);
@@ -259,116 +268,128 @@ class VaultService {
       throw Exception('Scrambled vault file not found: ${record.scrambledPath}');
     }
 
-    final bytes = await scrambledFile.readAsBytes();
-
-    // Verificar magic tag
-    if (bytes.length < _magicTag.length + _saltLength + _ivLength + 4) {
-      throw Exception('Invalid vault file format (Too short)');
-    }
-
-    final magicBytes = bytes.sublist(0, _magicTag.length);
-    final magic = utf8.decode(magicBytes);
-    if (magic != _magicTag) {
-      throw Exception('Invalid vault file format (Magic tag mismatch)');
-    }
-
-    // Extraer salt e IV
-    final saltStart = _magicTag.length;
-    final ivStart = saltStart + _saltLength;
-    final metaLenStart = ivStart + _ivLength;
-
-    final salt = bytes.sublist(saltStart, ivStart);
-    final iv = bytes.sublist(ivStart, metaLenStart);
-
-    // Extraer longitud de metadata
-    final metaLen = (bytes[metaLenStart] << 24) |
-                    (bytes[metaLenStart + 1] << 16) |
-                    (bytes[metaLenStart + 2] << 8) |
-                    bytes[metaLenStart + 3];
-
-    final metaStart = metaLenStart + 4;
-    final metaEnd = metaStart + metaLen;
-
-    if (bytes.length < metaEnd) {
-      throw Exception('Invalid vault file format (Corrupted header)');
-    }
-
-    // Derivar clave de descifrado
-    final key = _deriveEncryptionKey(password, salt);
-
-    // Descifrar metadata
-    final encryptedMetadata = bytes.sublist(metaStart, metaEnd);
-    List<int> decryptedMetadataBytes;
-    try {
-      decryptedMetadataBytes = _decryptAESGCM(encryptedMetadata, key, iv);
-    } catch (e) {
-      throw Exception('Incorrect password or corrupted file');
-    }
-
-    final metadataStr = utf8.decode(decryptedMetadataBytes);
-    final metadata = jsonDecode(metadataStr) as Map<String, dynamic>;
-
-    // Extraer bytes cifrados de la firma
-    final originalSize = metadata['size'] as int;
-    final scrambleLen = min(_scrambleSize, originalSize);
-    final encryptedScrambleLen = scrambleLen + 16; // AES-GCM SIEMPRE añade un MAC de 16 bytes, incluso si está vacío
-    final fileDataStart = metaEnd;
-
-    if (bytes.length < fileDataStart + encryptedScrambleLen) {
-      throw Exception('Invalid vault file format (Corrupted payload)');
-    }
-
-    // Descifrar firma
-    final encryptedScramble = bytes.sublist(fileDataStart, fileDataStart + encryptedScrambleLen);
-    final decryptedScramble = _decryptAESGCM(encryptedScramble, key, iv);
+    final raf = await scrambledFile.open(mode: FileMode.read);
     
-    final restBytes = bytes.sublist(fileDataStart + encryptedScrambleLen);
+    try {
+      final baseHeaderLen = _magicTag.length + _saltLength + _ivLength + 4;
+      final baseHeader = await raf.read(baseHeaderLen);
+      if (baseHeader.length < baseHeaderLen) {
+        throw Exception('Invalid vault file format (Too short)');
+      }
 
-    // Reconstruir archivo original
-    final originalBytes = BytesBuilder();
-    originalBytes.add(decryptedScramble);
-    originalBytes.add(restBytes);
+      // Verificar magic tag
+      final magicBytes = baseHeader.sublist(0, _magicTag.length);
+      final magic = utf8.decode(magicBytes);
+      if (magic != _magicTag) {
+        throw Exception('Invalid vault file format (Magic tag mismatch)');
+      }
 
-    final originalFile = File(record.originalPath);
+      final salt = baseHeader.sublist(_magicTag.length, _magicTag.length + _saltLength);
+      final iv = baseHeader.sublist(_magicTag.length + _saltLength, _magicTag.length + _saltLength + _ivLength);
 
-    if (record.isFolder) {
-      // Reconstruir estructura de carpeta
-      final archive = ZipDecoder().decodeBytes(originalBytes.toBytes());
+      // Obtener longitud de la metadata
+      final metaLenStart = _magicTag.length + _saltLength + _ivLength;
+      final metaLen = (baseHeader[metaLenStart] << 24) |
+                      (baseHeader[metaLenStart + 1] << 16) |
+                      (baseHeader[metaLenStart + 2] << 8) |
+                      baseHeader[metaLenStart + 3];
+
+      // Leer la metadata cifrada
+      final encryptedMetadata = await raf.read(metaLen);
+      if (encryptedMetadata.length < metaLen) {
+        throw Exception('Invalid vault file format (Corrupted header)');
+      }
+
+      // Derivar clave
+      final key = _deriveEncryptionKey(password, salt);
+
+      // Descifrar metadata
+      List<int> decryptedMetadataBytes;
+      try {
+        decryptedMetadataBytes = _decryptAESGCM(encryptedMetadata, key, iv);
+      } catch (e) {
+        throw Exception('Incorrect password or corrupted file');
+      }
+
+      final metadataStr = utf8.decode(decryptedMetadataBytes);
+      final metadata = jsonDecode(metadataStr) as Map<String, dynamic>;
+
+      final originalSize = metadata['size'] as int;
+      final scrambleLen = min(_scrambleSize, originalSize);
+      final encryptedScrambleLen = scrambleLen + 16;
+
+      // Leer la firma cifrada
+      final encryptedScramble = await raf.read(encryptedScrambleLen);
+      if (encryptedScramble.length < encryptedScrambleLen) {
+        throw Exception('Invalid vault file format (Corrupted payload)');
+      }
+
+      // Descifrar firma
+      final decryptedScramble = _decryptAESGCM(encryptedScramble, key, iv);
+
+      // Reconstruir archivo de destino
       final destinationDir = p.dirname(record.originalPath);
+      final originalFile = File(record.originalPath);
 
-      for (final file in archive) {
-        final filename = file.name;
-        final fullPath = p.join(destinationDir, filename);
-
-        if (file.isFile) {
-          final data = file.content as List<int>;
-          final destFile = File(fullPath);
-          await destFile.parent.create(recursive: true);
-          await destFile.writeAsBytes(data, flush: true);
-        } else {
-          await Directory(fullPath).create(recursive: true);
+      if (record.isFolder) {
+        // Para carpetas, escribimos temporalmente el archivo zip descifrado y luego lo descomprimimos
+        final cacheDir = await getTemporaryDirectory();
+        final tempZipPath = p.join(cacheDir.path, 'temp_unlock_${record.id}.zip');
+        final tempZipFile = File(tempZipPath);
+        final sink = tempZipFile.openWrite();
+        sink.add(decryptedScramble);
+        
+        while (true) {
+          final chunk = await raf.read(64 * 1024);
+          if (chunk.isEmpty) break;
+          sink.add(chunk);
         }
-      }
-    } else {
-      // Recrear carpeta padre si fue eliminada
-      final originalDir = originalFile.parent;
-      if (!await originalDir.exists()) {
-        await originalDir.create(recursive: true);
+        await sink.flush();
+        await sink.close();
+
+        // Descomprimir el ZIP
+        final bytes = await tempZipFile.readAsBytes();
+        final archive = ZipDecoder().decodeBytes(bytes);
+        for (final file in archive) {
+          final filename = file.name;
+          final fullPath = p.join(destinationDir, filename);
+          if (file.isFile) {
+            final outFile = File(fullPath);
+            await outFile.parent.create(recursive: true);
+            await outFile.writeAsBytes(file.content as List<int>);
+          } else {
+            await Directory(fullPath).create(recursive: true);
+          }
+        }
+        await tempZipFile.delete();
+      } else {
+        // Para archivos normales, lo escribimos directamente en streaming al disco
+        await originalFile.parent.create(recursive: true);
+        final sink = originalFile.openWrite();
+        sink.add(decryptedScramble);
+
+        while (true) {
+          final chunk = await raf.read(64 * 1024);
+          if (chunk.isEmpty) break;
+          sink.add(chunk);
+        }
+        await sink.flush();
+        await sink.close();
       }
 
-      await originalFile.writeAsBytes(originalBytes.toBytes(), flush: true);
+      // Limpiar archivo cifrado
+      await scrambledFile.delete();
+
+      // Actualizar registros
+      final records = await loadRecords();
+      records.removeWhere((e) => e.id == record.id);
+      await saveRecords(records);
+
+      debugPrint('[VaultService] File decrypted: ${record.originalName}');
+      return originalFile;
+    } finally {
+      await raf.close();
     }
-
-    // Limpiar archivo cifrado
-    await scrambledFile.delete();
-
-    // Actualizar registros
-    final records = await loadRecords();
-    records.removeWhere((e) => e.id == record.id);
-    await saveRecords(records);
-
-    debugPrint('[VaultService] File decrypted: ${record.originalName}');
-    return originalFile;
   }
 
   /// Bloquea una carpeta completa comprimiéndola primero
@@ -449,53 +470,79 @@ class VaultService {
       throw Exception('Scrambled vault file not found');
     }
 
-    final bytes = await scrambledFile.readAsBytes();
+    final raf = await scrambledFile.open(mode: FileMode.read);
+    
+    try {
+      final baseHeaderLen = _magicTag.length + _saltLength + _ivLength + 4;
+      final baseHeader = await raf.read(baseHeaderLen);
+      if (baseHeader.length < baseHeaderLen) {
+        throw Exception('Invalid vault file format (Too short)');
+      }
 
-    // Extraer componentes
-    final saltStart = _magicTag.length;
-    final ivStart = saltStart + _saltLength;
-    final metaLenStart = ivStart + _ivLength;
+      final magicBytes = baseHeader.sublist(0, _magicTag.length);
+      final magic = utf8.decode(magicBytes);
+      if (magic != _magicTag) {
+        throw Exception('Invalid vault file format (Magic tag mismatch)');
+      }
 
-    final salt = bytes.sublist(saltStart, ivStart);
-    final iv = bytes.sublist(ivStart, metaLenStart);
+      final salt = baseHeader.sublist(_magicTag.length, _magicTag.length + _saltLength);
+      final iv = baseHeader.sublist(_magicTag.length + _saltLength, _magicTag.length + _saltLength + _ivLength);
 
-    final metaLen = (bytes[metaLenStart] << 24) |
-                    (bytes[metaLenStart + 1] << 16) |
-                    (bytes[metaLenStart + 2] << 8) |
-                    bytes[metaLenStart + 3];
+      final metaLenStart = _magicTag.length + _saltLength + _ivLength;
+      final metaLen = (baseHeader[metaLenStart] << 24) |
+                      (baseHeader[metaLenStart + 1] << 16) |
+                      (baseHeader[metaLenStart + 2] << 8) |
+                      baseHeader[metaLenStart + 3];
 
-    final metaStart = metaLenStart + 4;
-    final metaEnd = metaStart + metaLen;
+      final encryptedMetadata = await raf.read(metaLen);
+      if (encryptedMetadata.length < metaLen) {
+        throw Exception('Invalid vault file format (Corrupted header)');
+      }
 
-    final key = _deriveEncryptionKey(password, salt);
+      final key = _deriveEncryptionKey(password, salt);
 
-    // Descifrar metadata
-    final encryptedMetadata = bytes.sublist(metaStart, metaEnd);
-    final decryptedMetadataBytes = _decryptAESGCM(encryptedMetadata, key, iv);
-    final decryptedMetadataStr = utf8.decode(decryptedMetadataBytes);
-    final metadata = jsonDecode(decryptedMetadataStr) as Map<String, dynamic>;
+      List<int> decryptedMetadataBytes;
+      try {
+        decryptedMetadataBytes = _decryptAESGCM(encryptedMetadata, key, iv);
+      } catch (e) {
+        throw Exception('Incorrect password or corrupted file');
+      }
 
-    final originalSize = metadata['size'] as int;
-    final scrambleLen = min(_scrambleSize, originalSize);
-    final encryptedScrambleLen = scrambleLen + 16; // AES-GCM adds a 16-byte MAC tag
-    final fileDataStart = metaEnd;
+      final metadataStr = utf8.decode(decryptedMetadataBytes);
+      final metadata = jsonDecode(metadataStr) as Map<String, dynamic>;
 
-    final encryptedScramble = bytes.sublist(fileDataStart, fileDataStart + encryptedScrambleLen);
-    final decryptedScramble = _decryptAESGCM(encryptedScramble, key, iv);
-    final restBytes = bytes.sublist(fileDataStart + encryptedScrambleLen);
+      final originalSize = metadata['size'] as int;
+      final scrambleLen = min(_scrambleSize, originalSize);
+      final encryptedScrambleLen = scrambleLen + 16;
 
-    final originalBytes = BytesBuilder();
-    originalBytes.add(decryptedScramble);
-    originalBytes.add(restBytes);
+      final encryptedScramble = await raf.read(encryptedScrambleLen);
+      if (encryptedScramble.length < encryptedScrambleLen) {
+        throw Exception('Invalid vault file format (Corrupted payload)');
+      }
 
-    // Escribir en cache temporal
-    final cacheDir = await getTemporaryDirectory();
-    final extension = record.isFolder ? '.zip' : '';
-    final tempFilePath = p.join(cacheDir.path, 'temp_vault_${record.id}_${record.originalName}$extension');
-    final tempFile = File(tempFilePath);
-    await tempFile.writeAsBytes(originalBytes.toBytes(), flush: true);
+      final decryptedScramble = _decryptAESGCM(encryptedScramble, key, iv);
 
-    return tempFile;
+      // Escribir en cache temporal usando un Stream/Sink
+      final cacheDir = await getTemporaryDirectory();
+      final extension = record.isFolder ? '.zip' : '';
+      final tempFilePath = p.join(cacheDir.path, 'temp_vault_${record.id}_${record.originalName}$extension');
+      final tempFile = File(tempFilePath);
+      
+      final sink = tempFile.openWrite();
+      sink.add(decryptedScramble);
+
+      while (true) {
+        final chunk = await raf.read(64 * 1024);
+        if (chunk.isEmpty) break;
+        sink.add(chunk);
+      }
+      await sink.flush();
+      await sink.close();
+
+      return tempFile;
+    } finally {
+      await raf.close();
+    }
   }
 
   // ============ MÉTODOS PRIVADOS DE CIFRADO ============
