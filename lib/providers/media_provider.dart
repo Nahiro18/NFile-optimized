@@ -341,6 +341,7 @@ class MediaProvider extends ChangeNotifier {
   bool _isLoaded = false;
   bool _mediaLoadInProgress = false;
   MediaSortOrder _sortOrder = MediaSortOrder.newest;
+  DateTime? _lastRefreshTime;
 
   String? _getItemPath(dynamic item) {
     if (item is FileSystemEntity) return item.path;
@@ -854,6 +855,13 @@ class MediaProvider extends ChangeNotifier {
   }
 
   Future<void> refreshMediaBackground() async {
+    final now = DateTime.now();
+    if (_lastRefreshTime != null && now.difference(_lastRefreshTime!) < const Duration(minutes: 5)) {
+      writeLog('Skipping refreshMediaBackground: last run was less than 5 minutes ago');
+      return;
+    }
+    _lastRefreshTime = now;
+
     final futures = <Future<void>>[];
     
     bool isStorageGranted = false;
@@ -908,6 +916,7 @@ class MediaProvider extends ChangeNotifier {
 
   Future<void> loadMedia({bool forceRefresh = false}) async {
     writeLog('loadMedia called (forceRefresh: $forceRefresh)');
+    _lastRefreshTime = DateTime.now();
     if (_isLoading) {
       writeLog('loadMedia returning early because already loading');
       return;
