@@ -923,6 +923,12 @@ class MediaProvider extends ChangeNotifier {
             try {
               await Permission.accessMediaLocation.request();
             } catch (_) {}
+            try {
+              final status = await PhotoManager.requestPermissionExtend();
+              if (status.isAuth) {
+                ps = status;
+              }
+            } catch (_) {}
           }
         } catch (_) {}
       }
@@ -938,8 +944,16 @@ class MediaProvider extends ChangeNotifier {
               ps = PermissionState.authorized;
               hasAudioPermission = true;
             }
-            await Permission.accessMediaLocation.request();
+            try {
+              await Permission.accessMediaLocation.request();
+            } catch (_) {}
             PhotoManager.setIgnorePermissionCheck(true);
+            try {
+              final status = await PhotoManager.requestPermissionExtend();
+              if (status.isAuth) {
+                ps = status;
+              }
+            } catch (_) {}
           } else {
             try {
               ps = await PhotoManager.requestPermissionExtend();
@@ -981,20 +995,41 @@ class MediaProvider extends ChangeNotifier {
       try {
         PhotoManager.clearFileCache();
       } catch (_) {}
-      futures.add(_loadImagesAndVideos());
+      futures.add(
+        _loadImagesAndVideos().timeout(const Duration(seconds: 15), onTimeout: () {
+          debugPrint('[MediaProvider] _loadImagesAndVideos timed out');
+        })
+      );
     }
     if (hasAudioPermission || isStorageGranted) {
-      futures.add(_loadAudios());
+      futures.add(
+        _loadAudios().timeout(const Duration(seconds: 15), onTimeout: () {
+          debugPrint('[MediaProvider] _loadAudios timed out');
+        })
+      );
     }
-    futures.add(_loadDocuments());
-    futures.add(_loadArchivesDownloadsAndApks());
+    futures.add(
+      _loadDocuments().timeout(const Duration(seconds: 15), onTimeout: () {
+        debugPrint('[MediaProvider] _loadDocuments timed out');
+      })
+    );
+    futures.add(
+      _loadArchivesDownloadsAndApks().timeout(const Duration(seconds: 15), onTimeout: () {
+        debugPrint('[MediaProvider] _loadArchivesDownloadsAndApks timed out');
+      })
+    );
 
     try {
-      await Future.wait(futures);
+      await Future.wait(futures.map((f) => f.catchError((e) {
+        debugPrint('[MediaProvider] Loader future threw error: $e');
+        return null;
+      })));
       await _scanCustomCategories();
 
       // Scan recent files after all media is loaded so it can merge from providers
-      await _scanRecentFiles();
+      await _scanRecentFiles().timeout(const Duration(seconds: 5), onTimeout: () {
+        debugPrint('[MediaProvider] _scanRecentFiles timed out');
+      });
 
       await _saveCache();
 
@@ -1076,12 +1111,14 @@ class MediaProvider extends ChangeNotifier {
         isStorageGranted = await Permission.storage.isGranted || await Permission.manageExternalStorage.isGranted;
       } catch (_) {}
 
-      if (!isStorageGranted) {
-        final hasPerm = await _audioQuery.permissionsStatus();
-        if (!hasPerm) {
-          _audios = [];
-          return;
-        }
+      bool hasPerm = false;
+      try {
+        hasPerm = await _audioQuery.permissionsStatus();
+      } catch (_) {}
+
+      if (!hasPerm && !isStorageGranted) {
+        _audios = [];
+        return;
       }
       _audios = await _audioQuery.querySongs(
         sortType: null,
