@@ -962,19 +962,20 @@ class MediaProvider extends ChangeNotifier {
           final info = await DeviceInfoPlugin().androidInfo;
           final sdk = info.version.sdkInt;
           if (sdk >= 33) {
-            await Permission.audio.request();
-          } else {
-            PhotoManager.setIgnorePermissionCheck(true);
             try {
-              await Permission.accessMediaLocation.request();
-            } catch (_) {}
-            try {
-              final status = await PhotoManager.requestPermissionExtend();
-              if (status.isAuth) {
-                ps = status;
-              }
+              await Permission.audio.request();
             } catch (_) {}
           }
+          PhotoManager.setIgnorePermissionCheck(true);
+          try {
+            await Permission.accessMediaLocation.request();
+          } catch (_) {}
+          try {
+            final status = await PhotoManager.requestPermissionExtend();
+            if (status.isAuth) {
+              ps = status;
+            }
+          } catch (_) {}
         } catch (_) {}
       }
     } else {
@@ -1144,7 +1145,19 @@ class MediaProvider extends ChangeNotifier {
       try {
         if (albums.isNotEmpty) {
           final allAlbum = albums.firstWhere((a) => a.isAll, orElse: () => albums.first);
-          await _paginateAlbumAssets(allAlbum, (assets) => allMedia.addAll(assets));
+          if (allAlbum.isAll) {
+            writeLog('Fetching all assets from combined isAll album: ${allAlbum.name}');
+            await _paginateAlbumAssets(allAlbum, (assets) => allMedia.addAll(assets));
+          } else {
+            writeLog('No isAll album found (first is: ${allAlbum.name}), scanning all albums...');
+            for (final album in albums) {
+              try {
+                await _paginateAlbumAssets(album, (assets) => allMedia.addAll(assets));
+              } catch (e2) {
+                writeLog('Album "${album.name}" fetch failed: $e2');
+              }
+            }
+          }
         }
       } catch (e) {
         // On some Huawei devices the combined query can fail; fetch each album separately.
@@ -1424,67 +1437,102 @@ class MediaProvider extends ChangeNotifier {
     'system sounds', 'alarms', 'alarm sounds',
   };
 
-  static Future<List<String>> _isolateDirectoryScan(Map<String, dynamic> params) async {
-  final startPath = params['startPath'] as String;
-  final filterType = params['filterType'] as String;
-  final docExts = params['docExts'] as List<String>? ?? [];
-  final archExts = params['archExts'] as List<String>? ?? [];
-  final apkExts = params['apkExts'] as List<String>? ?? [];
-  
-  final result = <String>[];
-  final queue = <String>[startPath];
-  
-  bool shouldInclude(String path) {
-    final ext = p.extension(path).toLowerCase();
-    switch (filterType) {
-      case 'doc': return docExts.contains(ext);
-      case 'arch_and_apk': return archExts.contains(ext) || apkExts.contains(ext);
-      case 'arch': return archExts.contains(ext);
-      case 'apk': return apkExts.contains(ext);
-      case 'image': return _imageExts.contains(ext);
-      case 'video': return _videoExts.contains(ext);
-      case 'audio': return _audioExts.contains(ext);
-      case 'all_media': return _imageExts.contains(ext) || _videoExts.contains(ext) || _audioExts.contains(ext);
-      default: return false;
+  static bool _isJunkDirectory(String path) {
+    final lower = path.toLowerCase();
+    final segments = p.split(lower);
+    for (final seg in segments) {
+      if (_junkDirNames.contains(seg)) return true;
+      if (seg.contains('sticker') ||
+          seg.contains('cache') ||
+          seg.contains('avatar') ||
+          seg.contains('emoji') ||
+          seg.contains('thumbnail') ||
+          seg.contains('voice') ||
+          seg.contains('sound') ||
+          seg.contains('alarm') ||
+          seg.contains('ringtone') ||
+          seg.contains('notification') ||
+          seg.contains('status') ||
+          seg.contains('whatsapp audio') ||
+          seg.contains('telegram')) {
+        return true;
+      }
     }
+    return false;
   }
 
-  while (queue.isNotEmpty) {
-    final currentPath = queue.removeAt(0);
-    final dir = Directory(currentPath);
-    try {
-      final entities = dir.listSync(recursive: false);
-      for (final entity in entities) {
-        try {
-          if (entity is Directory) {
-            final name = p.basename(entity.path);
-            if (!name.startsWith('.') &&
-                name != 'Android' &&
-                !_junkDirNames.contains(name.toLowerCase())) {
-              queue.add(entity.path);
-            }
-          } else if (entity is File) {
-            if (shouldInclude(entity.path)) {
-              // Reject tiny cached junk files (icons, stickers, notification
-              // sounds, placeholder clips) from the media fallback scan.
-              if (filterType == 'all_media') {
-                try {
-                  final size = entity.statSync().size;
-                  final ext = p.extension(entity.path).toLowerCase();
-                  if (_imageExts.contains(ext) && size < 3000) continue;
-                  if (_videoExts.contains(ext) && size < 10240) continue;
-                  if (_audioExts.contains(ext) && size < 102400) continue;
-                } catch (_) {}
-              }
-              result.add(entity.path);
-            }
-          }
-        } catch (_) {}
+  static Future<List<String>> _isolateDirectoryScan(Map<String, dynamic> params) async {
+    final startPath = params['startPath'] as String;
+    final filterType = params['filterType'] as String;
+    final docExts = params['docExts'] as List<String>? ?? [];
+    final archExts = params['archExts'] as List<String>? ?? [];
+    final apkExts = params['apkExts'] as List<String>? ?? [];
+
+    final result = <String>[];
+    final queue = <String>[startPath];
+
+    bool shouldInclude(String path) {
+      final ext = p.extension(path).toLowerCase();
+      switch (filterType) {
+        case 'doc': return docExts.contains(ext);
+        case 'arch_and_apk': return archExts.contains(ext) || apkExts.contains(ext);
+        case 'arch': return archExts.contains(ext);
+        case 'apk': return apkExts.contains(ext);
+        case 'image': return _imageExts.contains(ext);
+        case 'video': return _videoExts.contains(ext);
+        case 'audio': return _audioExts.contains(ext);
+        case 'all_media': return _imageExts.contains(ext) || _videoExts.contains(ext) || _audioExts.contains(ext);
+        default: return false;
       }
-    } catch (_) {}
+    }
+
+    while (queue.isNotEmpty) {
+      final currentPath = queue.removeAt(0);
+      final dir = Directory(currentPath);
+      try {
+        final entities = dir.listSync(recursive: false);
+
+        // Standard Android behavior: Skip scanning directories that contain a .nomedia file
+        bool hasNoMedia = false;
+        for (final entity in entities) {
+          if (entity is File && p.basename(entity.path).toLowerCase() == '.nomedia') {
+            hasNoMedia = true;
+            break;
+          }
+        }
+        if (hasNoMedia) continue;
+
+        for (final entity in entities) {
+          try {
+            if (entity is Directory) {
+              final name = p.basename(entity.path);
+              if (!name.startsWith('.') &&
+                  name != 'Android' &&
+                  !_isJunkDirectory(entity.path)) {
+                queue.add(entity.path);
+              }
+            } else if (entity is File) {
+              if (shouldInclude(entity.path)) {
+                // Reject tiny cached junk files (icons, stickers, notification
+                // sounds, placeholder clips) from the media fallback scan.
+                if (filterType == 'all_media') {
+                  try {
+                    final size = entity.statSync().size;
+                    final ext = p.extension(entity.path).toLowerCase();
+                    if (_imageExts.contains(ext) && size < 3000) continue;
+                    if (_videoExts.contains(ext) && size < 10240) continue;
+                    if (_audioExts.contains(ext) && size < 102400) continue;
+                  } catch (_) {}
+                }
+                result.add(entity.path);
+              }
+            }
+          } catch (_) {}
+        }
+      } catch (_) {}
+    }
+    return result;
   }
-  return result;
-}
 
   Future<void> _scanDirectoryRecursively(
     String startPath,
