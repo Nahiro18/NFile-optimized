@@ -1303,16 +1303,13 @@ class MediaProvider extends ChangeNotifier {
       final existingImgPaths = <String>{
         ..._images.map((a) => _getItemPath(a)).whereType<String>(),
         ..._customImages.map((f) => f.path),
-        ..._fallbackImages.map((f) => f.path),
       };
       final existingVidPaths = <String>{
         ..._videos.map((a) => _getItemPath(a)).whereType<String>(),
         ..._customVideos.map((f) => f.path),
-        ..._fallbackVideos.map((f) => f.path),
       };
       final existingAudPaths = <String>{
         ..._audios.map((s) => s.data),
-        ..._fallbackAudios.map((s) => s.data),
       };
 
       _fallbackImages = [
