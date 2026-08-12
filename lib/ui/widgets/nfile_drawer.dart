@@ -10,6 +10,7 @@ import '../screens/network_connection_wizard_screen.dart';
 import '../screens/remote_explorer_screen.dart';
 import '../screens/about_screen.dart';
 import '../screens/web_sharing_screen.dart';
+import '../screens/app_logs_screen.dart';
 import '../../providers/media_provider.dart';
 import 'quick_categories_grid.dart';
 import 'nfile_icon.dart';
@@ -160,6 +161,15 @@ class NFileDrawer extends StatelessWidget {
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => const WebSharingScreen()));
+                              },
+                            ),
+                            _buildDrawerTile(
+                              context,
+                              icon: Icons.bug_report_rounded,
+                              title: 'App Logs',
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => const AppLogsScreen()));
                               },
                             ),
                             ...connections.map((conn) {

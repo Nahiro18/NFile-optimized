@@ -57,7 +57,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
       try {
         final List<String> pathsToScan = [];
         
-        final rootEntities = await rootDir.list(recursive: false).toList();
+        final rootEntities = await rootDir.list(recursive: false, followLinks: false).toList();
         for (final entity in rootEntities) {
           if (entity is Directory) {
             final name = p.basename(entity.path);
@@ -77,7 +77,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
           final dir = Directory(path);
           if (await dir.exists()) {
             try {
-              final entities = await dir.list(recursive: false).toList();
+              final entities = await dir.list(recursive: false, followLinks: false).toList();
               for (final entity in entities) {
                 if (!seen.contains(entity.path)) {
                   seen.add(entity.path);
@@ -85,7 +85,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
                 }
                 if (entity is Directory && !p.basename(entity.path).startsWith('.')) {
                   try {
-                    final subEntities = await entity.list(recursive: false).toList();
+                    final subEntities = await entity.list(recursive: false, followLinks: false).toList();
                     for (final sub in subEntities) {
                       if (!seen.contains(sub.path)) {
                         seen.add(sub.path);
@@ -106,16 +106,20 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
     void addFromMediaList(List<FileSystemEntity> mediaList) {
       for (final entity in mediaList) {
         if (!seen.contains(entity.path)) {
-          seen.add(entity.path);
-          list.add(entity);
+          try {
+            if (entity is File && entity.existsSync()) {
+              seen.add(entity.path);
+              list.add(entity);
+            }
+          } catch (_) {}
         }
       }
     }
 
-    addFromMediaList(mediaProvider.downloads);
-    addFromMediaList(mediaProvider.documents);
-    addFromMediaList(mediaProvider.archives);
-    addFromMediaList(mediaProvider.apks);
+    addFromMediaList([...mediaProvider.downloads]);
+    addFromMediaList([...mediaProvider.documents]);
+    addFromMediaList([...mediaProvider.archives]);
+    addFromMediaList([...mediaProvider.apks]);
 
     for (final song in mediaProvider.audios) {
       final path = song.data;

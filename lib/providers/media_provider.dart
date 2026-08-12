@@ -162,11 +162,21 @@ class ThumbnailCache {
 class MediaProvider extends ChangeNotifier {
   static const int _cacheVersion = 3;
 
+  static final List<String> _inMemoryLogs = [];
+  static List<String> get inMemoryLogs => _inMemoryLogs;
+
+  static void clearInMemoryLogs() {
+    _inMemoryLogs.clear();
+  }
+
   static Future<void> writeLog(String message) async {
+    debugPrint('[NFileLog] $message');
     try {
-      final file = File('/storage/emulated/0/Download/nfile_debug.log');
-      final timestamp = DateTime.now().toIso8601String();
-      await file.writeAsString('[$timestamp] $message\n', mode: FileMode.append, flush: true);
+      final timestamp = DateTime.now().toIso8601String().substring(11, 19);
+      _inMemoryLogs.add('[$timestamp] $message');
+      if (_inMemoryLogs.length > 500) {
+        _inMemoryLogs.removeAt(0);
+      }
     } catch (_) {}
   }
 
@@ -1256,6 +1266,7 @@ class MediaProvider extends ChangeNotifier {
   }
 
   Future<void> _scanMediaFallback() async {
+    _fallbackAudios.clear();
     try {
       final allImg = <String>[];
       final allVid = <String>[];
@@ -1336,16 +1347,11 @@ class MediaProvider extends ChangeNotifier {
       }
       writeLog('Media fallback merge -> extra Images: ${_fallbackImages.length}, extra Videos: ${_fallbackVideos.length}, extra Audios: $addedAudios');
 
-      if (_screenshots.isEmpty &&
-          _customScreenshots.isEmpty &&
-          _fallbackScreenshots.isEmpty &&
-          _fallbackImages.isNotEmpty) {
-        _fallbackScreenshots = _fallbackImages
-            .where((e) =>
-                e.path.toLowerCase().contains('screenshot') ||
-                p.basename(e.path).toLowerCase().contains('screenshot'))
-            .toList();
-      }
+      _fallbackScreenshots = _fallbackImages
+          .where((e) =>
+              e.path.toLowerCase().contains('screenshot') ||
+              p.basename(e.path).toLowerCase().contains('screenshot'))
+          .toList();
     } catch (e) {
       writeLog('Media fallback scan failed: $e');
     }
@@ -1923,16 +1929,20 @@ class MediaProvider extends ChangeNotifier {
     void addFromList(List<FileSystemEntity> src) {
       for (final e in src) {
         if (!seen.contains(e.path)) {
-          seen.add(e.path);
-          list.add(e);
+          try {
+            if (e is File && e.existsSync()) {
+              seen.add(e.path);
+              list.add(e);
+            }
+          } catch (_) {}
         }
       }
     }
 
-    addFromList(_downloads);
-    addFromList(_documents);
-    addFromList(_archives);
-    addFromList(_apks);
+    addFromList([..._downloads]);
+    addFromList([..._documents]);
+    addFromList([..._archives]);
+    addFromList([..._apks]);
 
     for (final song in [..._audios, ..._fallbackAudios]) {
       final path = song.data;
