@@ -50,7 +50,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      context.read<MediaProvider>().refreshMediaBackground();
+      Future.delayed(const Duration(milliseconds: 600), () {
+        if (mounted) {
+          context.read<MediaProvider>().refreshMediaBackground();
+        }
+      });
     }
   }
 

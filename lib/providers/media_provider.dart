@@ -1292,41 +1292,35 @@ class MediaProvider extends ChangeNotifier {
         ..._fallbackAudios.map((s) => s.data),
       };
 
-      _fallbackImages = _images.isEmpty && _customImages.isEmpty
-          ? [
-              for (final path in allImg)
-                if (!existingImgPaths.contains(path)) File(path),
-            ]
-          : [];
-      _fallbackVideos = _videos.isEmpty && _customVideos.isEmpty
-          ? [
-              for (final path in allVid)
-                if (!existingVidPaths.contains(path)) File(path),
-            ]
-          : [];
+      _fallbackImages = [
+        for (final path in allImg)
+          if (!existingImgPaths.contains(path)) File(path),
+      ];
+      _fallbackVideos = [
+        for (final path in allVid)
+          if (!existingVidPaths.contains(path)) File(path),
+      ];
 
       int addedAudios = 0;
-      if (_audios.isEmpty) {
-        for (int i = 0; i < allAud.length; i++) {
-          final path = allAud[i];
-          if (existingAudPaths.contains(path)) continue;
-          try {
-            final stat = File(path).statSync();
-            _fallbackAudios.add(SongModel({
-              '_id': 800000 + i,
-              '_data': path,
-              'title': p.basenameWithoutExtension(path),
-              'artist': 'Unknown Artist',
-              'album': 'Device Storage',
-              'duration': 0,
-              '_size': stat.size,
-              '_display_name': p.basename(path),
-              '_display_name_wo_ext': p.basenameWithoutExtension(path),
-              'is_music': true,
-            }));
-            addedAudios++;
-          } catch (_) {}
-        }
+      for (int i = 0; i < allAud.length; i++) {
+        final path = allAud[i];
+        if (existingAudPaths.contains(path)) continue;
+        try {
+          final stat = File(path).statSync();
+          _fallbackAudios.add(SongModel({
+            '_id': 800000 + i,
+            '_data': path,
+            'title': p.basenameWithoutExtension(path),
+            'artist': 'Unknown Artist',
+            'album': 'Device Storage',
+            'duration': 0,
+            '_size': stat.size,
+            '_display_name': p.basename(path),
+            '_display_name_wo_ext': p.basenameWithoutExtension(path),
+            'is_music': true,
+          }));
+          addedAudios++;
+        } catch (_) {}
       }
       writeLog('Media fallback merge -> extra Images: ${_fallbackImages.length}, extra Videos: ${_fallbackVideos.length}, extra Audios: $addedAudios');
 

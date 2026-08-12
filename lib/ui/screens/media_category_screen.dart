@@ -62,7 +62,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
       _loadAlbumAssets();
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<MediaProvider>().loadMedia();
+        final provider = context.read<MediaProvider>();
+        if (!provider.isLoaded && !provider.isLoading) {
+          provider.loadMedia();
+        }
       });
     }
   }
