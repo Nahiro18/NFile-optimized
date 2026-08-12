@@ -1974,7 +1974,7 @@ class MediaProvider extends ChangeNotifier {
     }));
 
     items.sort((a, b) => b.modified.compareTo(a.modified));
-    _recentFiles = items;
+    _recentFiles = items.take(15).toList();
   }
 
   void setSortOrder(MediaSortOrder order) {
