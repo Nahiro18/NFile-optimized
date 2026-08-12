@@ -361,14 +361,15 @@ class MediaProvider extends ChangeNotifier {
   List<dynamic> get images {
     final excluded = _excludedDefaultPaths['Images'] ?? [];
     final excludeGallery = excluded.contains('Device Gallery (Auto)');
-    final list = [..._images, ..._customImages].where((item) {
-      if (item is AssetEntity && excludeGallery) return false;
+    final seen = <String>{};
+    final list = <dynamic>[];
+    for (final item in [..._images, ..._customImages]) {
       final path = _getItemPath(item);
-      if (path != null && _isPathExcluded(path, excluded)) {
-        return false;
-      }
-      return true;
-    }).toList();
+      if (path != null && !seen.add(path)) continue;
+      if (item is AssetEntity && excludeGallery) continue;
+      if (path != null && _isPathExcluded(path, excluded)) continue;
+      list.add(item);
+    }
     _sortDynamicList(list);
     return list;
   }
@@ -376,14 +377,15 @@ class MediaProvider extends ChangeNotifier {
   List<dynamic> get videos {
     final excluded = _excludedDefaultPaths['Videos'] ?? [];
     final excludeGallery = excluded.contains('Device Gallery (Auto)');
-    final list = [..._videos, ..._customVideos].where((item) {
-      if (item is AssetEntity && excludeGallery) return false;
+    final seen = <String>{};
+    final list = <dynamic>[];
+    for (final item in [..._videos, ..._customVideos]) {
       final path = _getItemPath(item);
-      if (path != null && _isPathExcluded(path, excluded)) {
-        return false;
-      }
-      return true;
-    }).toList();
+      if (path != null && !seen.add(path)) continue;
+      if (item is AssetEntity && excludeGallery) continue;
+      if (path != null && _isPathExcluded(path, excluded)) continue;
+      list.add(item);
+    }
     _sortDynamicList(list);
     return list;
   }
@@ -391,12 +393,16 @@ class MediaProvider extends ChangeNotifier {
   List<SongModel> get audios {
     final excluded = _excludedDefaultPaths['Audio'] ?? [];
     final excludeLibrary = excluded.contains('Device Audio Library (Auto)');
-    return _audios.where((song) {
-      if (excludeLibrary && song.id < 900000) return false;
+    final seen = <String>{};
+    final list = <SongModel>[];
+    for (final song in _audios) {
       final path = song.data;
-      if (_isPathExcluded(path, excluded)) return false;
-      return true;
-    }).toList();
+      if (path.isNotEmpty && !seen.add(path)) continue;
+      if (excludeLibrary && song.id < 900000) continue;
+      if (_isPathExcluded(path, excluded)) continue;
+      list.add(song);
+    }
+    return list;
   }
 
   List<FileSystemEntity> get documents {
@@ -880,6 +886,10 @@ class MediaProvider extends ChangeNotifier {
 
   Future<void> loadMedia({bool forceRefresh = false}) async {
     writeLog('loadMedia called (forceRefresh: $forceRefresh)');
+    if (_isLoading) {
+      writeLog('loadMedia returning early because already loading');
+      return;
+    }
     if (_isLoaded && !forceRefresh) {
       writeLog('loadMedia returning early because already loaded');
       await _scanCustomCategories();
@@ -1045,14 +1055,10 @@ class MediaProvider extends ChangeNotifier {
       await _scanCustomCategories();
 
       // Fallback: if MediaStore (photo_manager / audio_query) returned nothing,
-      // scan the filesystem directly, the same way documents are loaded.
-      if (_images.isEmpty && _videos.isEmpty) {
-        writeLog('MediaStore returned no images/videos, starting filesystem fallback scan...');
+      // scan the filesystem directly in a single pass, the same way documents load.
+      if (_images.isEmpty && _videos.isEmpty && _audios.isEmpty) {
+        writeLog('MediaStore returned no media, starting single-pass filesystem fallback scan...');
         await _scanMediaFallback();
-      }
-      if (_audios.isEmpty) {
-        writeLog('MediaStore returned no audio, starting filesystem fallback scan...');
-        await _scanAudioFallback();
       }
 
       // Scan recent files after all media is loaded so it can merge from providers
@@ -1141,7 +1147,38 @@ class MediaProvider extends ChangeNotifier {
 
   Future<void> _scanMediaFallback() async {
     try {
-      final searchDirs = await _getUserSearchDirs();
+      final allImg = <String>[];
+      final allVid = <String>[];
+      final allAud = <String>[];
+
+      void collect(String path) {
+        final ext = p.extension(path).toLowerCase();
+        if (_imageExts.contains(ext)) {
+          allImg.add(path);
+        } else if (_videoExts.contains(ext)) {
+          allVid.add(path);
+        } else if (_audioExts.contains(ext)) {
+          allAud.add(path);
+        }
+      }
+
+      // Single isolate pass over the whole storage, like documents scanning.
+      try {
+        final params = {'startPath': '/storage/emulated/0', 'filterType': 'all_media'};
+        final paths = await compute(_isolateDirectoryScan, params);
+        for (final path in paths) {
+          collect(path);
+        }
+      } catch (e) {
+        writeLog('Media fallback isolate failed, using per-dir scan: $e');
+        final searchDirs = await _getUserSearchDirs();
+        for (final dirPath in searchDirs) {
+          await _scanDirectoryRecursively(dirPath, 'all_media', (file) => collect(file.path));
+        }
+      }
+
+      writeLog('Media fallback scan -> Images: ${allImg.length}, Videos: ${allVid.length}, Audios: ${allAud.length}');
+
       final existingImgPaths = <String>{
         ..._images.map((a) => _getItemPath(a)).whereType<String>(),
         ..._customImages.map((f) => f.path),
@@ -1150,21 +1187,42 @@ class MediaProvider extends ChangeNotifier {
         ..._videos.map((a) => _getItemPath(a)).whereType<String>(),
         ..._customVideos.map((f) => f.path),
       };
-      final img = <File>[];
-      final vid = <File>[];
-      for (final dirPath in searchDirs) {
-        await _scanDirectoryRecursively(dirPath, 'media', (file) {
-          final ext = p.extension(file.path).toLowerCase();
-          if (_imageExts.contains(ext)) {
-            if (!existingImgPaths.contains(file.path)) img.add(file);
-          } else if (_videoExts.contains(ext)) {
-            if (!existingVidPaths.contains(file.path)) vid.add(file);
-          }
-        });
+      final existingAudPaths = _audios.map((s) => s.data).toSet();
+
+      _customImages = [
+        ..._customImages,
+        for (final path in allImg)
+          if (!existingImgPaths.contains(path)) File(path),
+      ];
+      _customVideos = [
+        ..._customVideos,
+        for (final path in allVid)
+          if (!existingVidPaths.contains(path)) File(path),
+      ];
+
+      int addedAudios = 0;
+      for (int i = 0; i < allAud.length; i++) {
+        final path = allAud[i];
+        if (existingAudPaths.contains(path)) continue;
+        try {
+          final stat = File(path).statSync();
+          _audios.add(SongModel({
+            '_id': 800000 + i,
+            '_data': path,
+            'title': p.basenameWithoutExtension(path),
+            'artist': 'Unknown Artist',
+            'album': 'Device Storage',
+            'duration': 0,
+            'size': stat.size,
+            'display_name': p.basename(path),
+            'display_name_wo_ext': p.basenameWithoutExtension(path),
+            'is_music': true,
+          }));
+          addedAudios++;
+        } catch (_) {}
       }
-      writeLog('Media fallback scan -> extra Images: ${img.length}, extra Videos: ${vid.length}');
-      _customImages = [..._customImages, ...img];
-      _customVideos = [..._customVideos, ...vid];
+      writeLog('Media fallback merge -> extra Images: ${_customImages.length - existingImgPaths.length}, extra Videos: ${_customVideos.length - existingVidPaths.length}, extra Audios: $addedAudios');
+
       if (_screenshots.isEmpty && _customScreenshots.isEmpty) {
         _customScreenshots = _customImages
             .where((e) =>
@@ -1174,40 +1232,6 @@ class MediaProvider extends ChangeNotifier {
       }
     } catch (e) {
       writeLog('Media fallback scan failed: $e');
-    }
-  }
-
-  Future<void> _scanAudioFallback() async {
-    try {
-      final searchDirs = await _getUserSearchDirs();
-      final existingPaths = _audios.map((s) => s.data).toSet();
-      final audFiles = <File>[];
-      for (final dirPath in searchDirs) {
-        await _scanDirectoryRecursively(dirPath, 'audio', (file) {
-          if (!existingPaths.contains(file.path)) audFiles.add(file);
-        });
-      }
-      writeLog('Audio fallback scan found: ${audFiles.length}');
-      for (int i = 0; i < audFiles.length; i++) {
-        final file = audFiles[i];
-        try {
-          final stat = file.statSync();
-          _audios.add(SongModel({
-            '_id': 800000 + i,
-            '_data': file.path,
-            'title': p.basenameWithoutExtension(file.path),
-            'artist': 'Unknown Artist',
-            'album': 'Device Storage',
-            'duration': 0,
-            'size': stat.size,
-            'display_name': p.basename(file.path),
-            'display_name_wo_ext': p.basenameWithoutExtension(file.path),
-            'is_music': true,
-          }));
-        } catch (_) {}
-      }
-    } catch (e) {
-      writeLog('Audio fallback scan failed: $e');
     }
   }
 
@@ -1299,7 +1323,6 @@ class MediaProvider extends ChangeNotifier {
   final docExts = params['docExts'] as List<String>? ?? [];
   final archExts = params['archExts'] as List<String>? ?? [];
   final apkExts = params['apkExts'] as List<String>? ?? [];
-  final mediaExts = params['mediaExts'] as List<String>? ?? [];
   
   final result = <String>[];
   final queue = <String>[startPath];
@@ -1314,7 +1337,7 @@ class MediaProvider extends ChangeNotifier {
       case 'image': return _imageExts.contains(ext);
       case 'video': return _videoExts.contains(ext);
       case 'audio': return _audioExts.contains(ext);
-      case 'media': return mediaExts.contains(ext);
+      case 'all_media': return _imageExts.contains(ext) || _videoExts.contains(ext) || _audioExts.contains(ext);
       default: return false;
     }
   }
@@ -1355,7 +1378,6 @@ class MediaProvider extends ChangeNotifier {
       'docExts': _docExtensions,
       'archExts': _archiveExtensions,
       'apkExts': _apkExtensions,
-      'mediaExts': [..._imageExts, ..._videoExts, ..._audioExts],
     };
     try {
       resultPaths = await compute(_isolateDirectoryScan, params);

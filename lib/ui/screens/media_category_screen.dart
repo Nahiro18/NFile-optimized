@@ -1278,6 +1278,8 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: double.infinity,
+                cacheWidth: 320,
+                filterQuality: FilterQuality.medium,
                 errorBuilder: (context, error, stackTrace) => Container(
                   color: Colors.grey.withValues(alpha: 0.1),
                   child: const Center(child: Icon(Broken.image, size: 24, color: Colors.grey)),
