@@ -160,6 +160,8 @@ class ThumbnailCache {
 }
 
 class MediaProvider extends ChangeNotifier {
+  static const int _cacheVersion = 3;
+
   static Future<void> writeLog(String message) async {
     try {
       final file = File('/storage/emulated/0/Download/nfile_debug.log');
@@ -246,7 +248,9 @@ class MediaProvider extends ChangeNotifier {
 
   Map<String, SongModel> get audioPathMap {
     if (_audioPathMap == null) {
-      _audioPathMap = {for (final s in _audios) s.data: s};
+      _audioPathMap = {
+        for (final s in [..._audios, ..._fallbackAudios]) s.data: s,
+      };
     }
     return _audioPathMap!;
   }
@@ -288,6 +292,12 @@ class MediaProvider extends ChangeNotifier {
   List<FileSystemEntity> _customImages = [];
   List<FileSystemEntity> _customVideos = [];
   List<FileSystemEntity> _customScreenshots = [];
+  // Fallback results are rebuilt on every launch and are never cached,
+  // so stale cache entries can never be shown again as fake media.
+  List<FileSystemEntity> _fallbackImages = [];
+  List<FileSystemEntity> _fallbackVideos = [];
+  List<SongModel> _fallbackAudios = [];
+  List<FileSystemEntity> _fallbackScreenshots = [];
   Map<String, List<String>> _customCategoryPaths = {};
   Map<String, List<String>> get customCategoryPaths => _customCategoryPaths;
   Map<String, List<String>> _excludedDefaultPaths = {};
@@ -364,7 +374,7 @@ class MediaProvider extends ChangeNotifier {
     final excludeGallery = excluded.contains('Device Gallery (Auto)');
     final seen = <String>{};
     final list = <dynamic>[];
-    for (final item in [..._images, ..._customImages]) {
+    for (final item in [..._images, ..._customImages, ..._fallbackImages]) {
       final path = _getItemPath(item);
       if (path != null && !seen.add(path)) continue;
       if (item is AssetEntity && excludeGallery) continue;
@@ -380,7 +390,7 @@ class MediaProvider extends ChangeNotifier {
     final excludeGallery = excluded.contains('Device Gallery (Auto)');
     final seen = <String>{};
     final list = <dynamic>[];
-    for (final item in [..._videos, ..._customVideos]) {
+    for (final item in [..._videos, ..._customVideos, ..._fallbackVideos]) {
       final path = _getItemPath(item);
       if (path != null && !seen.add(path)) continue;
       if (item is AssetEntity && excludeGallery) continue;
@@ -396,7 +406,7 @@ class MediaProvider extends ChangeNotifier {
     final excludeLibrary = excluded.contains('Device Audio Library (Auto)');
     final seen = <String>{};
     final list = <SongModel>[];
-    for (final song in _audios) {
+    for (final song in [..._audios, ..._fallbackAudios]) {
       final path = song.data;
       if (path.isNotEmpty && !seen.add(path)) continue;
       if (excludeLibrary && song.id < 900000) continue;
@@ -453,14 +463,15 @@ class MediaProvider extends ChangeNotifier {
   List<dynamic> get screenshots {
     final excluded = _excludedDefaultPaths['Screenshots'] ?? [];
     final excludeGallery = excluded.contains('Device Gallery (Screenshots)');
-    final list = [..._screenshots, ..._customScreenshots].where((item) {
-      if (item is AssetEntity && excludeGallery) return false;
+    final seen = <String>{};
+    final list = <dynamic>[];
+    for (final item in [..._screenshots, ..._customScreenshots, ..._fallbackScreenshots]) {
       final path = _getItemPath(item);
-      if (path != null && _isPathExcluded(path, excluded)) {
-        return false;
-      }
-      return true;
-    }).toList();
+      if (path != null && !seen.add(path)) continue;
+      if (item is AssetEntity && excludeGallery) continue;
+      if (path != null && _isPathExcluded(path, excluded)) continue;
+      list.add(item);
+    }
     _sortDynamicList(list);
     return list;
   }
@@ -653,6 +664,12 @@ class MediaProvider extends ChangeNotifier {
           _activeCategories = List<String>.from(map['activeCategories'] ?? _activeCategories);
         }
 
+        // Discard cached media from older versions (e.g. stale fallback junk).
+        if (map['cacheVersion'] != _cacheVersion) {
+          writeLog('Cache version mismatch (${map['cacheVersion']}), discarding cached media');
+          return;
+        }
+
         if (map.containsKey('images')) {
           final imgMaps = List<Map<String, dynamic>>.from(
             (map['images'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
@@ -803,6 +820,7 @@ class MediaProvider extends ChangeNotifier {
       
       // Limitar cache a últimos 1000 items por categoría para evitar archivos gigantes
       final map = {
+        'cacheVersion': _cacheVersion,
         'categoryOrder': _categoryOrder,
         'activeCategories': _activeCategories,
         'images': _images.take(1000).map((a) => _assetToMap(a)).toList(),
@@ -1055,10 +1073,11 @@ class MediaProvider extends ChangeNotifier {
       writeLog('Future.wait loaders completed. Images: ${images.length}, Videos: ${videos.length}, Audios: ${_audios.length}, Docs: ${_documents.length}');
       await _scanCustomCategories();
 
-      // Fallback: if MediaStore (photo_manager / audio_query) returned nothing,
-      // scan the filesystem directly in a single pass, the same way documents load.
-      if (_images.isEmpty && _videos.isEmpty && _audios.isEmpty) {
-        writeLog('MediaStore returned no media, starting single-pass filesystem fallback scan...');
+      // Fallback: if MediaStore (photo_manager / audio_query) left any category
+      // empty, scan the filesystem in a single pass (like documents loading)
+      // and fill only the missing categories.
+      if (_images.isEmpty || _videos.isEmpty || _audios.isEmpty) {
+        writeLog('MediaStore left categories empty, starting single-pass filesystem fallback scan...');
         await _scanMediaFallback();
       }
 
@@ -1248,49 +1267,61 @@ class MediaProvider extends ChangeNotifier {
       final existingImgPaths = <String>{
         ..._images.map((a) => _getItemPath(a)).whereType<String>(),
         ..._customImages.map((f) => f.path),
+        ..._fallbackImages.map((f) => f.path),
       };
       final existingVidPaths = <String>{
         ..._videos.map((a) => _getItemPath(a)).whereType<String>(),
         ..._customVideos.map((f) => f.path),
+        ..._fallbackVideos.map((f) => f.path),
       };
-      final existingAudPaths = _audios.map((s) => s.data).toSet();
+      final existingAudPaths = <String>{
+        ..._audios.map((s) => s.data),
+        ..._fallbackAudios.map((s) => s.data),
+      };
 
-      _customImages = [
-        ..._customImages,
-        for (final path in allImg)
-          if (!existingImgPaths.contains(path)) File(path),
-      ];
-      _customVideos = [
-        ..._customVideos,
-        for (final path in allVid)
-          if (!existingVidPaths.contains(path)) File(path),
-      ];
+      _fallbackImages = _images.isEmpty && _customImages.isEmpty
+          ? [
+              for (final path in allImg)
+                if (!existingImgPaths.contains(path)) File(path),
+            ]
+          : [];
+      _fallbackVideos = _videos.isEmpty && _customVideos.isEmpty
+          ? [
+              for (final path in allVid)
+                if (!existingVidPaths.contains(path)) File(path),
+            ]
+          : [];
 
       int addedAudios = 0;
-      for (int i = 0; i < allAud.length; i++) {
-        final path = allAud[i];
-        if (existingAudPaths.contains(path)) continue;
-        try {
-          final stat = File(path).statSync();
-          _audios.add(SongModel({
-            '_id': 800000 + i,
-            '_data': path,
-            'title': p.basenameWithoutExtension(path),
-            'artist': 'Unknown Artist',
-            'album': 'Device Storage',
-            'duration': 0,
-            'size': stat.size,
-            'display_name': p.basename(path),
-            'display_name_wo_ext': p.basenameWithoutExtension(path),
-            'is_music': true,
-          }));
-          addedAudios++;
-        } catch (_) {}
+      if (_audios.isEmpty) {
+        for (int i = 0; i < allAud.length; i++) {
+          final path = allAud[i];
+          if (existingAudPaths.contains(path)) continue;
+          try {
+            final stat = File(path).statSync();
+            _fallbackAudios.add(SongModel({
+              '_id': 800000 + i,
+              '_data': path,
+              'title': p.basenameWithoutExtension(path),
+              'artist': 'Unknown Artist',
+              'album': 'Device Storage',
+              'duration': 0,
+              'size': stat.size,
+              'display_name': p.basename(path),
+              'display_name_wo_ext': p.basenameWithoutExtension(path),
+              'is_music': true,
+            }));
+            addedAudios++;
+          } catch (_) {}
+        }
       }
-      writeLog('Media fallback merge -> extra Images: ${_customImages.length - existingImgPaths.length}, extra Videos: ${_customVideos.length - existingVidPaths.length}, extra Audios: $addedAudios');
+      writeLog('Media fallback merge -> extra Images: ${_fallbackImages.length}, extra Videos: ${_fallbackVideos.length}, extra Audios: $addedAudios');
 
-      if (_screenshots.isEmpty && _customScreenshots.isEmpty) {
-        _customScreenshots = _customImages
+      if (_screenshots.isEmpty &&
+          _customScreenshots.isEmpty &&
+          _fallbackScreenshots.isEmpty &&
+          _fallbackImages.isNotEmpty) {
+        _fallbackScreenshots = _fallbackImages
             .where((e) =>
                 e.path.toLowerCase().contains('screenshot') ||
                 p.basename(e.path).toLowerCase().contains('screenshot'))
@@ -1323,7 +1354,9 @@ class MediaProvider extends ChangeNotifier {
         uriType: UriType.EXTERNAL,
         ignoreCase: true,
       );
-    } catch (_) {
+      writeLog('_loadAudios succeeded with ${_audios.length} songs');
+    } catch (e) {
+      writeLog('_loadAudios failed with exception: $e');
       _audios = [];
     }
   }
@@ -1385,6 +1418,10 @@ class MediaProvider extends ChangeNotifier {
   static const Set<String> _junkDirNames = {
     'cache', 'caches', 'cacheddata', 'thumbnails', 'thumbnails_cache',
     'tmp', 'temp', 'web_cache', 'webcache', 'cachedimages', 'download_cache',
+    'stickers', 'sticker', 'avatars', 'filters', 'emojis', 'effects',
+    'gifs', 'gif cache', 'voices', 'voicenotes', 'voice notes', 'voicemessages',
+    'voice messages', 'recorder', 'recordings', 'notification sounds',
+    'system sounds', 'alarms', 'alarm sounds',
   };
 
   static Future<List<String>> _isolateDirectoryScan(Map<String, dynamic> params) async {
@@ -1428,6 +1465,17 @@ class MediaProvider extends ChangeNotifier {
             }
           } else if (entity is File) {
             if (shouldInclude(entity.path)) {
+              // Reject tiny cached junk files (icons, stickers, notification
+              // sounds, placeholder clips) from the media fallback scan.
+              if (filterType == 'all_media') {
+                try {
+                  final size = entity.statSync().size;
+                  final ext = p.extension(entity.path).toLowerCase();
+                  if (_imageExts.contains(ext) && size < 3000) continue;
+                  if (_videoExts.contains(ext) && size < 10240) continue;
+                  if (_audioExts.contains(ext) && size < 102400) continue;
+                } catch (_) {}
+              }
               result.add(entity.path);
             }
           }
@@ -1832,7 +1880,7 @@ class MediaProvider extends ChangeNotifier {
     addFromList(_archives);
     addFromList(_apks);
 
-    for (final song in _audios) {
+    for (final song in [..._audios, ..._fallbackAudios]) {
       final path = song.data;
       if (!seen.contains(path)) {
         seen.add(path);
