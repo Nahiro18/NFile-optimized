@@ -346,15 +346,18 @@ class MediaProvider extends ChangeNotifier {
     if (item is FileSystemEntity) return item.path;
     if (item is AssetEntity) {
       final rel = item.relativePath;
-      if (rel != null) {
+      final title = item.title;
+      if (rel != null && title != null) {
         final cleanRel = rel.endsWith('/') ? rel.substring(0, rel.length - 1) : rel;
+        String folder = '';
         if (cleanRel.startsWith('/storage/emulated/0') || cleanRel.startsWith('/storage/')) {
-          return cleanRel;
+          folder = cleanRel;
+        } else if (cleanRel.startsWith('storage/emulated/0') || cleanRel.startsWith('storage/')) {
+          folder = '/$cleanRel';
+        } else {
+          folder = '/storage/emulated/0/$cleanRel';
         }
-        if (cleanRel.startsWith('storage/emulated/0') || cleanRel.startsWith('storage/')) {
-          return '/$cleanRel';
-        }
-        return '/storage/emulated/0/$cleanRel';
+        return p.join(folder, title);
       }
     }
     return null;
@@ -1484,7 +1487,7 @@ class MediaProvider extends ChangeNotifier {
       final currentPath = queue.removeAt(0);
       final dir = Directory(currentPath);
       try {
-        final entities = dir.listSync(recursive: false);
+        final entities = dir.listSync(recursive: false, followLinks: false);
 
         // Standard Android behavior: Skip scanning directories that contain a .nomedia file
         bool hasNoMedia = false;
