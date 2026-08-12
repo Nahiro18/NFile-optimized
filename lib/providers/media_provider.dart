@@ -160,6 +160,14 @@ class ThumbnailCache {
 }
 
 class MediaProvider extends ChangeNotifier {
+  static Future<void> writeLog(String message) async {
+    try {
+      final file = File('/storage/emulated/0/Download/nfile_debug.log');
+      final timestamp = DateTime.now().toIso8601String();
+      await file.writeAsString('[$timestamp] $message\n', mode: FileMode.append, flush: true);
+    } catch (_) {}
+  }
+
   MediaProvider() {
     final savedOrder = PreferencesService.getCategoryOrder();
     if (savedOrder != null && savedOrder.isNotEmpty) {
@@ -871,7 +879,9 @@ class MediaProvider extends ChangeNotifier {
   }
 
   Future<void> loadMedia({bool forceRefresh = false}) async {
+    writeLog('loadMedia called (forceRefresh: $forceRefresh)');
     if (_isLoaded && !forceRefresh) {
+      writeLog('loadMedia returning early because already loaded');
       await _scanCustomCategories();
       _applySort();
       notifyListeners();
@@ -894,6 +904,8 @@ class MediaProvider extends ChangeNotifier {
         _apks.isNotEmpty ||
         _screenshots.isNotEmpty;
 
+    writeLog('Cached data found: $hasCachedData');
+
     if (hasCachedData) {
       _isLoading = false;
       _isLoaded = true;
@@ -904,7 +916,11 @@ class MediaProvider extends ChangeNotifier {
     bool isStorageGranted = false;
     try {
       isStorageGranted = await Permission.storage.isGranted || await Permission.manageExternalStorage.isGranted;
-    } catch (_) {}
+    } catch (e) {
+      writeLog('Error checking permissions: $e');
+    }
+
+    writeLog('isStorageGranted status: $isStorageGranted (storage: ${await Permission.storage.isGranted}, manageExternalStorage: ${await Permission.manageExternalStorage.isGranted})');
 
     PermissionState ps = PermissionState.denied;
     bool hasAudioPermission = false;
@@ -1020,15 +1036,28 @@ class MediaProvider extends ChangeNotifier {
     );
 
     try {
+      writeLog('Starting Future.wait loaders...');
       await Future.wait(futures.map((f) => f.catchError((e) {
-        debugPrint('[MediaProvider] Loader future threw error: $e');
+        writeLog('Loader future threw error: $e');
         return null;
       })));
+      writeLog('Future.wait loaders completed. Images: ${images.length}, Videos: ${videos.length}, Audios: ${_audios.length}, Docs: ${_documents.length}');
       await _scanCustomCategories();
+
+      // Fallback: if MediaStore (photo_manager / audio_query) returned nothing,
+      // scan the filesystem directly, the same way documents are loaded.
+      if (_images.isEmpty && _videos.isEmpty) {
+        writeLog('MediaStore returned no images/videos, starting filesystem fallback scan...');
+        await _scanMediaFallback();
+      }
+      if (_audios.isEmpty) {
+        writeLog('MediaStore returned no audio, starting filesystem fallback scan...');
+        await _scanAudioFallback();
+      }
 
       // Scan recent files after all media is loaded so it can merge from providers
       await _scanRecentFiles().timeout(const Duration(seconds: 5), onTimeout: () {
-        debugPrint('[MediaProvider] _scanRecentFiles timed out');
+        writeLog('_scanRecentFiles timed out');
       });
 
       await _saveCache();
@@ -1043,9 +1072,11 @@ class MediaProvider extends ChangeNotifier {
       PreferencesService.saveCategoryCount('Downloads', _downloads.length);
       PreferencesService.saveCategoryCount('APKs', _apks.length);
       PreferencesService.saveCategoryCount('Screenshots', screenshots.length);
+      writeLog('Finished loading media. Counts -> Images: ${images.length}, Videos: ${videos.length}, Audio: ${_audios.length}, Docs: ${_documents.length}, Archives: ${_archives.length}, Downloads: ${_downloads.length}, APKs: ${_apks.length}, Screenshots: ${screenshots.length}');
     } catch (e) {
-      debugPrint('[MediaProvider] Error during loadMedia scanners: $e');
+      writeLog('Error during loadMedia scanners: $e');
     } finally {
+      writeLog('loadMedia finally block. _isLoaded = true');
       _isLoading = false;
       _isLoaded = true;
       notifyListeners();
@@ -1053,8 +1084,10 @@ class MediaProvider extends ChangeNotifier {
   }
 
   Future<void> _loadImagesAndVideos() async {
+    writeLog('_loadImagesAndVideos started');
     try {
       List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(onlyAll: false);
+      writeLog('PhotoManager albums count: ${albums.length}');
       List<AssetEntity> allScreenshots = [];
       final seenScreenshotIds = <String>{};
       for (final album in albums) {
@@ -1101,7 +1134,81 @@ class MediaProvider extends ChangeNotifier {
         }
       }
       _videoAlbums = filteredVidAlbums;
-    } catch (_) {}
+    } catch (_) {
+      writeLog('_loadImagesAndVideos failed with an exception');
+    }
+  }
+
+  Future<void> _scanMediaFallback() async {
+    try {
+      final searchDirs = await _getUserSearchDirs();
+      final existingImgPaths = <String>{
+        ..._images.map((a) => _getItemPath(a)).whereType<String>(),
+        ..._customImages.map((f) => f.path),
+      };
+      final existingVidPaths = <String>{
+        ..._videos.map((a) => _getItemPath(a)).whereType<String>(),
+        ..._customVideos.map((f) => f.path),
+      };
+      final img = <File>[];
+      final vid = <File>[];
+      for (final dirPath in searchDirs) {
+        await _scanDirectoryRecursively(dirPath, 'media', (file) {
+          final ext = p.extension(file.path).toLowerCase();
+          if (_imageExts.contains(ext)) {
+            if (!existingImgPaths.contains(file.path)) img.add(file);
+          } else if (_videoExts.contains(ext)) {
+            if (!existingVidPaths.contains(file.path)) vid.add(file);
+          }
+        });
+      }
+      writeLog('Media fallback scan -> extra Images: ${img.length}, extra Videos: ${vid.length}');
+      _customImages = [..._customImages, ...img];
+      _customVideos = [..._customVideos, ...vid];
+      if (_screenshots.isEmpty && _customScreenshots.isEmpty) {
+        _customScreenshots = _customImages
+            .where((e) =>
+                e.path.toLowerCase().contains('screenshot') ||
+                p.basename(e.path).toLowerCase().contains('screenshot'))
+            .toList();
+      }
+    } catch (e) {
+      writeLog('Media fallback scan failed: $e');
+    }
+  }
+
+  Future<void> _scanAudioFallback() async {
+    try {
+      final searchDirs = await _getUserSearchDirs();
+      final existingPaths = _audios.map((s) => s.data).toSet();
+      final audFiles = <File>[];
+      for (final dirPath in searchDirs) {
+        await _scanDirectoryRecursively(dirPath, 'audio', (file) {
+          if (!existingPaths.contains(file.path)) audFiles.add(file);
+        });
+      }
+      writeLog('Audio fallback scan found: ${audFiles.length}');
+      for (int i = 0; i < audFiles.length; i++) {
+        final file = audFiles[i];
+        try {
+          final stat = file.statSync();
+          _audios.add(SongModel({
+            '_id': 800000 + i,
+            '_data': file.path,
+            'title': p.basenameWithoutExtension(file.path),
+            'artist': 'Unknown Artist',
+            'album': 'Device Storage',
+            'duration': 0,
+            'size': stat.size,
+            'display_name': p.basename(file.path),
+            'display_name_wo_ext': p.basenameWithoutExtension(file.path),
+            'is_music': true,
+          }));
+        } catch (_) {}
+      }
+    } catch (e) {
+      writeLog('Audio fallback scan failed: $e');
+    }
   }
 
   Future<void> _loadAudios() async {
@@ -1182,12 +1289,17 @@ class MediaProvider extends ChangeNotifier {
     return searchDirs;
   }
 
+  static const List<String> _imageExts = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.heic', '.heif', '.svg', '.avif'];
+  static const List<String> _videoExts = ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.3gp', '.ts'];
+  static const List<String> _audioExts = ['.mp3', '.wav', '.ogg', '.m4a', '.flac', '.aac', '.wma', '.amr', '.opus', '.mid'];
+
   static Future<List<String>> _isolateDirectoryScan(Map<String, dynamic> params) async {
   final startPath = params['startPath'] as String;
   final filterType = params['filterType'] as String;
   final docExts = params['docExts'] as List<String>? ?? [];
   final archExts = params['archExts'] as List<String>? ?? [];
   final apkExts = params['apkExts'] as List<String>? ?? [];
+  final mediaExts = params['mediaExts'] as List<String>? ?? [];
   
   final result = <String>[];
   final queue = <String>[startPath];
@@ -1199,9 +1311,10 @@ class MediaProvider extends ChangeNotifier {
       case 'arch_and_apk': return archExts.contains(ext) || apkExts.contains(ext);
       case 'arch': return archExts.contains(ext);
       case 'apk': return apkExts.contains(ext);
-      case 'image': return ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.heic', '.heif', '.svg'].contains(ext);
-      case 'video': return ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.3gp'].contains(ext);
-      case 'audio': return ['.mp3', '.wav', '.ogg', '.m4a', '.flac', '.aac', '.wma', '.amr', '.opus'].contains(ext);
+      case 'image': return _imageExts.contains(ext);
+      case 'video': return _videoExts.contains(ext);
+      case 'audio': return _audioExts.contains(ext);
+      case 'media': return mediaExts.contains(ext);
       default: return false;
     }
   }
@@ -1242,6 +1355,7 @@ class MediaProvider extends ChangeNotifier {
       'docExts': _docExtensions,
       'archExts': _archiveExtensions,
       'apkExts': _apkExtensions,
+      'mediaExts': [..._imageExts, ..._videoExts, ..._audioExts],
     };
     try {
       resultPaths = await compute(_isolateDirectoryScan, params);
