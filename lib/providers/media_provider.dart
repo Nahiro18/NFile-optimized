@@ -597,7 +597,7 @@ class MediaProvider extends ChangeNotifier {
       switch (category) {
         case 'Images': return images.length;
         case 'Videos': return videos.length;
-        case 'Audio': return _audios.length;
+        case 'Audio': return audios.length;
         case 'Documents': return _documents.length;
         case 'Archives': return _archives.length;
         case 'Downloads': return _downloads.length;
@@ -823,10 +823,10 @@ class MediaProvider extends ChangeNotifier {
         'cacheVersion': _cacheVersion,
         'categoryOrder': _categoryOrder,
         'activeCategories': _activeCategories,
-        'images': _images.take(1000).map((a) => _assetToMap(a)).toList(),
-        'videos': _videos.take(500).map((a) => _assetToMap(a)).toList(),
-        'screenshots': _screenshots.take(500).map((a) => _assetToMap(a)).toList(),
-        'audios': _audios.take(1000).map((s) => s.getMap).toList(),
+        'images': images.take(1000).map((a) => _assetToMap(a)).toList(),
+        'videos': videos.take(500).map((a) => _assetToMap(a)).toList(),
+        'screenshots': screenshots.take(500).map((a) => _assetToMap(a)).toList(),
+        'audios': audios.take(1000).map((s) => s.getMap).toList(),
         'customImages': _customImages.take(500).map((e) => e.path).toList(),
         'customVideos': _customVideos.take(500).map((e) => e.path).toList(),
         'customScreenshots': _customScreenshots.take(500).map((e) => e.path).toList(),
@@ -893,7 +893,7 @@ class MediaProvider extends ChangeNotifier {
     
     PreferencesService.saveCategoryCount('Images', images.length);
     PreferencesService.saveCategoryCount('Videos', videos.length);
-    PreferencesService.saveCategoryCount('Audio', _audios.length);
+    PreferencesService.saveCategoryCount('Audio', audios.length);
     PreferencesService.saveCategoryCount('Documents', _documents.length);
     PreferencesService.saveCategoryCount('Archives', _archives.length);
     PreferencesService.saveCategoryCount('Downloads', _downloads.length);
@@ -1093,13 +1093,13 @@ class MediaProvider extends ChangeNotifier {
 
       PreferencesService.saveCategoryCount('Images', images.length);
       PreferencesService.saveCategoryCount('Videos', videos.length);
-      PreferencesService.saveCategoryCount('Audio', _audios.length);
+      PreferencesService.saveCategoryCount('Audio', audios.length);
       PreferencesService.saveCategoryCount('Documents', _documents.length);
       PreferencesService.saveCategoryCount('Archives', _archives.length);
       PreferencesService.saveCategoryCount('Downloads', _downloads.length);
       PreferencesService.saveCategoryCount('APKs', _apks.length);
       PreferencesService.saveCategoryCount('Screenshots', screenshots.length);
-      writeLog('Finished loading media. Counts -> Images: ${images.length}, Videos: ${videos.length}, Audio: ${_audios.length}, Docs: ${_documents.length}, Archives: ${_archives.length}, Downloads: ${_downloads.length}, APKs: ${_apks.length}, Screenshots: ${screenshots.length}');
+      writeLog('Finished loading media. Counts -> Images: ${images.length}, Videos: ${videos.length}, Audio: ${audios.length}, Docs: ${_documents.length}, Archives: ${_archives.length}, Downloads: ${_downloads.length}, APKs: ${_apks.length}, Screenshots: ${screenshots.length}');
     } catch (e) {
       writeLog('Error during loadMedia scanners: $e');
     } finally {
@@ -1319,9 +1319,9 @@ class MediaProvider extends ChangeNotifier {
               'artist': 'Unknown Artist',
               'album': 'Device Storage',
               'duration': 0,
-              'size': stat.size,
-              'display_name': p.basename(path),
-              'display_name_wo_ext': p.basenameWithoutExtension(path),
+              '_size': stat.size,
+              '_display_name': p.basename(path),
+              '_display_name_wo_ext': p.basenameWithoutExtension(path),
               'is_music': true,
             }));
             addedAudios++;

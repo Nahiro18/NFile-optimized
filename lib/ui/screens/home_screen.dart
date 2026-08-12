@@ -238,8 +238,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                       provider.loadDirectory(provider.rootPath);
                     }
                     _lastBrowseTapTime = now;
-                  } else if (index == 0) {
-                    context.read<MediaProvider>().refreshMediaBackground();
                   }
                   setState(() => _currentIndex = index);
                 },
