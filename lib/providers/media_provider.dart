@@ -329,6 +329,7 @@ class MediaProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   bool _isLoaded = false;
+  bool _mediaLoadInProgress = false;
   MediaSortOrder _sortOrder = MediaSortOrder.newest;
 
   String? _getItemPath(dynamic item) {
@@ -1090,58 +1091,123 @@ class MediaProvider extends ChangeNotifier {
   }
 
   Future<void> _loadImagesAndVideos() async {
+    if (_mediaLoadInProgress) {
+      writeLog('_loadImagesAndVideos skipped: already in progress');
+      return;
+    }
+    _mediaLoadInProgress = true;
     writeLog('_loadImagesAndVideos started');
     try {
       List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(onlyAll: false);
       writeLog('PhotoManager albums count: ${albums.length}');
+
+      // Screenshots from screenshot-named albums (best effort, never fatal)
       List<AssetEntity> allScreenshots = [];
-      final seenScreenshotIds = <String>{};
-      for (final album in albums) {
-        if (album.name.toLowerCase().contains('screenshot')) {
-          final assets = await album.getAssetListPaged(page: 0, size: 5000);
-          for (final asset in assets) {
-            if (seenScreenshotIds.add(asset.id)) {
-              allScreenshots.add(asset);
-            }
+      try {
+        final seenScreenshotIds = <String>{};
+        for (final album in albums) {
+          if (album.name.toLowerCase().contains('screenshot')) {
+            await _paginateAlbumAssets(album, (assets) {
+              for (final asset in assets) {
+                if (seenScreenshotIds.add(asset.id)) {
+                  allScreenshots.add(asset);
+                }
+              }
+            });
+          }
+        }
+      } catch (e) {
+        writeLog('Screenshot albums fetch failed: $e');
+      }
+
+      // Main image/video list (best effort)
+      final allMedia = <AssetEntity>[];
+      try {
+        if (albums.isNotEmpty) {
+          final allAlbum = albums.firstWhere((a) => a.isAll, orElse: () => albums.first);
+          await _paginateAlbumAssets(allAlbum, (assets) => allMedia.addAll(assets));
+        }
+      } catch (e) {
+        // On some Huawei devices the combined query can fail; fetch each album separately.
+        writeLog('All-album fetch failed, trying per-album: $e');
+        for (final album in albums) {
+          try {
+            await _paginateAlbumAssets(album, (assets) => allMedia.addAll(assets));
+          } catch (e2) {
+            writeLog('Album "${album.name}" fetch failed: $e2');
           }
         }
       }
 
-      if (albums.isNotEmpty) {
-        final allAlbum = albums.firstWhere((a) => a.isAll, orElse: () => albums.first);
-        List<AssetEntity> allMedia = await allAlbum.getAssetListPaged(page: 0, size: 10000);
-        _images = allMedia.where((e) => e.type == AssetType.image).toList();
-        _videos = allMedia.where((e) => e.type == AssetType.video).toList();
-        if (allScreenshots.isEmpty) {
-          _screenshots = _images.where((e) => (e.title ?? '').toLowerCase().contains('screenshot') || (e.relativePath ?? '').toLowerCase().contains('screenshot')).toList();
-        } else {
-          _screenshots = allScreenshots;
-        }
+      final seenIds = <String>{};
+      final unique = <AssetEntity>[];
+      for (final a in allMedia) {
+        if (seenIds.add(a.id)) unique.add(a);
+      }
+      writeLog('PhotoManager fetched media: ${unique.length}');
+
+      _images = unique.where((e) => e.type == AssetType.image).toList();
+      _videos = unique.where((e) => e.type == AssetType.video).toList();
+      if (allScreenshots.isEmpty) {
+        _screenshots = _images.where((e) => (e.title ?? '').toLowerCase().contains('screenshot') || (e.relativePath ?? '').toLowerCase().contains('screenshot')).toList();
+      } else {
+        _screenshots = allScreenshots;
       }
 
-      // Fetch distinct image albums
-      final imgAlbums = await PhotoManager.getAssetPathList(type: RequestType.image);
-      final filteredImgAlbums = <AssetPathEntity>[];
-      for (final album in imgAlbums) {
-        final count = await album.assetCountAsync;
-        if (count > 0) {
-          filteredImgAlbums.add(album);
+      // Fetch distinct image albums (best effort)
+      try {
+        final imgAlbums = await PhotoManager.getAssetPathList(type: RequestType.image);
+        final filteredImgAlbums = <AssetPathEntity>[];
+        for (final album in imgAlbums) {
+          try {
+            if (await album.assetCountAsync > 0) {
+              filteredImgAlbums.add(album);
+            }
+          } catch (_) {
+            filteredImgAlbums.add(album);
+          }
         }
+        _imageAlbums = filteredImgAlbums;
+      } catch (e) {
+        writeLog('Image album fetch failed: $e');
       }
-      _imageAlbums = filteredImgAlbums;
 
-      // Fetch distinct video albums
-      final vidAlbums = await PhotoManager.getAssetPathList(type: RequestType.video);
-      final filteredVidAlbums = <AssetPathEntity>[];
-      for (final album in vidAlbums) {
-        final count = await album.assetCountAsync;
-        if (count > 0) {
-          filteredVidAlbums.add(album);
+      // Fetch distinct video albums (best effort)
+      try {
+        final vidAlbums = await PhotoManager.getAssetPathList(type: RequestType.video);
+        final filteredVidAlbums = <AssetPathEntity>[];
+        for (final album in vidAlbums) {
+          try {
+            if (await album.assetCountAsync > 0) {
+              filteredVidAlbums.add(album);
+            }
+          } catch (_) {
+            filteredVidAlbums.add(album);
+          }
         }
+        _videoAlbums = filteredVidAlbums;
+      } catch (e) {
+        writeLog('Video album fetch failed: $e');
       }
-      _videoAlbums = filteredVidAlbums;
-    } catch (_) {
-      writeLog('_loadImagesAndVideos failed with an exception');
+    } catch (e) {
+      writeLog('_loadImagesAndVideos failed with exception: $e');
+    } finally {
+      _mediaLoadInProgress = false;
+    }
+  }
+
+  Future<void> _paginateAlbumAssets(
+    AssetPathEntity album,
+    void Function(List<AssetEntity> page) onPage,
+  ) async {
+    const pageSize = 500;
+    var page = 0;
+    while (true) {
+      final assets = await album.getAssetListPaged(page: page, size: pageSize);
+      if (assets.isEmpty) break;
+      onPage(assets);
+      if (assets.length < pageSize) break;
+      page++;
     }
   }
 
@@ -1316,6 +1382,10 @@ class MediaProvider extends ChangeNotifier {
   static const List<String> _imageExts = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.heic', '.heif', '.svg', '.avif'];
   static const List<String> _videoExts = ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.3gp', '.ts'];
   static const List<String> _audioExts = ['.mp3', '.wav', '.ogg', '.m4a', '.flac', '.aac', '.wma', '.amr', '.opus', '.mid'];
+  static const Set<String> _junkDirNames = {
+    'cache', 'caches', 'cacheddata', 'thumbnails', 'thumbnails_cache',
+    'tmp', 'temp', 'web_cache', 'webcache', 'cachedimages', 'download_cache',
+  };
 
   static Future<List<String>> _isolateDirectoryScan(Map<String, dynamic> params) async {
   final startPath = params['startPath'] as String;
@@ -1351,7 +1421,9 @@ class MediaProvider extends ChangeNotifier {
         try {
           if (entity is Directory) {
             final name = p.basename(entity.path);
-            if (!name.startsWith('.') && name != 'Android') {
+            if (!name.startsWith('.') &&
+                name != 'Android' &&
+                !_junkDirNames.contains(name.toLowerCase())) {
               queue.add(entity.path);
             }
           } else if (entity is File) {
