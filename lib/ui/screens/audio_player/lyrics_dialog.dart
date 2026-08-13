@@ -114,7 +114,8 @@ class _LyricsDialogState extends State<LyricsDialog> {
       if (!await file.exists()) return null;
       try {
         return await file.readAsString(encoding: utf8);
-      } catch (_) {
+      } catch (e, stackTrace) {
+      // Error handled
         return await file.readAsString(encoding: latin1);
       }
     } catch (e) {

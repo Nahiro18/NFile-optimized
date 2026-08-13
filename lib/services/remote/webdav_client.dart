@@ -163,7 +163,10 @@ class WebDavRemoteClient implements RemoteClient {
         if (getlastmodified != null) {
           try {
             modified = HttpDate.parse(getlastmodified.innerText);
-          } catch (_) {}
+          } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         }
       }
 

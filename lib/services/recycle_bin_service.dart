@@ -99,7 +99,10 @@ class RecycleBinService {
             await _saveItem(item);
             _trashItems.add(item);
           }
-        } catch (_) {}
+        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
       }
       // Limpiar prefs para no volver a migrar
       await _prefs?.remove(_keyRecycleBinItems);
@@ -189,7 +192,10 @@ class RecycleBinService {
       } else {
         size = File(path).lengthSync();
       }
-    } catch (_) {}
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
 
     // Move to trash using standard rename/move or Shizuku/root copy-delete
     final isRestricted = path.toLowerCase().contains('/android/data') || path.toLowerCase().contains('/android/obb');
@@ -276,11 +282,15 @@ class RecycleBinService {
       } else if (type == FileSystemEntityType.file) {
         await File(trashPath).delete();
       }
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       // Just in case, try root/Shizuku delete
       try {
         await RootShizukuService.deleteItem(trashPath, useRoot: useRoot);
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     }
 
     await _deleteItem(item.id);
@@ -292,7 +302,10 @@ class RecycleBinService {
     if (trashDir.existsSync()) {
       try {
         await trashDir.delete(recursive: true);
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     }
     
     for (var item in _trashItems) {
@@ -327,7 +340,10 @@ class RecycleBinService {
           totalSize += entity.lengthSync();
         }
       }
-    } catch (_) {}
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     return totalSize;
   }
 

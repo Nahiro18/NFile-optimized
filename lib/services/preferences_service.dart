@@ -193,7 +193,7 @@ class PreferencesService {
     final str = _prefs?.getString(_keyFolderSortTypes);
     if (str == null) return {};
     try {
-      final map = jsonDecode(str) as Map<String, dynamic>;
+      final map = (jsonDecode(str) as? Map<String, dynamic>) ?? {};
       return map.map((key, value) {
         final idx = value as int;
         if (idx >= 0 && idx < FileSortType.values.length) {
@@ -243,9 +243,10 @@ class PreferencesService {
     final str = _prefs?.getString(_keyCustomShortcuts);
     if (str == null) return null;
     try {
-      final list = jsonDecode(str) as List;
-      return list.map((e) => CustomShortcutModel.fromJson(e as Map<String, dynamic>)).toList();
-    } catch (_) {
+      final list = (jsonDecode(str) as? List) ?? [];
+      return list.map((e) => CustomShortcutModel.fromJson(e as? Map<String, dynamic>)).toList();
+    } catch (e, stackTrace) {
+      // Error handled
       return null;
     }
   }
@@ -261,9 +262,10 @@ class PreferencesService {
     final str = _prefs?.getString(_keyPinnedFolderShortcuts);
     if (str == null) return [];
     try {
-      final list = jsonDecode(str) as List;
-      return list.map((e) => CustomShortcutModel.fromJson(e as Map<String, dynamic>)).toList();
-    } catch (_) {
+      final list = (jsonDecode(str) as? List) ?? [];
+      return list.map((e) => CustomShortcutModel.fromJson(e as? Map<String, dynamic>)).toList();
+    } catch (e, stackTrace) {
+      // Error handled
       return [];
     }
   }
@@ -549,9 +551,10 @@ class PreferencesService {
     final str = _prefs?.getString(_keyCustomCategoryPaths);
     if (str == null) return {};
     try {
-      final map = jsonDecode(str) as Map<String, dynamic>;
+      final map = (jsonDecode(str) as? Map<String, dynamic>) ?? {};
       return map.map((key, value) => MapEntry(key, List<String>.from(value)));
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       return {};
     }
   }
@@ -566,9 +569,10 @@ class PreferencesService {
     final str = _prefs?.getString(_keyExcludedDefaultPaths);
     if (str == null) return {};
     try {
-      final map = jsonDecode(str) as Map<String, dynamic>;
+      final map = (jsonDecode(str) as? Map<String, dynamic>) ?? {};
       return map.map((key, value) => MapEntry(key, List<String>.from(value)));
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       return {};
     }
   }
@@ -607,9 +611,10 @@ class PreferencesService {
     final str = _prefs?.getString(_keyTabsList);
     if (str == null) return [];
     try {
-      final decoded = jsonDecode(str) as List<dynamic>;
+      final decoded = (jsonDecode(str) as? List<dynamic>) ?? [];
       return decoded.map((e) => Map<String, dynamic>.from(e)).toList();
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       return [];
     }
   }

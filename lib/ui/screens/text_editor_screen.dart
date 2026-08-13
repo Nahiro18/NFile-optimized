@@ -84,7 +84,10 @@ class CodeTextEditingController extends TextEditingController {
         if (m.groupNames.contains(name)) {
           return m.namedGroup(name);
         }
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
       return null;
     }
 
@@ -316,7 +319,10 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         content = await tempFile.readAsString();
         try {
           await tempFile.delete();
-        } catch (_) {}
+        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
       } else {
         final file = File(_normalizedPath);
         content = await file.readAsString();
@@ -352,7 +358,10 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         await RootShizukuService.copyItem(tempFile.path, _normalizedPath, useRoot: provider.useRootMode);
         try {
           await tempFile.delete();
-        } catch (_) {}
+        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
       } else {
         final file = File(_normalizedPath);
         await file.writeAsString(_controller.text);
@@ -362,7 +371,10 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         if (mounted) {
           context.read<FileManagerProvider>().updateFileInList(_normalizedPath);
         }
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
 
       if (IntentHandlerService.isIncomingCacheFile(_normalizedPath)) {
         final success = await IntentHandlerService.saveContentUriFile(_normalizedPath, _controller.text);

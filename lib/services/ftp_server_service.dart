@@ -81,13 +81,19 @@ class FtpServerService {
     for (var socket in _activeSockets) {
       try {
         socket.destroy();
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     }
     _activeSockets.clear();
     for (var server in _activeDataSockets) {
       try {
         server.close();
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     }
     _activeDataSockets.clear();
     if (Platform.isAndroid) {
@@ -109,7 +115,10 @@ class FtpServerService {
           }
         }
       }
-    } catch (_) {}
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     return '127.0.0.1';
   }
 
@@ -159,13 +168,19 @@ class FtpSession {
   void sendResponse(String response) {
     try {
       controlSocket.write('$response\r\n');
-    } catch (_) {}
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
   }
 
   void close() {
     try {
       controlSocket.destroy();
-    } catch (_) {}
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     server._activeSockets.remove(controlSocket);
     passiveServer?.close();
   }
@@ -322,7 +337,8 @@ class FtpSession {
         activeHost = null;
         activePort = null;
         return sock;
-      } catch (_) {
+      } catch (e, stackTrace) {
+      // Error handled
         return null;
       }
     }
@@ -359,7 +375,10 @@ class FtpSession {
         dataSocket.write(buffer.toString());
       }
       await dataSocket.flush();
-    } catch (_) {} finally {
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      } finally {
       await dataSocket.close();
       sendResponse('226 Transfer complete.');
     }
@@ -432,7 +451,10 @@ class FtpSession {
     sendResponse('150 Opening BINARY mode data connection.');
     try {
       await dataSocket.addStream(file.openRead());
-    } catch (_) {} finally {
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      } finally {
       await dataSocket.close();
       sendResponse('226 Transfer complete.');
     }
@@ -453,7 +475,10 @@ class FtpSession {
       final sink = file.openWrite();
       await sink.addStream(dataSocket);
       await sink.close();
-    } catch (_) {} finally {
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      } finally {
       await dataSocket.close();
       sendResponse('226 Transfer complete.');
     }
@@ -476,7 +501,8 @@ class FtpSession {
     try {
       await dir.create(recursive: true);
       sendResponse('257 "$arg" directory created.');
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       sendResponse('550 Can\'t create directory.');
     }
   }
@@ -487,7 +513,8 @@ class FtpSession {
     try {
       await dir.delete(recursive: true);
       sendResponse('250 Directory deleted successfully.');
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       sendResponse('550 Can\'t delete directory.');
     }
   }
@@ -508,7 +535,8 @@ class FtpSession {
         throw Exception();
       }
       sendResponse('250 File renamed successfully.');
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       sendResponse('550 File rename failed.');
     } finally {
       renameFromPath = null;

@@ -127,8 +127,8 @@ class VaultService {
     
     try {
       final str = await file.readAsString();
-      final list = jsonDecode(str) as List;
-      return list.map((e) => VaultFileRecord.fromJson(e as Map<String, dynamic>)).toList();
+      final list = (jsonDecode(str) as? List) ?? [];
+      return list.map((e) => VaultFileRecord.fromJson(e as? Map<String, dynamic>)).toList();
     } catch (e) {
       debugPrint('[VaultService] Error loading records: $e');
       return [];
@@ -312,7 +312,7 @@ class VaultService {
       }
 
       final metadataStr = utf8.decode(decryptedMetadataBytes);
-      final metadata = jsonDecode(metadataStr) as Map<String, dynamic>;
+      final metadata = (jsonDecode(metadataStr) as? Map<String, dynamic>) ?? {};
 
       final originalSize = metadata['size'] as int;
       final scrambleLen = min(_scrambleSize, originalSize);
@@ -356,7 +356,7 @@ class VaultService {
           if (file.isFile) {
             final outFile = File(fullPath);
             await outFile.parent.create(recursive: true);
-            await outFile.writeAsBytes(file.content as List<int>);
+            await outFile.writeAsBytes(file.content as? List<int>);
           } else {
             await Directory(fullPath).create(recursive: true);
           }
@@ -509,7 +509,7 @@ class VaultService {
       }
 
       final metadataStr = utf8.decode(decryptedMetadataBytes);
-      final metadata = jsonDecode(metadataStr) as Map<String, dynamic>;
+      final metadata = (jsonDecode(metadataStr) as? Map<String, dynamic>) ?? {};
 
       final originalSize = metadata['size'] as int;
       final scrambleLen = min(_scrambleSize, originalSize);
@@ -626,7 +626,10 @@ class VaultService {
                   final zeroBytes = List<int>.filled(len, 0);
                   await entity.writeAsBytes(zeroBytes, flush: true);
                 }
-              } catch (_) {}
+              } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
               await entity.delete();
             }
           }

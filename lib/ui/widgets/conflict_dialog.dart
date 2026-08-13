@@ -79,7 +79,8 @@ class _ConflictDialogState extends State<ConflictDialog> {
           _statsLoaded = true;
         });
       }
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       if (mounted) {
         setState(() {
           _statsLoaded = false;

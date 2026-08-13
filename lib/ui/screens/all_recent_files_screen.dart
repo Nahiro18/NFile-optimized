@@ -41,7 +41,8 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
           _isLoading = false;
         });
       }
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -92,13 +93,22 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
                         list.add(sub);
                       }
                     }
-                  } catch (_) {}
+                  } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
                 }
               }
-            } catch (_) {}
+            } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
           }
         }));
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     }
 
     final mediaProvider = context.read<MediaProvider>();
@@ -111,7 +121,10 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
               seen.add(entity.path);
               list.add(entity);
             }
-          } catch (_) {}
+          } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         }
       }
     }
@@ -128,7 +141,10 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
         try {
           final f = File(path);
           if (await f.exists()) list.add(f);
-        } catch (_) {}
+        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
       }
     }
 
@@ -167,7 +183,10 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
           size: stat.size,
           modified: stat.modified,
         ));
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     }));
 
     items.sort((a, b) => b.modified.compareTo(a.modified));

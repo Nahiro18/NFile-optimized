@@ -17,10 +17,16 @@ class SecureDeleteService {
             await _deleteFileSecurely(child);
           }
         }
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
       try {
         await entity.delete(recursive: true);
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     } else if (entity is File) {
       await _deleteFileSecurely(entity);
     }

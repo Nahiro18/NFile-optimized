@@ -46,7 +46,10 @@ class LanClient implements RemoteClient {
           }
         }
       }
-    } catch (_) {}
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     return ips;
   }
 
@@ -92,7 +95,10 @@ class LanClient implements RemoteClient {
               type: type,
               name: '$type Server ($ip)',
             ));
-          } catch (_) {}
+          } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         }
         scannedCount++;
         onProgress(scannedCount / maxIps);
@@ -114,9 +120,9 @@ class LanClient implements RemoteClient {
     
     if (stored != null) {
       try {
-        final decoded = json.decode(stored) as List<dynamic>;
+        final decoded = (json.decode(stored) as? List<dynamic>) ?? [];
         for (final item in decoded) {
-          final map = item as Map<String, dynamic>;
+          final map = item as? Map<String, dynamic>;
           _virtualItems.add(RemoteFileItem(
             name: map['name'] as String,
             path: map['path'] as String,
@@ -125,7 +131,8 @@ class LanClient implements RemoteClient {
             modified: DateTime.parse(map['modified'] as String),
           ));
         }
-      } catch (_) {
+      } catch (e, stackTrace) {
+      // Error handled
         _loadDefaultStructure();
       }
     } else {

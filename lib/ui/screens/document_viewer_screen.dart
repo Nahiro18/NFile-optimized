@@ -166,7 +166,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
           final match = RegExp(r'slide(\d+)\.xml').firstMatch(file.name);
           if (match != null) {
             final slideNum = int.parse(match.group(1)!);
-            final contentStr = utf8.decode(file.content as List<int>);
+            final contentStr = utf8.decode(file.content as? List<int>);
             final doc = XmlDocument.parse(contentStr);
             final textNodes = doc.findAllElements('a:t');
             final slideText = textNodes.map((node) => node.innerText).where((t) => t.trim().isNotEmpty).join('\n');

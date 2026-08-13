@@ -81,7 +81,8 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
           _loadingAlbum = false;
         });
       }
-    } catch (_) {
+    } catch (e, stackTrace) {
+      // Error handled
       if (mounted) setState(() => _loadingAlbum = false);
     }
   }
@@ -282,7 +283,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
           }
           pastedCount++;
         }
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     }
 
     fm.clearClipboard();
@@ -482,7 +486,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                 lastMod = st.modified;
                 permissionsStr = '${(st.mode & 0x100) != 0 ? "R" : ""}${(st.mode & 0x80) != 0 ? "/W" : ""}';
               }
-            } catch (_) {}
+            } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
             if (count == 1) {
               if (match.type == AssetType.image) {
                 dimensionsOrDuration = '${match.width} x ${match.height}';
@@ -521,7 +528,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
             }
           }
         }
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     }
 
     if (!mounted) return;
@@ -581,7 +591,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                     ? () {
                         try {
                           HapticFeedback.mediumImpact();
-                        } catch (_) {}
+                        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
                         Navigator.pop(ctx);
                         context.read<FileManagerProvider>().openFile(context, filePath, forceOpenWith: true);
                       }
@@ -1102,12 +1115,18 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
         if (f.existsSync()) {
           return f.statSync().modified;
         }
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
       return DateTime.fromMillisecondsSinceEpoch((item.dateAdded ?? 0) * 1000);
     } else if (item is FileSystemEntity) {
       try {
         return item.statSync().modified;
-      } catch (_) {}
+      } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
     }
     return DateTime.fromMillisecondsSinceEpoch(0);
   }
@@ -1357,7 +1376,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
           } else if (item is FileSystemEntity) {
             try {
               date = File(item.path).statSync().modified;
-            } catch (_) {}
+            } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
           }
           final dateStr = FileUtils.formatDate(date);
           return _buildImageTile(item, theme, isSelected, showDate, dateStr, images);
@@ -1384,7 +1406,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
         } else if (item is FileSystemEntity) {
           try {
             date = File(item.path).statSync().modified;
-          } catch (_) {}
+          } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         }
         final dateStr = FileUtils.formatDate(date);
         return _buildImageTile(item, theme, isSelected, isDateWise, dateStr, images);
@@ -1541,7 +1566,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
           } else if (item is FileSystemEntity) {
             try {
               date = File(item.path).statSync().modified;
-            } catch (_) {}
+            } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
           }
           final dateStr = FileUtils.formatDate(date);
           return _buildVideoTile(item, theme, isSelected, showDate, dateStr, videos);
@@ -1568,7 +1596,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
         } else if (item is FileSystemEntity) {
           try {
             date = File(item.path).statSync().modified;
-          } catch (_) {}
+          } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         }
         final dateStr = FileUtils.formatDate(date);
         return _buildVideoTile(item, theme, isSelected, isDateWise, dateStr, videos);
@@ -1671,7 +1702,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
           DateTime? modified;
           try {
             modified = File(path).statSync().modified;
-          } catch (_) {}
+          } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
           final dateStr = modified != null ? FileUtils.formatDate(modified) : 'Unknown Date';
           final index = audios.indexOf(audio);
           return _buildAudioTile(audio, theme, isSelected, showDate, dateStr, index, audios);
@@ -1688,7 +1722,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
         DateTime? modified;
         try {
           modified = File(path).statSync().modified;
-        } catch (_) {}
+        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         final dateStr = modified != null ? FileUtils.formatDate(modified) : 'Unknown Date';
         return _buildAudioTile(audio, theme, isSelected, isDateWise, dateStr, index, audios);
       },
@@ -1770,7 +1807,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
             final st = doc.statSync();
             size = st.size;
             modified = st.modified;
-          } catch (_) {}
+          } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
           return _buildDocumentTile(doc, theme, isSelected, showDate, size, modified);
         },
       );
@@ -1788,7 +1828,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
           final st = doc.statSync();
           size = st.size;
           modified = st.modified;
-        } catch (_) {}
+        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         return _buildDocumentTile(doc, theme, isSelected, isDateWise, size, modified);
       },
     );
@@ -1870,7 +1913,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
             final st = file.statSync();
             size = st.size;
             modified = st.modified;
-          } catch (_) {}
+          } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
           return _buildGenericFileTile(file, theme, isSelected, showDate, size, modified);
         },
       );
@@ -1888,7 +1934,10 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
           final st = file.statSync();
           size = st.size;
           modified = st.modified;
-        } catch (_) {}
+        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         return _buildGenericFileTile(file, theme, isSelected, isDateWise, size, modified);
       },
     );
@@ -2276,7 +2325,10 @@ class _FolderGridItemState extends State<FolderGridItem> {
           return;
         }
       }
-    } catch (_) {}
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
   }
 
   @override
@@ -2406,7 +2458,10 @@ class _ApkThumbnailState extends State<_ApkThumbnail> {
           _apkIcon = iconBytes;
         });
       }
-    } catch (_) {}
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
   }
 
   @override

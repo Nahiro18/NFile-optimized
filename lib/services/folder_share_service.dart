@@ -101,7 +101,10 @@ class FolderShareService {
             if (file.existsSync()) {
               file.deleteSync();
             }
-          } catch (_) {}
+          } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         }
       });
     }

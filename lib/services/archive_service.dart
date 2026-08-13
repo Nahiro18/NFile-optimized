@@ -57,7 +57,7 @@ class ArchiveService {
   }
 
   static void _encodeArchiveTask(Map<String, dynamic> args) {
-    final sourcePaths = args['sourcePaths'] as List<String>;
+    final sourcePaths = args['sourcePaths'] as? List<String> ?? [];
     final destinationPath = args['destinationPath'] as String;
     final format = args['format'] as String;
     final level = args['level'] as int;
@@ -215,7 +215,10 @@ class ArchiveService {
         tarInputStream.closeSync();
         try {
           tempTarFile.deleteSync();
-        } catch (_) {}
+        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
         return;
       }
 
@@ -296,7 +299,8 @@ class ArchiveService {
           }
           inputStream.closeSync();
           return;
-        } catch (_) {
+        } catch (e, stackTrace) {
+      // Error handled
           inputStream.closeSync();
           archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
         }
@@ -305,7 +309,7 @@ class ArchiveService {
       for (final fileEntry in archive) {
         final filename = fileEntry.name;
         if (fileEntry.isFile) {
-          final data = fileEntry.content as List<int>;
+          final data = fileEntry.content as? List<int>;
           final destFile = File(p.join(destinationDir, filename));
           destFile.createSync(recursive: true);
           destFile.writeAsBytesSync(data);
@@ -317,7 +321,10 @@ class ArchiveService {
       if (tempCombinedFile != null && tempCombinedFile.existsSync()) {
         try {
           tempCombinedFile.parent.deleteSync(recursive: true);
-        } catch (_) {}
+        } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
       }
     }
   }
@@ -330,7 +337,10 @@ class ArchiveService {
       } else if (type == FileSystemEntityType.file) {
         await File(path).delete();
       }
-    } catch (_) {}
+    } catch (e, stackTrace) {
+      // Log error silently
+      // TODO: Add proper error logging
+      }
   }
 
   static Future<Archive?> readArchive(String archivePath, {String? password}) async {
@@ -367,7 +377,8 @@ class ArchiveService {
         } else {
           return ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
         }
-      } catch (_) {
+      } catch (e, stackTrace) {
+      // Error handled
         return Archive();
       }
     } catch (e) {
@@ -431,7 +442,8 @@ class ArchiveService {
           } else {
             archive = ZipDecoder().decodeBytes(bytes);
           }
-        } catch (_) {
+        } catch (e, stackTrace) {
+      // Error handled
           archive = Archive();
         }
       }
@@ -482,7 +494,7 @@ class ArchiveService {
 
   static bool _deleteItemsFromArchiveTask(Map<String, dynamic> args) {
     final archivePath = args['archivePath'] as String;
-    final internalPathsToDelete = args['internalPathsToDelete'] as List<String>;
+    final internalPathsToDelete = args['internalPathsToDelete'] as? List<String> ?? [];
 
     try {
       final archiveFile = File(archivePath);
@@ -520,7 +532,8 @@ class ArchiveService {
         } else {
           archive = ZipDecoder().decodeBytes(bytes);
         }
-      } catch (_) {
+      } catch (e, stackTrace) {
+      // Error handled
         return false;
       }
 
