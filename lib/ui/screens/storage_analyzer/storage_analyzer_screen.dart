@@ -80,7 +80,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
         }
       }
       _appsSize = appsSum;
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       _appsSize = 0;
     }
@@ -123,10 +123,9 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
                   docBytes += size;
                 }
               }
-            } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+            } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
           }
         }
 
@@ -135,10 +134,9 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
         _audioSize = audBytes;
         _docsSize = docBytes;
       }
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
     // Adjust system/other size
     final double calculatedUsed = (_appsSize + _imagesSize + _videosSize + _audioSize + _docsSize).toDouble();

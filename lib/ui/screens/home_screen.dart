@@ -69,10 +69,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
         context.read<FileManagerProvider>().updateStorageSpace(),
         context.read<MediaProvider>().loadMedia(forceRefresh: true),
       ]);
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      } finally {
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    } finally {
       if (mounted) {
         _refreshIconController.stop();
         setState(() {

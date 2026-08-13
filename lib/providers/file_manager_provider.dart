@@ -384,7 +384,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
         try {
           final stat = await item.entity.stat();
           return item.copyWith(size: stat.size, modified: stat.modified);
-        } catch (e, stackTrace) {
+        } catch (e) {
       // Error handled
           return item;
         }
@@ -638,10 +638,9 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
                 });
               }
             }
-          } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
       }
 
@@ -799,7 +798,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
               }
               await srcFile.rename(finalDestPath);
               bytesProcessed += size;
-            } catch (e, stackTrace) {
+            } catch (e) {
       // Error handled
               await _copyFileWithProgress(
                 srcFile,
@@ -1021,10 +1020,9 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     } finally {
       try {
         await client.disconnect();
-      } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       progressNotifier.value = null;
       if (clearAfterPaste) {
         clearClipboard();

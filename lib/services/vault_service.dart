@@ -626,10 +626,9 @@ class VaultService {
                   final zeroBytes = List<int>.filled(len, 0);
                   await entity.writeAsBytes(zeroBytes, flush: true);
                 }
-              } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+              } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
               await entity.delete();
             }
           }

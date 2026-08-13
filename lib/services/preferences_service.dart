@@ -245,7 +245,7 @@ class PreferencesService {
     try {
       final list = (jsonDecode(str) as? List) ?? [];
       return list.map((e) => CustomShortcutModel.fromJson(e as? Map<String, dynamic>)).toList();
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       return null;
     }
@@ -264,7 +264,7 @@ class PreferencesService {
     try {
       final list = (jsonDecode(str) as? List) ?? [];
       return list.map((e) => CustomShortcutModel.fromJson(e as? Map<String, dynamic>)).toList();
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       return [];
     }
@@ -553,7 +553,7 @@ class PreferencesService {
     try {
       final map = (jsonDecode(str) as? Map<String, dynamic>) ?? {};
       return map.map((key, value) => MapEntry(key, List<String>.from(value)));
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       return {};
     }
@@ -571,7 +571,7 @@ class PreferencesService {
     try {
       final map = (jsonDecode(str) as? Map<String, dynamic>) ?? {};
       return map.map((key, value) => MapEntry(key, List<String>.from(value)));
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       return {};
     }
@@ -613,7 +613,7 @@ class PreferencesService {
     try {
       final decoded = (jsonDecode(str) as? List<dynamic>) ?? [];
       return decoded.map((e) => Map<String, dynamic>.from(e)).toList();
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       return [];
     }

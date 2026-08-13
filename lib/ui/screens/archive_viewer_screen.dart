@@ -361,10 +361,9 @@ class _ArchiveViewerScreenState extends State<ArchiveViewerScreen> {
         if (provider.isCut) {
           try {
             await File(path).delete();
-          } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
       }
     }

@@ -78,6 +78,12 @@ class _BatchRenameDialogState extends State<BatchRenameDialog> {
 
   @override
   void dispose() {
+    _patternController.removeListener(_onInputChanged);
+    _extensionController.removeListener(_onInputChanged);
+    _paddingController.removeListener(_onInputChanged);
+    _startController.removeListener(_onInputChanged);
+    _findController.removeListener(_onInputChanged);
+    _replaceController.removeListener(_onInputChanged);
     _patternController.dispose();
     _extensionController.dispose();
     _paddingController.dispose();

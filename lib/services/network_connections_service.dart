@@ -19,7 +19,7 @@ class NetworkConnectionsService {
       return list
           .map((e) => NetworkConnectionModel.fromJson(e as? Map<String, dynamic>))
           .toList();
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       return [];
     }

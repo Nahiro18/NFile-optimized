@@ -478,10 +478,9 @@ mixin PreferencesMixin on ChangeNotifier {
           count++;
         }
       }
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
     _folderItemCounts[folderPath] = count;
     return count;
@@ -1004,7 +1003,7 @@ mixin PreferencesMixin on ChangeNotifier {
         List<FileSystemEntity> entities;
         try {
           entities = await dir.list(followLinks: false).toList();
-        } catch (e, stackTrace) {
+        } catch (e) {
       // Error handled
           continue;
         }
@@ -1305,10 +1304,9 @@ mixin PreferencesMixin on ChangeNotifier {
             }
           }
         }
-      } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
       try {
         final storageDir = Directory('/storage');
@@ -1326,10 +1324,9 @@ mixin PreferencesMixin on ChangeNotifier {
             }
           }
         }
-      } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     } else {
       final dir = await getApplicationDocumentsDirectory();
       volumes.add(StorageVolume(name: 'Documents', path: dir.path, isInternal: true));

@@ -98,7 +98,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
         _imageList.insert(0, widget.imagePath);
         _currentIndex = 0;
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       _imageList = [widget.imagePath];
       _currentIndex = 0;

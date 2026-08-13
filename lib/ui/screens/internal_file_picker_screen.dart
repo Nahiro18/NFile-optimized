@@ -115,10 +115,9 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
             } else if (!widget.pickDirectory) {
               files.add(item);
             }
-          } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
 
         folders.sort((a, b) => FileUtils.compareNatural(a.name, b.name));
@@ -210,10 +209,9 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
   void _showStorageVolumeModal(BuildContext context) {
     try {
       HapticFeedback.mediumImpact();
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
     final theme = Theme.of(context);
     final provider = context.read<FileManagerProvider>();

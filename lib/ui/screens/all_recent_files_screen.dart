@@ -41,7 +41,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
           _isLoading = false;
         });
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       if (mounted) {
         setState(() => _isLoading = false);
@@ -93,22 +93,19 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
                         list.add(sub);
                       }
                     }
-                  } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+                  } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
                 }
               }
-            } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+            } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
           }
         }));
-      } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     }
 
     final mediaProvider = context.read<MediaProvider>();
@@ -121,10 +118,9 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
               seen.add(entity.path);
               list.add(entity);
             }
-          } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
       }
     }
@@ -141,10 +137,9 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
         try {
           final f = File(path);
           if (await f.exists()) list.add(f);
-        } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
     }
 
@@ -183,10 +178,9 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
           size: stat.size,
           modified: stat.modified,
         ));
-      } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     }));
 
     items.sort((a, b) => b.modified.compareTo(a.modified));

@@ -456,10 +456,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   Future<void> _toggleBackgroundMode() async {
     try {
       player.pause();
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
     if (_isBackgroundMode) {
       // Turn off — stop background handler to completely clear the notification,

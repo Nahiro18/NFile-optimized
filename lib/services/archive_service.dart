@@ -215,10 +215,9 @@ class ArchiveService {
         tarInputStream.closeSync();
         try {
           tempTarFile.deleteSync();
-        } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         return;
       }
 
@@ -299,7 +298,7 @@ class ArchiveService {
           }
           inputStream.closeSync();
           return;
-        } catch (e, stackTrace) {
+        } catch (e) {
       // Error handled
           inputStream.closeSync();
           archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
@@ -321,10 +320,9 @@ class ArchiveService {
       if (tempCombinedFile != null && tempCombinedFile.existsSync()) {
         try {
           tempCombinedFile.parent.deleteSync(recursive: true);
-        } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
     }
   }
@@ -337,10 +335,9 @@ class ArchiveService {
       } else if (type == FileSystemEntityType.file) {
         await File(path).delete();
       }
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
   }
 
   static Future<Archive?> readArchive(String archivePath, {String? password}) async {
@@ -377,7 +374,7 @@ class ArchiveService {
         } else {
           return ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
         }
-      } catch (e, stackTrace) {
+      } catch (e) {
       // Error handled
         return Archive();
       }
@@ -442,7 +439,7 @@ class ArchiveService {
           } else {
             archive = ZipDecoder().decodeBytes(bytes);
           }
-        } catch (e, stackTrace) {
+        } catch (e) {
       // Error handled
           archive = Archive();
         }
@@ -532,7 +529,7 @@ class ArchiveService {
         } else {
           archive = ZipDecoder().decodeBytes(bytes);
         }
-      } catch (e, stackTrace) {
+      } catch (e) {
       // Error handled
         return false;
       }

@@ -54,7 +54,7 @@ class FtpServerService {
       _controlSocket = await ServerSocket.bind(InternetAddress.anyIPv4, _port, shared: true);
       _isActive = true;
       _controlSocket!.listen(_handleConnection, onError: (e) {
-        if (kDebugMode) print('FTP Control Server error: $e');
+        debugPrint('FTP Control Server error: $e');
       });
       if (Platform.isAndroid) {
         try {
@@ -62,13 +62,17 @@ class FtpServerService {
             'ip': _ipAddress,
             'port': _port,
           });
-        } catch (e) {
-          if (kDebugMode) print('Failed to start background notification service: $e');
+        } on PlatformException catch (e) {
+          debugPrint('Failed to start background notification service: $e');
         }
       }
       onStatusChanged?.call();
+    } on SocketException catch (e) {
+      debugPrint('Failed to start FTP server: $e');
+      stop();
+      rethrow;
     } catch (e) {
-      if (kDebugMode) print('Failed to start FTP server: $e');
+      debugPrint('Failed to start FTP server (unknown error): $e');
       stop();
       rethrow;
     }
@@ -81,26 +85,24 @@ class FtpServerService {
     for (var socket in _activeSockets) {
       try {
         socket.destroy();
-      } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
+      } on SocketException catch (e) {
+        debugPrint('Error destroying socket: $e');
       }
     }
     _activeSockets.clear();
     for (var server in _activeDataSockets) {
       try {
         server.close();
-      } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
+      } on SocketException catch (e) {
+        debugPrint('Error closing data socket: $e');
       }
     }
     _activeDataSockets.clear();
     if (Platform.isAndroid) {
       try {
         _channel.invokeMethod('stopFtpService');
-      } catch (e) {
-        if (kDebugMode) print('Failed to stop background notification service: $e');
+      } on PlatformException catch (e) {
+        debugPrint('Failed to stop background notification service: $e');
       }
     }
     onStatusChanged?.call();
@@ -115,10 +117,9 @@ class FtpServerService {
           }
         }
       }
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } on SocketException catch (e) {
+      debugPrint('Failed to get local IP: $e');
+    }
     return '127.0.0.1';
   }
 
@@ -168,19 +169,17 @@ class FtpSession {
   void sendResponse(String response) {
     try {
       controlSocket.write('$response\r\n');
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
   }
 
   void close() {
     try {
       controlSocket.destroy();
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     server._activeSockets.remove(controlSocket);
     passiveServer?.close();
   }
@@ -337,7 +336,7 @@ class FtpSession {
         activeHost = null;
         activePort = null;
         return sock;
-      } catch (e, stackTrace) {
+      } catch (e) {
       // Error handled
         return null;
       }
@@ -375,10 +374,9 @@ class FtpSession {
         dataSocket.write(buffer.toString());
       }
       await dataSocket.flush();
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      } finally {
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    } finally {
       await dataSocket.close();
       sendResponse('226 Transfer complete.');
     }
@@ -451,10 +449,9 @@ class FtpSession {
     sendResponse('150 Opening BINARY mode data connection.');
     try {
       await dataSocket.addStream(file.openRead());
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      } finally {
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    } finally {
       await dataSocket.close();
       sendResponse('226 Transfer complete.');
     }
@@ -475,10 +472,9 @@ class FtpSession {
       final sink = file.openWrite();
       await sink.addStream(dataSocket);
       await sink.close();
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      } finally {
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    } finally {
       await dataSocket.close();
       sendResponse('226 Transfer complete.');
     }
@@ -501,7 +497,7 @@ class FtpSession {
     try {
       await dir.create(recursive: true);
       sendResponse('257 "$arg" directory created.');
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       sendResponse('550 Can\'t create directory.');
     }
@@ -513,7 +509,7 @@ class FtpSession {
     try {
       await dir.delete(recursive: true);
       sendResponse('250 Directory deleted successfully.');
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       sendResponse('550 Can\'t delete directory.');
     }
@@ -535,7 +531,7 @@ class FtpSession {
         throw Exception();
       }
       sendResponse('250 File renamed successfully.');
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       sendResponse('550 File rename failed.');
     } finally {

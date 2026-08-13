@@ -17,10 +17,9 @@ class TabOptionsSheet extends StatelessWidget {
   static Future<void> show(BuildContext context, FileManagerProvider provider, int tabIndex) {
     try {
       HapticFeedback.mediumImpact();
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } on PlatformException catch (e) {
+      debugPrint('Haptic feedback error: $e');
+    }
 
     return showModalBottomSheet(
       context: context,

@@ -84,10 +84,9 @@ class CodeTextEditingController extends TextEditingController {
         if (m.groupNames.contains(name)) {
           return m.namedGroup(name);
         }
-      } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       return null;
     }
 
@@ -319,10 +318,9 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         content = await tempFile.readAsString();
         try {
           await tempFile.delete();
-        } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       } else {
         final file = File(_normalizedPath);
         content = await file.readAsString();
@@ -358,10 +356,9 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         await RootShizukuService.copyItem(tempFile.path, _normalizedPath, useRoot: provider.useRootMode);
         try {
           await tempFile.delete();
-        } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       } else {
         final file = File(_normalizedPath);
         await file.writeAsString(_controller.text);
@@ -371,10 +368,9 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         if (mounted) {
           context.read<FileManagerProvider>().updateFileInList(_normalizedPath);
         }
-      } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
       if (IntentHandlerService.isIncomingCacheFile(_normalizedPath)) {
         final success = await IntentHandlerService.saveContentUriFile(_normalizedPath, _controller.text);

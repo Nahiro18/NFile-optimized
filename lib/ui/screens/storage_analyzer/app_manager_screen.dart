@@ -72,7 +72,7 @@ class _AppManagerScreenState extends State<AppManagerScreen> with SingleTickerPr
         _systemApps = sys;
         _isLoading = false;
       });
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Error handled
       setState(() {
         _isLoading = false;

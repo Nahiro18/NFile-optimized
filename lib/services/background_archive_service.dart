@@ -224,10 +224,9 @@ class BackgroundArchiveService {
       await _channel.invokeMethod('cancelNotification', {
         'id': operation.id.hashCode,
       });
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
   }
 
   void _onOperationComplete(BuildContext context, BackgroundOperation operation, String message, {bool isError = false}) async {
@@ -255,10 +254,9 @@ class BackgroundArchiveService {
     try {
       final provider = Provider.of<FileManagerProvider>(context, listen: false);
       await provider.loadDirectory(provider.currentPath, showLoading: false);
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -471,10 +469,9 @@ class BackgroundArchiveService {
         tarInputStream.closeSync();
         try {
           tempTarFile.deleteSync();
-        } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         sendPort.send({'status': 'completed'});
         return;
       }
@@ -585,7 +582,7 @@ class BackgroundArchiveService {
           inputStream.closeSync();
           sendPort.send({'status': 'completed'});
           return;
-        } catch (e, stackTrace) {
+        } catch (e) {
       // Error handled
           inputStream.closeSync();
           archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);

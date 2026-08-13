@@ -46,10 +46,9 @@ class LanClient implements RemoteClient {
           }
         }
       }
-    } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     return ips;
   }
 
@@ -95,10 +94,9 @@ class LanClient implements RemoteClient {
               type: type,
               name: '$type Server ($ip)',
             ));
-          } catch (e, stackTrace) {
-      // Log error silently
-      // TODO: Add proper error logging
-      }
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
         scannedCount++;
         onProgress(scannedCount / maxIps);
@@ -131,7 +129,7 @@ class LanClient implements RemoteClient {
             modified: DateTime.parse(map['modified'] as String),
           ));
         }
-      } catch (e, stackTrace) {
+      } catch (e) {
       // Error handled
         _loadDefaultStructure();
       }
