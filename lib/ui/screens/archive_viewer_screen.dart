@@ -157,7 +157,7 @@ class _ArchiveViewerScreenState extends State<ArchiveViewerScreen> {
       final fileObj = _archive!.files.firstWhere((f) => _normalizePath(f.name) == item.fullPath);
       final tempDir = Directory.systemTemp.createTempSync('zip_preview');
       final tempFile = File(p.join(tempDir.path, item.name));
-      tempFile.writeAsBytesSync(fileObj.content as? List<int>);
+      tempFile.writeAsBytesSync(fileObj.content as List<int>);
 
       if (mounted) {
         final provider = context.read<FileManagerProvider>();
@@ -178,7 +178,7 @@ class _ArchiveViewerScreenState extends State<ArchiveViewerScreen> {
       if (!item.isDirectory) {
         final fileObj = _archive!.files.firstWhere((f) => _normalizePath(f.name) == item.fullPath);
         final destFile = File(p.join(destDir, item.name));
-        destFile.writeAsBytesSync(fileObj.content as? List<int>);
+        destFile.writeAsBytesSync(fileObj.content as List<int>);
       } else {
         for (final f in _archive!.files) {
           final name = _normalizePath(f.name);
@@ -186,7 +186,7 @@ class _ArchiveViewerScreenState extends State<ArchiveViewerScreen> {
             final rel = name.substring(item.fullPath.length);
             final destFile = File(p.join(destDir, item.name, rel));
             destFile.createSync(recursive: true);
-            destFile.writeAsBytesSync(f.content as? List<int>);
+            destFile.writeAsBytesSync(f.content as List<int>);
           }
         }
       }
@@ -215,7 +215,7 @@ class _ArchiveViewerScreenState extends State<ArchiveViewerScreen> {
           final fileObj = _archive!.files.firstWhere((f) => _normalizePath(f.name) == internalPath);
           final fileName = p.basename(internalPath);
           final physicalFile = File(p.join(tempDir.path, fileName));
-          physicalFile.writeAsBytesSync(fileObj.content as? List<int>);
+          physicalFile.writeAsBytesSync(fileObj.content as List<int>);
           physicalPaths.add(physicalFile.path);
         } else {
           final folderName = p.basename(internalPath.substring(0, internalPath.length - 1));
@@ -229,7 +229,7 @@ class _ArchiveViewerScreenState extends State<ArchiveViewerScreen> {
               final rel = name.substring(internalPath.length);
               final destFile = File(p.join(targetSubDir.path, rel));
               destFile.createSync(recursive: true);
-              destFile.writeAsBytesSync(f.content as? List<int>);
+              destFile.writeAsBytesSync(f.content as List<int>);
             }
           }
         }
@@ -361,9 +361,7 @@ class _ArchiveViewerScreenState extends State<ArchiveViewerScreen> {
         if (provider.isCut) {
           try {
             await File(path).delete();
-          } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+          } catch (_) {}
         }
       }
     }

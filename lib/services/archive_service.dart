@@ -57,7 +57,7 @@ class ArchiveService {
   }
 
   static void _encodeArchiveTask(Map<String, dynamic> args) {
-    final sourcePaths = args['sourcePaths'] as? List<String> ?? [];
+    final sourcePaths = args['sourcePaths'] as List<String>;
     final destinationPath = args['destinationPath'] as String;
     final format = args['format'] as String;
     final level = args['level'] as int;
@@ -215,9 +215,7 @@ class ArchiveService {
         tarInputStream.closeSync();
         try {
           tempTarFile.deleteSync();
-        } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+        } catch (_) {}
         return;
       }
 
@@ -298,8 +296,7 @@ class ArchiveService {
           }
           inputStream.closeSync();
           return;
-        } catch (e) {
-      // Error handled
+        } catch (_) {
           inputStream.closeSync();
           archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
         }
@@ -308,7 +305,7 @@ class ArchiveService {
       for (final fileEntry in archive) {
         final filename = fileEntry.name;
         if (fileEntry.isFile) {
-          final data = fileEntry.content as? List<int>;
+          final data = fileEntry.content as List<int>;
           final destFile = File(p.join(destinationDir, filename));
           destFile.createSync(recursive: true);
           destFile.writeAsBytesSync(data);
@@ -320,9 +317,7 @@ class ArchiveService {
       if (tempCombinedFile != null && tempCombinedFile.existsSync()) {
         try {
           tempCombinedFile.parent.deleteSync(recursive: true);
-        } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+        } catch (_) {}
       }
     }
   }
@@ -335,9 +330,7 @@ class ArchiveService {
       } else if (type == FileSystemEntityType.file) {
         await File(path).delete();
       }
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
   }
 
   static Future<Archive?> readArchive(String archivePath, {String? password}) async {
@@ -374,8 +367,7 @@ class ArchiveService {
         } else {
           return ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
         }
-      } catch (e) {
-      // Error handled
+      } catch (_) {
         return Archive();
       }
     } catch (e) {
@@ -439,8 +431,7 @@ class ArchiveService {
           } else {
             archive = ZipDecoder().decodeBytes(bytes);
           }
-        } catch (e) {
-      // Error handled
+        } catch (_) {
           archive = Archive();
         }
       }
@@ -491,7 +482,7 @@ class ArchiveService {
 
   static bool _deleteItemsFromArchiveTask(Map<String, dynamic> args) {
     final archivePath = args['archivePath'] as String;
-    final internalPathsToDelete = args['internalPathsToDelete'] as? List<String> ?? [];
+    final internalPathsToDelete = args['internalPathsToDelete'] as List<String>;
 
     try {
       final archiveFile = File(archivePath);
@@ -529,8 +520,7 @@ class ArchiveService {
         } else {
           archive = ZipDecoder().decodeBytes(bytes);
         }
-      } catch (e) {
-      // Error handled
+      } catch (_) {
         return false;
       }
 

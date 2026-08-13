@@ -1096,9 +1096,7 @@ class _CompactMediaThumbnailState extends State<_CompactMediaThumbnail> {
           _apkIcon = iconBytes;
         });
       }
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
   }
 
   Future<void> _loadAudioThumb() async {
@@ -1119,9 +1117,7 @@ class _CompactMediaThumbnailState extends State<_CompactMediaThumbnail> {
           });
         }
       }
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
   }
 
   Future<void> _loadVideoThumb() async {
@@ -1162,9 +1158,7 @@ class _CompactMediaThumbnailState extends State<_CompactMediaThumbnail> {
           });
         }
       }
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
   }
 
   @override

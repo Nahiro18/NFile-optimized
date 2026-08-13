@@ -224,9 +224,7 @@ class BackgroundArchiveService {
       await _channel.invokeMethod('cancelNotification', {
         'id': operation.id.hashCode,
       });
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
   }
 
   void _onOperationComplete(BuildContext context, BackgroundOperation operation, String message, {bool isError = false}) async {
@@ -254,9 +252,7 @@ class BackgroundArchiveService {
     try {
       final provider = Provider.of<FileManagerProvider>(context, listen: false);
       await provider.loadDirectory(provider.currentPath, showLoading: false);
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -270,7 +266,7 @@ class BackgroundArchiveService {
 
   static void _compressIsolateTask(Map<String, dynamic> args) async {
     final sendPort = args['sendPort'] as SendPort;
-    final sourcePaths = args['sourcePaths'] as? List<String> ?? [];
+    final sourcePaths = args['sourcePaths'] as List<String>;
     final destinationPath = args['destinationPath'] as String;
     final format = args['format'] as String;
     final level = args['level'] as int;
@@ -469,9 +465,7 @@ class BackgroundArchiveService {
         tarInputStream.closeSync();
         try {
           tempTarFile.deleteSync();
-        } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+        } catch (_) {}
         sendPort.send({'status': 'completed'});
         return;
       }
@@ -582,8 +576,7 @@ class BackgroundArchiveService {
           inputStream.closeSync();
           sendPort.send({'status': 'completed'});
           return;
-        } catch (e) {
-      // Error handled
+        } catch (_) {
           inputStream.closeSync();
           archive = ZipDecoder().decodeBytes(bytes, password: password != null && password.isNotEmpty ? password : null);
         }
@@ -603,7 +596,7 @@ class BackgroundArchiveService {
 
         final filename = fileEntry.name;
         if (fileEntry.isFile) {
-          final data = fileEntry.content as? List<int>;
+          final data = fileEntry.content as List<int>;
           final destFile = File(p.join(destinationDir, filename));
           destFile.createSync(recursive: true);
           destFile.writeAsBytesSync(data);

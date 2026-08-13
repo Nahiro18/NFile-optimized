@@ -101,9 +101,7 @@ class FolderShareService {
             if (file.existsSync()) {
               file.deleteSync();
             }
-          } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+          } catch (_) {}
         }
       });
     }

@@ -35,9 +35,7 @@ class RootShizukuService {
       if (res is Map) {
         return RootShizukuStatus.fromMap(res);
       }
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
     return RootShizukuStatus(isRootAvailable: false, isShizukuAvailable: false, shizukuPermissionGranted: false);
   }
 
@@ -52,9 +50,7 @@ class RootShizukuService {
           'usedBytes': res['usedBytes'] as int? ?? 0,
         };
       }
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
     return null;
   }
 
@@ -63,8 +59,7 @@ class RootShizukuService {
     try {
       final res = await _channel.invokeMethod('requestShizukuPermission');
       return res == true;
-    } catch (e) {
-      // Error handled
+    } catch (_) {
       return false;
     }
   }

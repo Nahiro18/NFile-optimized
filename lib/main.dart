@@ -232,8 +232,7 @@ class _NFileAppState extends State<NFileApp> {
             _hasPermission = granted;
           });
         }
-      } catch (e) {
-      // Error handled
+      } catch (_) {
         final standard = await Permission.storage.isGranted;
         if (mounted) {
           setState(() {
@@ -281,8 +280,7 @@ class _NFileAppState extends State<NFileApp> {
             _hasPermission = granted;
           });
         }
-      } catch (e) {
-      // Error handled
+      } catch (_) {
         final standard = await Permission.storage.request().isGranted;
         if (mounted) {
           setState(() {

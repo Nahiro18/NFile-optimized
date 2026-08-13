@@ -25,8 +25,7 @@ class AudioArtworkCache {
       _cache[audioId] = data;
       _pending.remove(audioId);
       return data;
-    } catch (e) {
-      // Error handled
+    } catch (_) {
       _pending.remove(audioId);
       return null;
     }
@@ -97,9 +96,7 @@ class _AudioArtworkWidgetState extends State<AudioArtworkWidget>
         if (match != null) {
           resolvedId = match.id;
         }
-      } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+      } catch (_) {}
 
       if (resolvedId == widget.audioId && (resolvedId <= 100 || resolvedId == 0)) {
         try {
@@ -115,9 +112,7 @@ class _AudioArtworkWidgetState extends State<AudioArtworkWidget>
               break;
             }
           }
-        } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+        } catch (_) {}
       }
     }
 

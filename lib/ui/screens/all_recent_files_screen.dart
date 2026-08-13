@@ -41,8 +41,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
           _isLoading = false;
         });
       }
-    } catch (e) {
-      // Error handled
+    } catch (_) {
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -93,19 +92,13 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
                         list.add(sub);
                       }
                     }
-                  } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+                  } catch (_) {}
                 }
               }
-            } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+            } catch (_) {}
           }
         }));
-      } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+      } catch (_) {}
     }
 
     final mediaProvider = context.read<MediaProvider>();
@@ -118,9 +111,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
               seen.add(entity.path);
               list.add(entity);
             }
-          } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+          } catch (_) {}
         }
       }
     }
@@ -137,9 +128,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
         try {
           final f = File(path);
           if (await f.exists()) list.add(f);
-        } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+        } catch (_) {}
       }
     }
 
@@ -178,9 +167,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
           size: stat.size,
           modified: stat.modified,
         ));
-      } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+      } catch (_) {}
     }));
 
     items.sort((a, b) => b.modified.compareTo(a.modified));

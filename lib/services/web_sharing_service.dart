@@ -103,9 +103,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
             request.response.statusCode = HttpStatus.internalServerError;
             request.response.write('500 Internal Server Error: $e');
             await request.response.close();
-          } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+          } catch (_) {}
         }
       });
     } catch (e) {
@@ -1938,9 +1936,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       if (interfaces.isNotEmpty && interfaces.first.addresses.isNotEmpty) {
         return interfaces.first.addresses.first.address;
       }
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
     return '127.0.0.1';
   }
 

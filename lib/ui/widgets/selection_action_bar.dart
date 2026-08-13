@@ -307,9 +307,7 @@ class PropertiesModalDialogState extends State<PropertiesModalDialog> {
                   folders++;
                 }
               }
-            } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+            } catch (_) {}
           }
         } else if (type == FileSystemEntityType.file) {
           files++;
@@ -334,8 +332,7 @@ class PropertiesModalDialogState extends State<PropertiesModalDialog> {
             }
           }
         }
-      } catch (e) {
-      // Error handled
+      } catch (_) {
         final item = currentFilesMap[path];
         if (item != null) {
           if (item.isDirectory) {

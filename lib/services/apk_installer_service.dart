@@ -70,9 +70,7 @@ class ApkInstallerService {
               await targetObbDir.create(recursive: true);
             }
             await entity.copy('${targetObbDir.path}/$obbFileName');
-          } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+          } catch (_) {}
         }
       }
 

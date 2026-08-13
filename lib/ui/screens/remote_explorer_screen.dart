@@ -249,9 +249,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
         // Cleanup temp
         try {
           File(tempPath).deleteSync();
-        } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+        } catch (_) {}
       } catch (e) {
         if (mounted) {
           setState(() => _isTransferring = false);
@@ -314,9 +312,7 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
         if (isCut) {
           try {
             file.deleteSync();
-          } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+          } catch (_) {}
         }
       } catch (e) {
         if (mounted) {

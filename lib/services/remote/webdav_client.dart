@@ -1,13 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:xml/xml.dart' as xml;
 import 'remote_client.dart';
 
-/// WebDAV client implementation for remote file operations.
-/// 
-/// This class handles communication with WebDAV servers using HTTP/HTTPS
-/// and supports basic authentication.
 class WebDavRemoteClient implements RemoteClient {
   final String host;
   final int port;
@@ -16,7 +11,7 @@ class WebDavRemoteClient implements RemoteClient {
   final String protocol;
   final String rootPath;
   
-  HttpClient? _httpClient;
+  late HttpClient _httpClient;
 
   WebDavRemoteClient({
     required this.host,
@@ -25,14 +20,9 @@ class WebDavRemoteClient implements RemoteClient {
     required this.password,
     this.protocol = 'http',
     this.rootPath = '/',
-  });
-
-  /// Initializes the HTTP client with proper timeout settings.
-  void _ensureHttpClient() {
-    if (_httpClient == null) {
-      _httpClient = HttpClient();
-      _httpClient!.connectionTimeout = const Duration(seconds: 15);
-    }
+  }) {
+    _httpClient = HttpClient();
+    _httpClient.connectionTimeout = const Duration(seconds: 15);
   }
 
   String get _baseUrl {
@@ -58,7 +48,6 @@ class WebDavRemoteClient implements RemoteClient {
 
   @override
   Future<void> connect() async {
-    _ensureHttpClient();
     var normalizedRoot = rootPath;
     if (!normalizedRoot.startsWith('/')) {
       normalizedRoot = '/$normalizedRoot';
@@ -67,7 +56,7 @@ class WebDavRemoteClient implements RemoteClient {
       normalizedRoot = '$normalizedRoot/';
     }
     final url = Uri.parse('$_baseUrl$normalizedRoot');
-    final request = await _httpClient!.openUrl('PROPFIND', url);
+    final request = await _httpClient.openUrl('PROPFIND', url);
     request.headers.set('Depth', '0');
     final auth = _authHeader();
     if (auth.isNotEmpty) {
@@ -82,13 +71,11 @@ class WebDavRemoteClient implements RemoteClient {
 
   @override
   Future<void> disconnect() async {
-    _httpClient?.close();
-    _httpClient = null;
+    _httpClient.close();
   }
 
   @override
   Future<List<RemoteFileItem>> listDirectory(String path) async {
-    _ensureHttpClient();
     var normalizedPath = path;
     if (!normalizedPath.startsWith('/')) {
       normalizedPath = '/$normalizedPath';
@@ -98,8 +85,8 @@ class WebDavRemoteClient implements RemoteClient {
     }
 
     final url = Uri.parse(_baseUrl + Uri.encodeFull(normalizedPath));
-    debugPrint('[WebDAV DEBUG] PROPFIND URL: $url');
-    final request = await _httpClient!.openUrl('PROPFIND', url);
+    print('[WebDAV DEBUG] PROPFIND URL: $url');
+    final request = await _httpClient.openUrl('PROPFIND', url);
     request.headers.set('Depth', '1');
     final auth = _authHeader();
     if (auth.isNotEmpty) {
@@ -107,14 +94,14 @@ class WebDavRemoteClient implements RemoteClient {
     }
     
     final response = await request.close();
-    debugPrint('[WebDAV DEBUG] Response status: ${response.statusCode}');
+    print('[WebDAV DEBUG] Response status: ${response.statusCode}');
     if (response.statusCode >= 400) {
       throw Exception('WebDAV list error: ${response.statusCode}');
     }
 
     final body = await response.transform(utf8.decoder).join();
-    debugPrint('[WebDAV DEBUG] Response body length: ${body.length}');
-    // Removed verbose body printing to avoid console spam
+    print('[WebDAV DEBUG] Response body length: ${body.length}');
+    print('[WebDAV DEBUG] Response body: $body');
     final document = xml.XmlDocument.parse(body);
     
     // Find response tags under any namespace prefix case-insensitively
@@ -176,9 +163,7 @@ class WebDavRemoteClient implements RemoteClient {
         if (getlastmodified != null) {
           try {
             modified = HttpDate.parse(getlastmodified.innerText);
-          } on FormatException catch (e) {
-            debugPrint('Failed to parse date: ${getlastmodified.innerText}, error: $e');
-          }
+          } catch (_) {}
         }
       }
 

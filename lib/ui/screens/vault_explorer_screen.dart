@@ -416,9 +416,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
         if (await tempFile.exists()) {
           await tempFile.delete();
         }
-      } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+      } catch (_) {}
     } catch (e) {
       Navigator.pop(context); // Dismiss loading dialog
       if (mounted) {

@@ -15,12 +15,11 @@ class NetworkConnectionsService {
     final str = _prefs!.getString(_keyConnections);
     if (str == null || str.isEmpty) return [];
     try {
-      final list = (json.decode(str) as? List<dynamic>) ?? [];
+      final list = json.decode(str) as List<dynamic>;
       return list
-          .map((e) => NetworkConnectionModel.fromJson(e as? Map<String, dynamic>))
+          .map((e) => NetworkConnectionModel.fromJson(e as Map<String, dynamic>))
           .toList();
-    } catch (e) {
-      // Error handled
+    } catch (_) {
       return [];
     }
   }

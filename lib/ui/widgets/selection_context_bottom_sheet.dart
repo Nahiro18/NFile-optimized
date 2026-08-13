@@ -23,9 +23,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
   static Future<void> show(BuildContext context, FileManagerProvider provider, String targetPath) {
     try {
       HapticFeedback.mediumImpact();
-    } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+    } catch (_) {}
 
     return showModalBottomSheet(
       context: context,
@@ -81,9 +79,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
                   ? () {
                       try {
                         HapticFeedback.mediumImpact();
-                      } catch (e) {
-      debugPrint('Operation error: \$e');
-    }
+                      } catch (_) {}
                       Navigator.pop(context);
                       provider.openFile(context, targetPath, forceOpenWith: true);
                     }
