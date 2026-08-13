@@ -36,14 +36,14 @@ class AudioPlayerScreen extends StatefulWidget {
 
 class _AudioPlayerScreenState extends State<AudioPlayerScreen>
     with TickerProviderStateMixin {
-  Player? _player;
+  late final Player player;
 
   bool isPlaying = false;
   Duration position = Duration.zero;
   Duration duration = Duration.zero;
   bool isSeeking = false;
 
-  int _currentIndex = 0;
+  late int _currentIndex;
   List<SongModel> get _allSongs => widget.allSongs ?? [];
   SongModel? get _currentSong =>
       _allSongs.isEmpty ? null : _allSongs[_currentIndex];
@@ -54,8 +54,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   String get _currentPath => _currentSong?.data ?? widget.audioPath;
 
   // Animations
-  AnimationController? _fadeController;
-  Animation<double>? _fadeAnim;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnim;
 
   // Modes & Audio FX
   bool _isFavorite = false;
@@ -65,7 +65,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
 
   // Shuffle
   bool _isShuffled = false;
-  List<int> _shuffleQueue = []; // shuffled indices of _allSongs
+  late List<int> _shuffleQueue; // shuffled indices of _allSongs
   int _shufflePos = 0; // current position in _shuffleQueue
 
   // Background playback
@@ -85,7 +85,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
     _fadeController.forward();
 
     // MUST enable pitch in PlayerConfiguration for runtime pitch control
-    _player = Player(
+    player = Player(
       configuration: const PlayerConfiguration(
         bufferSize: 16 * 1024 * 1024,
         pitch: true,
@@ -100,22 +100,22 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   }
 
   void _initListeners() {
-    _player!stream.playing.listen((playing) {
+    player.stream.playing.listen((playing) {
       if (!mounted) return;
       setState(() => isPlaying = playing);
     });
-    _player!stream.position.listen((p) {
+    player.stream.position.listen((p) {
       if (!mounted || isSeeking) return;
       setState(() => position = p);
     });
-    _player!stream.duration.listen((d) {
+    player.stream.duration.listen((d) {
       if (!mounted) return;
       setState(() => duration = d);
       if (_isBackgroundMode) {
         _updateBackgroundItem();
       }
     });
-    _player!stream.completed.listen((completed) {
+    player.stream.completed.listen((completed) {
       if (!completed || !mounted) return;
       _onTrackComplete();
     });
@@ -123,17 +123,17 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
 
   void _onTrackComplete() {
     if (_repeatMode == 1) {
-      _player!seek(Duration.zero);
-      _player!play();
+      player.seek(Duration.zero);
+      player.play();
     } else if (_repeatMode == 2 || _allSongs.isNotEmpty) {
       _playNext();
     }
   }
 
   void _openTrack() {
-    _player!open(Media(_currentPath), play: true);
-    _player!setRate(_playbackSpeed);
-    _player!setPitch(_pitch);
+    player.open(Media(_currentPath), play: true);
+    player.setRate(_playbackSpeed);
+    player.setPitch(_pitch);
     _resetFade();
   }
 
@@ -170,7 +170,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   void _playPrevious() {
     if (_allSongs.isEmpty) return;
     if (position.inSeconds > 3) {
-      _player!seek(Duration.zero);
+      player.seek(Duration.zero);
       return;
     }
     if (_isShuffled) {
@@ -194,7 +194,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
       // Let audio keep playing in background — don't dispose player
       getAudioHandler().setSkipCallback(null);
     } else {
-      _player!dispose();
+      player.dispose();
       getAudioHandler().detach();
     }
     super.dispose();
@@ -331,7 +331,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                   onChanged: (v) {
                     setModalState(() => _playbackSpeed = v);
                     setState(() {});
-                    _player!setRate(v);
+                    player.setRate(v);
                   },
                 ),
                 const SizedBox(height: 16),
@@ -351,7 +351,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                   onChanged: (v) {
                     setModalState(() => _pitch = v);
                     setState(() {});
-                    _player!setPitch(v);
+                    player.setPitch(v);
                   },
                 ),
                 const SizedBox(height: 12),
@@ -368,8 +368,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                       _pitch = 1.0;
                     });
                     setState(() {});
-                    _player!setRate(1.0);
-                    _player!setPitch(1.0);
+                    player.setRate(1.0);
+                    player.setPitch(1.0);
                   },
                 ),
               ],
@@ -455,7 +455,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
 
   Future<void> _toggleBackgroundMode() async {
     try {
-      _player!pause();
+      player.pause();
     } catch (e) {
       debugPrint('Operation error: \$e');
     }
@@ -775,7 +775,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                             onSeekStart: () => isSeeking = true,
                             onSeek: (d) {
                               isSeeking = false;
-                              _player!seek(d);
+                              player.seek(d);
                             },
                           ),
                         ),
@@ -784,7 +784,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                           isPlaying: isPlaying,
                           position: position,
                           duration: duration,
-                          onPlayPause: () => _player!playOrPause(),
+                          onPlayPause: () => player.playOrPause(),
                           onPrevious: _allSongs.length > 1 ? _playPrevious : null,
                           onNext: _allSongs.length > 1 ? _playNext : null,
                           onShowLyrics: _showLyricsDialog,

@@ -34,10 +34,10 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     with TickerProviderStateMixin {
-  Player? _player;
-  VideoController? _controller;
+  late final Player player;
+  late final VideoController controller;
 
-  int _currentIndex = 0;
+  late int _currentIndex;
   bool _isResolvingAsset = false;
 
   bool _controlsVisible = true;
@@ -59,8 +59,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Timer? _sliderTimer;
 
   Timer? _hideTimer;
-  AnimationController? _controlsAnimController;
-  Animation<double>? _controlsOpacity;
+  late AnimationController _controlsAnimController;
+  late Animation<double> _controlsOpacity;
 
   // Double-tap seek accumulation & animation
   bool _showSeekLeft = false;
@@ -94,38 +94,38 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       duration: const Duration(milliseconds: 250),
     );
     _controlsOpacity = CurvedAnimation(
-      parent: _controlsAnimController!,
+      parent: _controlsAnimController,
       curve: Curves.easeInOut,
     );
-    _controlsAnimController!.value = 1.0;
+    _controlsAnimController.value = 1.0;
 
-    _player = Player(
+    player = Player(
       configuration: const PlayerConfiguration(
         ready: null,
         logLevel: MPVLogLevel.warn,
         bufferSize: 32 * 1024 * 1024,
       ),
     );
-    _controller = VideoController(
-      _player!,
+    controller = VideoController(
+      player,
       configuration: const VideoControllerConfiguration(
         hwdec: 'auto-safe',
       ),
     );
 
     _initListeners();
-    _player!.open(Media(widget.videoPath));
-    _player!.setVolume(_volume * 100.0);
+    player.open(Media(widget.videoPath));
+    player.setVolume(_volume * 100.0);
     _startHideTimer();
   }
 
   void _initListeners() {
-    _player!.stream.playing.listen((v) {
+    player.stream.playing.listen((v) {
       if (!mounted) return;
       setState(() => _isPlaying = v);
     });
 
-    _player!.stream.position.listen((p) {
+    player.stream.position.listen((p) {
       if (!mounted || _isSeeking) return;
       setState(() {
         _position = p;
@@ -133,21 +133,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       });
     });
 
-    _player!.stream.duration.listen((d) {
+    player.stream.duration.listen((d) {
       if (!mounted) return;
       setState(() => _duration = d);
     });
 
-    _player!.stream.buffering.listen((v) {
+    player.stream.buffering.listen((v) {
       if (!mounted) return;
       setState(() => _isBuffering = v);
     });
 
-    _player!.stream.completed.listen((v) {
+    player.stream.completed.listen((v) {
       if (!v || !mounted) return;
       if (_repeatMode == 1 || _repeatMode == 2) {
-        _player!seek(Duration.zero);
-        _player!play();
+        player.seek(Duration.zero);
+        player.play();
       }
     });
   }
@@ -199,15 +199,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (widget.playlist != null) {
       final item = widget.playlist![index];
       if (item is String) {
-        _player!open(Media(item));
+        player.open(Media(item));
       } else if (item is FileSystemEntity) {
-        _player!open(Media(item.path));
+        player.open(Media(item.path));
       } else if (item is AssetEntity) {
         setState(() => _isResolvingAsset = true);
         try {
           final file = await item.file;
           if (file != null && mounted) {
-            _player!open(Media(file.path));
+            player.open(Media(file.path));
           }
         } catch (e) {
           debugPrint('Error resolving video asset: $e');
@@ -221,7 +221,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         final asset = widget.assetPlaylist![index];
         final file = await asset.file;
         if (file != null && mounted) {
-          _player!open(Media(file.path));
+          player.open(Media(file.path));
         }
       } catch (e) {
         debugPrint('Error resolving video asset: $e');
@@ -253,7 +253,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _seekSeconds += 10;
     }
     _lastSeekWasForward = false;
-    _player!seek(_position - const Duration(seconds: 10));
+    player.seek(_position - const Duration(seconds: 10));
 
     setState(() {
       _showSeekLeft = true;
@@ -279,7 +279,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _seekSeconds += 10;
     }
     _lastSeekWasForward = true;
-    _player!seek(_position + const Duration(seconds: 10));
+    player.seek(_position + const Duration(seconds: 10));
 
     setState(() {
       _showSeekRight = true;
@@ -303,7 +303,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     setState(() {
       if (isLeft) {
         _volume = (_volume + delta).clamp(0.0, 1.0);
-        if (!_isMuted) _player!setVolume(_volume * 100.0);
+        if (!_isMuted) player.setVolume(_volume * 100.0);
         _showVolumeSlider = true;
         _showBrightnessSlider = false;
       } else {
@@ -327,13 +327,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _startLongPress() {
     if (_isLocked) return;
     _previousSpeed = _playbackSpeed;
-    _player!setRate(2.0);
+    player.setRate(2.0);
     setState(() => _isLongPressSpeed = true);
   }
 
   void _endLongPress() {
     if (!_isLongPressSpeed) return;
-    _player!setRate(_previousSpeed);
+    player.setRate(_previousSpeed);
     setState(() => _isLongPressSpeed = false);
   }
 
@@ -370,8 +370,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _hideTimer?.cancel();
     _seekIndicatorTimer?.cancel();
     _sliderTimer?.cancel();
-    _controlsAnimController?.dispose();
-    _player?.dispose();
+    _controlsAnimController.dispose();
+    player.dispose();
     try {
       Provider.of<FileManagerProvider>(context, listen: false)
           .setVideoPlayingFullscreen(false);
@@ -417,7 +417,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           Hero(
             tag: 'media-${widget.videoPath}',
             child: Video(
-              controller: _controller!,
+              controller: controller,
               controls: NoVideoControls,
               fit: BoxFit.contain,
             ),
@@ -615,16 +615,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     },
                     onChangeEnd: (v) {
                       _isSeeking = false;
-                      _player!seek(Duration(milliseconds: v.toInt()));
+                      player.seek(Duration(milliseconds: v.toInt()));
                       _startHideTimer();
                     },
-                    onPlayPause: () => _player!playOrPause(),
+                    onPlayPause: () => player.playOrPause(),
                     onRewind: () {
-                      _player!seek(_position - const Duration(seconds: 10));
+                      player.seek(_position - const Duration(seconds: 10));
                       _showControls();
                     },
                     onFastForward: () {
-                      _player!seek(_position + const Duration(seconds: 10));
+                      player.seek(_position + const Duration(seconds: 10));
                       _showControls();
                     },
                     onPrevious: (widget.playlist != null || widget.assetPlaylist != null) && _currentIndex > 0 ? _onPrevious : null,
@@ -632,7 +632,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     onToggleFullScreen: _toggleFullScreen,
                     onSelectSpeed: (v) {
                       setState(() => _playbackSpeed = v);
-                      _player!setRate(v);
+                      player.setRate(v);
                       _showControls();
                     },
                     onToggleLock: () {
@@ -642,7 +642,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     onToggleMute: () {
                       setState(() {
                         _isMuted = !_isMuted;
-                        _player!setVolume(_isMuted ? 0.0 : _volume * 100.0);
+                        player.setVolume(_isMuted ? 0.0 : _volume * 100.0);
                       });
                       _showControls();
                     },
