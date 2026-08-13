@@ -9,7 +9,7 @@ class VideoLoadingIndicator extends StatefulWidget {
 
 class _VideoLoadingIndicatorState extends State<VideoLoadingIndicator>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  AnimationController? _controller;
 
   @override
   void initState() {
@@ -22,20 +22,20 @@ class _VideoLoadingIndicatorState extends State<VideoLoadingIndicator>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _controller,
+      animation: _controller!,
       builder: (context, child) {
         return SizedBox(
           width: 64,
           height: 64,
           child: CustomPaint(
-            painter: _ThreeArchedCirclePainter(_controller.value),
+            painter: _ThreeArchedCirclePainter(_controller!.value),
           ),
         );
       },
