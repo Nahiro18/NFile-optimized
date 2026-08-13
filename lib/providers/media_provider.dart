@@ -177,7 +177,9 @@ class MediaProvider extends ChangeNotifier {
       if (_inMemoryLogs.length > 500) {
         _inMemoryLogs.removeAt(0);
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
   }
 
   MediaProvider() {
@@ -527,7 +529,9 @@ class MediaProvider extends ChangeNotifier {
     if (item is FileSystemEntity) {
       try {
         return File(item.path).lastModifiedSync();
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     }
     return DateTime.fromMillisecondsSinceEpoch(0);
   }
@@ -539,7 +543,9 @@ class MediaProvider extends ChangeNotifier {
     if (item is FileSystemEntity) {
       try {
         return File(item.path).lengthSync();
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     }
     return 0;
   }
@@ -660,7 +666,7 @@ class MediaProvider extends ChangeNotifier {
       final cacheFile = File('${dir.path}/media_meta_cache.json');
       if (await cacheFile.exists()) {
         final jsonStr = await cacheFile.readAsString();
-        final map = jsonDecode(jsonStr) as Map<String, dynamic>;
+        final map = (jsonDecode(jsonStr) as? Map<String, dynamic>) ?? {};
 
         if (map.containsKey('categoryOrder')) {
           _categoryOrder = List<String>.from(map['categoryOrder'] ?? _categoryOrder);
@@ -686,7 +692,7 @@ class MediaProvider extends ChangeNotifier {
 
         if (map.containsKey('images')) {
           final imgMaps = List<Map<String, dynamic>>.from(
-            (map['images'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+            (map['images'] as? List)?.map((e) => Map<String, dynamic>.from(e as? Map)) ?? [],
           );
           final cachedImages = imgMaps.map((m) => _assetFromMap(m)).toList();
           if (cachedImages.isNotEmpty && _images.isEmpty) {
@@ -696,7 +702,7 @@ class MediaProvider extends ChangeNotifier {
 
         if (map.containsKey('videos')) {
           final vidMaps = List<Map<String, dynamic>>.from(
-            (map['videos'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+            (map['videos'] as? List)?.map((e) => Map<String, dynamic>.from(e as? Map)) ?? [],
           );
           final cachedVideos = vidMaps.map((m) => _assetFromMap(m)).toList();
           if (cachedVideos.isNotEmpty && _videos.isEmpty) {
@@ -706,7 +712,7 @@ class MediaProvider extends ChangeNotifier {
 
         if (map.containsKey('screenshots')) {
           final scMaps = List<Map<String, dynamic>>.from(
-            (map['screenshots'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+            (map['screenshots'] as? List)?.map((e) => Map<String, dynamic>.from(e as? Map)) ?? [],
           );
           final cachedScreenshots = scMaps.map((m) => _assetFromMap(m)).toList();
           if (cachedScreenshots.isNotEmpty && _screenshots.isEmpty) {
@@ -716,7 +722,7 @@ class MediaProvider extends ChangeNotifier {
 
         if (map.containsKey('audios')) {
           final audMaps = List<Map<String, dynamic>>.from(
-            (map['audios'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+            (map['audios'] as? List)?.map((e) => Map<String, dynamic>.from(e as? Map)) ?? [],
           );
           final cachedAudios = audMaps.map((m) => SongModel(m)).toList();
           if (cachedAudios.isNotEmpty && _audios.isEmpty) {
@@ -798,7 +804,7 @@ class MediaProvider extends ChangeNotifier {
 
         if (map.containsKey('recentFiles')) {
           final paths = List<Map<String, dynamic>>.from(
-            (map['recentFiles'] as List?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+            (map['recentFiles'] as? List)?.map((e) => Map<String, dynamic>.from(e as? Map)) ?? [],
           );
           final cached = <FileItemModel>[];
           for (final entry in paths) {
@@ -817,14 +823,18 @@ class MediaProvider extends ChangeNotifier {
                   (entry['modified'] as num?)?.toInt() ?? 0,
                 ),
               ));
-            } catch (_) {}
+            } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
           }
           if (cached.isNotEmpty && _recentFiles.isEmpty) {
             _recentFiles = cached;
           }
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
   }
 
   Future<void> _saveCache() async {
@@ -877,17 +887,23 @@ class MediaProvider extends ChangeNotifier {
     bool isStorageGranted = false;
     try {
       isStorageGranted = await Permission.storage.isGranted || await Permission.manageExternalStorage.isGranted;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     
     PermissionState ps = PermissionState.denied;
     try {
       ps = await PhotoManager.requestPermissionExtend();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
     bool hasAudioPermission = false;
     try {
       hasAudioPermission = await _audioQuery.permissionsStatus();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
     if (ps.isAuth || isStorageGranted) {
       if (Platform.isAndroid) {
@@ -896,7 +912,9 @@ class MediaProvider extends ChangeNotifier {
           if (info.version.sdkInt < 33) {
             PhotoManager.setIgnorePermissionCheck(true);
           }
-        } catch (_) {}
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
       futures.add(_loadImagesAndVideos());
     }
@@ -986,19 +1004,27 @@ class MediaProvider extends ChangeNotifier {
           if (sdk >= 33) {
             try {
               await Permission.audio.request();
-            } catch (_) {}
+            } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
           }
           PhotoManager.setIgnorePermissionCheck(true);
           try {
             await Permission.accessMediaLocation.request();
-          } catch (_) {}
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
           try {
             final status = await PhotoManager.requestPermissionExtend();
             if (status.isAuth) {
               ps = status;
             }
-          } catch (_) {}
-        } catch (_) {}
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
     } else {
       if (Platform.isAndroid) {
@@ -1014,18 +1040,24 @@ class MediaProvider extends ChangeNotifier {
             }
             try {
               await Permission.accessMediaLocation.request();
-            } catch (_) {}
+            } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
             PhotoManager.setIgnorePermissionCheck(true);
             try {
               final status = await PhotoManager.requestPermissionExtend();
               if (status.isAuth) {
                 ps = status;
               }
-            } catch (_) {}
+            } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
           } else {
             try {
               ps = await PhotoManager.requestPermissionExtend();
-            } catch (_) {}
+            } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
             try {
               hasAudioPermission = await _audioQuery.permissionsStatus();
@@ -1033,13 +1065,19 @@ class MediaProvider extends ChangeNotifier {
                 final status = await Permission.audio.request();
                 hasAudioPermission = status.isGranted;
               }
-            } catch (_) {}
+            } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
           }
-        } catch (_) {}
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       } else {
         try {
           ps = await PhotoManager.requestPermissionExtend();
-        } catch (_) {}
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         hasAudioPermission = true;
       }
     }
@@ -1053,16 +1091,22 @@ class MediaProvider extends ChangeNotifier {
           if (sdk < 33) {
             PhotoManager.setIgnorePermissionCheck(true);
           }
-        } catch (_) {}
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
       if (isStorageGranted && !ps.isAuth) {
         try {
           PhotoManager.setIgnorePermissionCheck(true);
-        } catch (_) {}
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
       try {
         PhotoManager.clearFileCache();
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       futures.add(
         _loadImagesAndVideos().timeout(const Duration(seconds: 15), onTimeout: () {
           debugPrint('[MediaProvider] _loadImagesAndVideos timed out');
@@ -1217,7 +1261,8 @@ class MediaProvider extends ChangeNotifier {
             if (await album.assetCountAsync > 0) {
               filteredImgAlbums.add(album);
             }
-          } catch (_) {
+          } catch (e) {
+      // Error handled
             filteredImgAlbums.add(album);
           }
         }
@@ -1235,7 +1280,8 @@ class MediaProvider extends ChangeNotifier {
             if (await album.assetCountAsync > 0) {
               filteredVidAlbums.add(album);
             }
-          } catch (_) {
+          } catch (e) {
+      // Error handled
             filteredVidAlbums.add(album);
           }
         }
@@ -1340,7 +1386,9 @@ class MediaProvider extends ChangeNotifier {
             'is_music': true,
           }));
           addedAudios++;
-        } catch (_) {}
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
       writeLog('Media fallback merge -> extra Images: ${_fallbackImages.length}, extra Videos: ${_fallbackVideos.length}, extra Audios: $addedAudios');
 
@@ -1359,12 +1407,16 @@ class MediaProvider extends ChangeNotifier {
       bool isStorageGranted = false;
       try {
         isStorageGranted = await Permission.storage.isGranted || await Permission.manageExternalStorage.isGranted;
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
       bool hasPerm = false;
       try {
         hasPerm = await _audioQuery.permissionsStatus();
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
       if (!hasPerm && !isStorageGranted) {
         _audios = [];
@@ -1413,10 +1465,14 @@ class MediaProvider extends ChangeNotifier {
                 searchDirs.add(entity.path);
               }
             }
-          } catch (_) {}
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     if (searchDirs.isEmpty) {
       searchDirs.addAll([
         '/storage/emulated/0/DCIM',
@@ -1473,9 +1529,9 @@ class MediaProvider extends ChangeNotifier {
   static Future<List<String>> _isolateDirectoryScan(Map<String, dynamic> params) async {
     final startPath = params['startPath'] as String;
     final filterType = params['filterType'] as String;
-    final docExts = params['docExts'] as List<String>? ?? [];
-    final archExts = params['archExts'] as List<String>? ?? [];
-    final apkExts = params['apkExts'] as List<String>? ?? [];
+    final docExts = (params['docExts'] as? List<String>) ?? [];
+    final archExts = (params['archExts'] as? List<String>) ?? [];
+    final apkExts = (params['apkExts'] as? List<String>) ?? [];
 
     final result = <String>[];
     final queue = <String>[startPath];
@@ -1531,14 +1587,20 @@ class MediaProvider extends ChangeNotifier {
                     if (_imageExts.contains(ext) && size < 3000) continue;
                     if (_videoExts.contains(ext) && size < 10240) continue;
                     if (_audioExts.contains(ext) && size < 102400) continue;
-                  } catch (_) {}
+                  } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
                 }
                 result.add(entity.path);
               }
             }
-          } catch (_) {}
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     }
     return result;
   }
@@ -1635,7 +1697,9 @@ class MediaProvider extends ChangeNotifier {
                 }
               }
             }
-          } catch (_) {}
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
       }
 
@@ -1735,7 +1799,9 @@ class MediaProvider extends ChangeNotifier {
             'is_music': true,
           };
           _audios.add(SongModel(songMap));
-        } catch (_) {}
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
     }
 
@@ -1799,7 +1865,9 @@ class MediaProvider extends ChangeNotifier {
               customDls.add(entity);
             }
           }
-        } catch (_) {}
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
     }
     _downloads.removeWhere((entity) {
@@ -1915,12 +1983,18 @@ class MediaProvider extends ChangeNotifier {
                       list.add(s);
                     }
                   }
-                } catch (_) {}
+                } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
               }
             }
-          } catch (_) {}
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }));
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     }
 
     void addFromList(List<FileSystemEntity> src) {
@@ -1931,7 +2005,9 @@ class MediaProvider extends ChangeNotifier {
               seen.add(e.path);
               list.add(e);
             }
-          } catch (_) {}
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
       }
     }
@@ -1948,7 +2024,9 @@ class MediaProvider extends ChangeNotifier {
         try {
           final f = File(path);
           if (await f.exists()) list.add(f);
-        } catch (_) {}
+        } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
       }
     }
 
@@ -1977,7 +2055,9 @@ class MediaProvider extends ChangeNotifier {
           size: stat.size,
           modified: stat.modified,
         ));
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     }));
 
     items.sort((a, b) => b.modified.compareTo(a.modified));
@@ -2047,7 +2127,8 @@ class MediaProvider extends ChangeNotifier {
         return (_sortOrder == MediaSortOrder.oldest || _sortOrder == MediaSortOrder.oldestGrouped)
             ? aTime.compareTo(bTime)
             : bTime.compareTo(aTime);
-      } catch (_) {
+      } catch (e) {
+      // Error handled
         return 0;
       }
     }
@@ -2075,7 +2156,9 @@ class MediaProvider extends ChangeNotifier {
         if (f.existsSync()) {
           f.deleteSync();
         }
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     }
 
     // Local List Optimization - instant updates without full-disk scans

@@ -45,7 +45,9 @@ class _FtpServerScreenState extends State<FtpServerScreen> {
       // Prompt for Notification permission as noted by user
       try {
         await Permission.notification.request();
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
 
       try {
         await _ftpService.start();

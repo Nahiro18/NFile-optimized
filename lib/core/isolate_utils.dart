@@ -32,11 +32,15 @@ int _calculateDirectorySizeIsolate(String path) {
         if (entity is File) {
           try {
             totalSize += entity.lengthSync();
-          } catch (_) {}
+          } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
         }
       }
     }
-  } catch (_) {}
+  } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
   
   return totalSize;
 }
@@ -107,7 +111,8 @@ void _moveFileIsolate(MoveFileParams params) {
       File(params.source).renameSync(params.destination);
     }
     return;
-  } catch (_) {
+  } catch (e) {
+      // Error handled
     // Si falla rename (eg cruce de particiones), copiar y eliminar
   }
   

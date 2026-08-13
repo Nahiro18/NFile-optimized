@@ -81,7 +81,9 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   void dispose() {
     try {
       context.read<FileManagerProvider>().removeListener(_onProviderChanged);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Operation error: \$e');
+    }
     _searchController.dispose();
     _searchFocusNode.dispose();
     _scrollController.dispose();

@@ -28,7 +28,9 @@ class FileItemModel {
         size: stat.size,
         modified: stat.modified,
       );
-    } catch (_) {
+    } catch (e) {
+      // Log error for debugging but return default value
+      debugPrint('Error reading file stats for ${entity.path}: $e');
       return FileItemModel(
         entity: entity,
         name: entity.path.split(Platform.pathSeparator).last,
@@ -76,7 +78,9 @@ class FileItemModel {
         size: stat.size,
         modified: stat.modified,
       );
-    } catch (_) {
+    } catch (e) {
+      // Log error for debugging but return default value
+      debugPrint('Error reading file stats async for ${entity.path}: $e');
       return FileItemModel(
         entity: entity,
         name: entity.path.split(Platform.pathSeparator).last,
