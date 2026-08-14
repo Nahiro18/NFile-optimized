@@ -721,7 +721,8 @@ class VaultService {
 
       }
     } catch (e) {
-      }
+      // Silently ignore cleanup errors
+    }
   }
 
   /// Solicita permisos especiales de Android para acceder a todos los archivos

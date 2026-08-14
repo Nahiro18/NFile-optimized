@@ -159,7 +159,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 
     // auth: check token
     final token = request.headers[_authHeader];
-    if (_authToken != null && token != _authToken) {
+    if (_authToken != null && (token == null || token.first != _authToken)) {
       response.statusCode = HttpStatus.forbidden;
       response.headers.add('content-security-policy', "default-src 'none'");
       response.headers.add('x-content-type-options', 'nosniff');
@@ -2193,6 +2193,8 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     if (!_isInternetActive) return;
     _speedTimer?.cancel();
     _speedTimer = null;
+    _stdoutSubscription?.cancel();
+    _stdoutSubscription = null;
     _sshForward = null;
     _sshClient?.close();
     _sshClient = null;

@@ -608,7 +608,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                                                           } else {
                                                             provider.toggleSelection(item.path);
                                                           }
-                                                        };
+                                                        }
                                                         return DragDropHandler(
                                                           path: item.path,
                                                           isDirectory: false,

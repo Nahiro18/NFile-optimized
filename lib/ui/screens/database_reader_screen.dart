@@ -26,7 +26,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
   // Browse Tab State
   List<Map<String, dynamic>> _tableRows = [];
   List<String> _tableColumns = [];
-  int _limit = 50;
+  final int _limit = 50;
   int _offset = 0;
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();

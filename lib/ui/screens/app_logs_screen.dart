@@ -12,7 +12,6 @@ class AppLogsScreen extends StatefulWidget {
 class _AppLogsScreenState extends State<AppLogsScreen> {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final logs = MediaProvider.inMemoryLogs;
 
     return Scaffold(

@@ -29,9 +29,9 @@ class ThumbnailCache {
   static final Map<String, Future<Uint8List?>> _pending = {};
   static String? _cacheDir;
   static int _currentCacheSizeBytes = 0; // Cumulative in-memory cache size in bytes
-  
-  static const int MAX_CACHE_SIZE = 100; // Max 100 thumbnails in memory
-  static const int MAX_CACHE_SIZE_BYTES = 50 * 1024 * 1024; // Max 50MB in memory
+
+  static const int maxCacheSize = 100; // Max 100 thumbnails in memory
+  static const int maxCacheSizeBytes = 50 * 1024 * 1024; // Max 50MB in memory
   
   static Future<void> init() async {
     if (_cacheDir != null) return;
@@ -53,7 +53,7 @@ class ThumbnailCache {
 
   /// Evicts the oldest items if the cache exceeds count or size limits (LRU)
   static void _evictIfNeeded() {
-    while (_cache.isNotEmpty && (_cache.length > MAX_CACHE_SIZE || _currentCacheSizeBytes > MAX_CACHE_SIZE_BYTES)) {
+    while (_cache.isNotEmpty && (_cache.length > maxCacheSize || _currentCacheSizeBytes > maxCacheSizeBytes)) {
       final oldestKey = _cache.keys.first;
       final oldestVal = _cache.remove(oldestKey);
       if (oldestVal != null) {
@@ -255,11 +255,9 @@ class MediaProvider extends ChangeNotifier {
   Map<String, AssetEntity>? _videoNameMap;
 
   Map<String, SongModel> get audioPathMap {
-    if (_audioPathMap == null) {
-      _audioPathMap = {
-        for (final s in [..._audios, ..._fallbackAudios]) s.data: s,
-      };
-    }
+    _audioPathMap ??= {
+      for (final s in [..._audios, ..._fallbackAudios]) s.data: s,
+    };
     return _audioPathMap!;
   }
 
@@ -316,7 +314,7 @@ class MediaProvider extends ChangeNotifier {
   // so stale cache entries can never be shown again as fake media.
   List<FileSystemEntity> _fallbackImages = [];
   List<FileSystemEntity> _fallbackVideos = [];
-  List<SongModel> _fallbackAudios = [];
+  final List<SongModel> _fallbackAudios = [];
   List<FileSystemEntity> _fallbackScreenshots = [];
   Map<String, List<String>> _customCategoryPaths = {};
   Map<String, List<String>> get customCategoryPaths => _customCategoryPaths;

@@ -816,10 +816,11 @@ class _RemoteExplorerScreenState extends State<RemoteExplorerScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
             onPressed: () {
-              if (_currentPath != widget.connection.rootPath)
+              if (_currentPath != widget.connection.rootPath) {
                 _navigateUp();
-              else
+              } else {
                 Navigator.pop(context);
+              }
             },
           ),
           title: Column(

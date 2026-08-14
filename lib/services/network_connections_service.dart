@@ -10,7 +10,7 @@ class NetworkConnectionsService {
   static const String _keyEncryptionKey = '_enc_key';
   static SharedPreferences? _prefs;
   static String _encryptionKey = '';
-  static Random _rng = Random.secure();
+  static final Random _rng = Random.secure();
 
   static Future<void> init() async {
     _prefs ??= await SharedPreferences.getInstance();

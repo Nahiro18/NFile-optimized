@@ -106,7 +106,7 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
     // Find matched storage volume prefix
     StorageVolume? matchedVol;
     for (final vol in volumes) {
-      if (path == vol.path || path.startsWith(vol.path + '/')) {
+      if (path == vol.path || path.startsWith('${vol.path}/')) {
         if (matchedVol == null || vol.path.length > matchedVol.path.length) {
           matchedVol = vol;
         }

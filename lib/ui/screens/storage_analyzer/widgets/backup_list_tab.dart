@@ -11,10 +11,10 @@ class BackupListTab extends StatefulWidget {
   final String sortBy;
 
   const BackupListTab({
-    key,
+    super.key,
     required this.searchQuery,
     required this.sortBy,
-  }) : super(key: key);
+  });
 
   @override
   State<BackupListTab> createState() => _BackupListTabState();

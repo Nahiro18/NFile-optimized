@@ -225,6 +225,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     String action,
     FileManagerProvider provider,
   ) async {
+    final handlerContext = context;
     switch (action) {
       case 'file':
         final fileName = await FileActionDialogs.showTextInputDialog(
@@ -1652,7 +1653,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                     child: Row(
                                       children: [
                                         Icon(Broken.info_circle, size: 20),
-                                        const SizedBox(width: 12),
+                                        SizedBox(width: 12),
                                         Text(
                                           'Properties',
                                           style: TextStyle(
@@ -1815,8 +1816,9 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         (x) =>
                             provider.currentPath == x ||
                             provider.currentPath.startsWith(x + p.separator),
-                      ))
+                      )) {
                         return false;
+                      }
                       return true;
                     },
                     onAcceptWithDetails: (details) {

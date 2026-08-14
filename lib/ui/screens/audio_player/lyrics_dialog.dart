@@ -81,7 +81,7 @@ class _LyricsDialogState extends State<LyricsDialog> {
     try {
       final ext = p.extension(widget.audioPath);
       if (ext.isNotEmpty) {
-        final lrcPath = widget.audioPath.substring(0, widget.audioPath.length - ext.length) + '.lrc';
+        final lrcPath = '${widget.audioPath.substring(0, widget.audioPath.length - ext.length)}.lrc';
         final file = File(lrcPath);
         if (await file.exists()) {
           final content = await _readLrcFile(lrcPath);

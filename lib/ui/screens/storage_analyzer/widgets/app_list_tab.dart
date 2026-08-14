@@ -13,13 +13,13 @@ class AppListTab extends StatelessWidget {
   final Map<String, Uint8List> iconCache;
 
   const AppListTab({
-    key,
+    super.key,
     required this.apps,
     required this.selectedPackages,
     required this.onToggleSelection,
     required this.onShowOptions,
     required this.iconCache,
-  }) : super(key: key);
+  });
 
   bool get _isSelectionMode => selectedPackages.isNotEmpty;
 

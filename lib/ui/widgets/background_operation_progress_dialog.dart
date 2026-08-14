@@ -59,7 +59,7 @@ class BackgroundOperationProgressDialog extends StatelessWidget {
                 borderRadius: BorderRadius.circular(28),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
-                  child: Container(
+                  child: SizedBox(
                     width: size.width * 0.85,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
