@@ -51,6 +51,8 @@ android {
         androidResources {
             localeFilters.addAll(listOf("en"))
         }
+        // Declare use of MANAGE_EXTERNAL_STORAGE for Android 11+
+        manifestPlaceholders["requestLegacyExternalStorage"] = "true"
     }
 
     buildTypes {

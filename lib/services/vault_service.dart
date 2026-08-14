@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -8,10 +9,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:archive/archive.dart';
-import 'package:pointycastle/key_derivators/api.dart';
-import 'package:pointycastle/key_derivators/pbkdf2.dart';
-import 'package:pointycastle/macs/hmac.dart';
-import 'package:pointycastle/digests/sha256.dart';
+import 'package:argon2_ffi_base/argon2_ffi_base.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'secure_delete_service.dart';
 
 /// Registro de archivo en la bóveda
@@ -24,6 +24,7 @@ class VaultFileRecord {
   final String lockedAt;
   final bool isInPlace;
   final bool isFolder;
+  final String displayName; // Nombre genérico para mostrar en el explorador
 
   VaultFileRecord({
     required this.id,
@@ -34,7 +35,8 @@ class VaultFileRecord {
     required this.lockedAt,
     required this.isInPlace,
     this.isFolder = false,
-  });
+    String? displayName,
+  }) : displayName = displayName ?? 'archivo_${id.substring(0, 8)}';
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -45,6 +47,7 @@ class VaultFileRecord {
     'lockedAt': lockedAt,
     'isInPlace': isInPlace,
     'isFolder': isFolder,
+    'displayName': displayName,
   };
 
   factory VaultFileRecord.fromJson(Map<String, dynamic> json) => VaultFileRecord(
@@ -56,6 +59,7 @@ class VaultFileRecord {
     lockedAt: json['lockedAt'] as String,
     isInPlace: json['isInPlace'] as bool,
     isFolder: json['isFolder'] as bool? ?? false,
+    displayName: json['displayName'] as String?,
   );
 }
 
@@ -67,6 +71,44 @@ class VaultService {
   static const int _ivLength = 16; // 128 bits
   static const int _saltLength = 32; // 256 bits
   static const int _pbkdf2Iterations = 100000;
+
+  // ============ AUTO-LOCK ============
+  static const Duration _autoLockTimeout = Duration(minutes: 5);
+  static Timer? _autoLockTimer;
+  static DateTime? _lastActivityTime;
+  static bool _isUnlocked = false;
+  static String? _currentSessionKey;
+
+  /// Registra actividad del usuario para resetear el timer de auto-lock
+  static void recordActivity() {
+    _lastActivityTime = DateTime.now();
+    _resetAutoLockTimer();
+  }
+
+  static void _resetAutoLockTimer() {
+    _autoLockTimer?.cancel();
+    _autoLockTimer = Timer(_autoLockTimeout, () {
+      lock();
+    });
+  }
+
+  /// Bloquea la bóveda manualmente o por inactividad
+  static void lock() {
+    _isUnlocked = false;
+    _currentSessionKey = null;
+    _autoLockTimer?.cancel();
+    _autoLockTimer = null;
+    _lastActivityTime = null;
+  }
+
+  /// Verifica si la bóveda está desbloqueada
+  static bool get isUnlocked => _isUnlocked;
+
+  /// Marca la bóveda como desbloqueada (llamar después de verifyPassword exitoso)
+  static void _markUnlocked() {
+    _isUnlocked = true;
+    recordActivity();
+  }
 
   /// Verifica si hay una contraseña configurada
   static Future<bool> isPasswordSet() async {
@@ -93,16 +135,67 @@ class VaultService {
     final prefs = await SharedPreferences.getInstance();
     final saltBase64 = prefs.getString('vault_salt');
     final hashBase64 = prefs.getString('vault_password_hash');
-    
+
     if (saltBase64 == null || hashBase64 == null) return false;
-    
+
     final salt = base64.decode(saltBase64);
     final storedHash = base64.decode(hashBase64);
-    
+
     final checkHash = _hashPasswordWithPBKDF2(password, salt);
-    
-    // Comparación constante en tiempo para evitar timing attacks
-    return _constantTimeEquals(storedHash, checkHash);
+
+    final isValid = _constantTimeEquals(storedHash, checkHash);
+
+    // Defensa contra timing attacks: delay fijo si la contraseña es incorrecta
+    // Un atacante no puede distinguir entre "contraseña incorrecta" y
+    // "contraseña correcta midiendo el tiempo de respuesta"
+    if (!isValid) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      return false;
+    }
+
+    // Contraseña correcta: marcar como desbloqueado y resetear timer
+    _markUnlocked();
+    return true;
+  }
+
+  /// Autenticación biométrica (huella/rostro) como alternativa a la contraseña
+  /// Retorna true si la biometría fue exitosa
+  static Future<bool> authenticateWithBiometrics({
+    String reason = 'Autentícate para acceder a la bóveda',
+  }) async {
+    try {
+      final localAuth = LocalAuthentication();
+      // Verificar que el dispositivo soporta biometría
+      final isAvailable = await localAuth.isDeviceSupported() &&
+          await localAuth.canCheckBiometrics;
+
+      if (!isAvailable) {
+        return false;
+      }
+
+      // Solicitar autenticación biométrica
+      final authenticated = await localAuth.authenticate(
+        localizedReason: reason,
+      );
+
+      if (authenticated) {
+        _markUnlocked();
+      }
+      return authenticated;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Verifica si el dispositivo tiene biometría disponible
+  static Future<bool> isBiometricAvailable() async {
+    try {
+      final localAuth = LocalAuthentication();
+      return await localAuth.isDeviceSupported() &&
+          await localAuth.canCheckBiometrics;
+    } catch (e) {
+      return false;
+    }
   }
 
   /// Obtiene el directorio de la bóveda
@@ -551,18 +644,28 @@ class VaultService {
     return List<int>.generate(length, (_) => random.nextInt(256));
   }
 
-  /// Deriva clave de cifrado usando PBKDF2 real de pointycastle
+  /// Deriva clave de cifrado usando Argon2id (estándar moderno)
+  /// Mucho más resistente que PBKDF2 contra ataques con GPU/ASIC
   static List<int> _deriveEncryptionKey(String password, List<int> salt) {
     final passwordBytes = utf8.encode(password);
-    final derivator = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64));
-    final params = Pbkdf2Parameters(Uint8List.fromList(salt), 600000, _keyLength);
-    derivator.init(params);
-    final key = Uint8List(_keyLength);
-    derivator.deriveKey(Uint8List.fromList(passwordBytes), 0, key, 0);
-    return List<int>.from(key);
+    // Argon2id: memory=64MB, iterations=3, parallelism=4, output=32 bytes
+    // Configuración recomendada por OWASP para Argon2id
+    // type=2 es Argon2id, version=0x13 es v1.3
+    final argon2 = Argon2FfiFlutter();
+    final result = argon2.argon2(Argon2Arguments(
+      Uint8List.fromList(passwordBytes),
+      Uint8List.fromList(salt),
+      65536, // memory (KB) = 64MB
+      3,     // iterations
+      _keyLength,
+      4,     // parallelism
+      2,     // type: Argon2id
+      0x13,  // version: 1.3
+    ));
+    return List<int>.from(result);
   }
 
-  /// Hashea contraseña con PBKDF2 para almacenamiento
+  /// Hashea contraseña con Argon2id para almacenamiento
   static List<int> _hashPasswordWithPBKDF2(String password, List<int> salt) {
     return _deriveEncryptionKey(password, salt);
   }
@@ -622,9 +725,30 @@ class VaultService {
             }
           }
         }
-        
+
       }
     } catch (e) {
       }
+  }
+
+  /// Solicita permisos especiales de Android para acceder a todos los archivos
+  /// (Documents, etc.) en Android 11+. Retorna true si los permisos fueron
+  /// otorgados.
+  static Future<bool> requestAllFilesAccess() async {
+    try {
+      final result = await Permission.manageExternalStorage.request();
+      return result.isGranted;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Verifica si la app tiene permiso de acceso total a archivos
+  static Future<bool> hasAllFilesAccess() async {
+    try {
+      return await Permission.manageExternalStorage.isGranted;
+    } catch (e) {
+      return false;
+    }
   }
 }
