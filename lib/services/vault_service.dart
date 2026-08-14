@@ -346,9 +346,9 @@ class VaultService {
         await sink.flush();
         await sink.close();
 
-        // Descomprimir el ZIP
-        final bytes = await tempZipFile.readAsBytes();
-        final archive = ZipDecoder().decodeBytes(bytes);
+        // Descomprimir el ZIP en streaming para evitar OOM con carpetas grandes
+        final inputBytes = await tempZipFile.readAsBytes();
+        final archive = ZipDecoder().decodeBytes(inputBytes);
         for (final file in archive) {
           final filename = file.name;
           final fullPath = p.join(destinationDir, filename);

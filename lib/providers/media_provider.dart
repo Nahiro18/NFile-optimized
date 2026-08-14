@@ -292,6 +292,18 @@ class MediaProvider extends ChangeNotifier {
     super.notifyListeners();
   }
 
+  /// Invalidates only the specified caches and notifies listeners.
+  /// Use this when you know exactly which caches need to be rebuilt,
+  /// avoiding the cost of invalidating all caches on every notification.
+  void notifyListenersSelective({
+    bool invalidateAudioPathMap = false,
+    bool invalidateVideoNameMap = false,
+  }) {
+    if (invalidateAudioPathMap) _audioPathMap = null;
+    if (invalidateVideoNameMap) _videoNameMap = null;
+    super.notifyListeners();
+  }
+
   List<FileSystemEntity> _documents = [];
   List<FileSystemEntity> _archives = [];
   List<FileSystemEntity> _downloads = [];

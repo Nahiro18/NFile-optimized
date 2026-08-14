@@ -619,7 +619,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                 min: 0.7,
                                 max: 1.5,
                                 divisions: 8,
-                                activeThumbColor: theme.colorScheme.primary,
+                                activeColor: theme.colorScheme.primary,
                                 onChanged: (val) {
                                   provider.setIconScale(val);
                                   setStateModal(() {});
@@ -650,7 +650,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                 min: 0.4,
                                 max: 2.0,
                                 divisions: 16,
-                                activeThumbColor: theme.colorScheme.primary,
+                                activeColor: theme.colorScheme.primary,
                                 onChanged: (val) {
                                   provider.setItemPaddingMultiplier(val);
                                   setStateModal(() {});

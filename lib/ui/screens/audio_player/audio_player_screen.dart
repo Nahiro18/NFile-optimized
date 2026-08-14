@@ -327,7 +327,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                   min: 0.5,
                   max: 2.0,
                   divisions: 15,
-                  activeThumbColor: Colors.deepPurpleAccent,
+                  activeColor: Colors.deepPurpleAccent,
                   onChanged: (v) {
                     setModalState(() => _playbackSpeed = v);
                     setState(() {});
@@ -347,7 +347,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                   min: 0.5,
                   max: 1.5,
                   divisions: 10,
-                  activeThumbColor: Colors.deepPurpleAccent,
+                  activeColor: Colors.deepPurpleAccent,
                   onChanged: (v) {
                     setModalState(() => _pitch = v);
                     setState(() {});
@@ -534,7 +534,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                 ),
                 trailing: Switch(
                   value: _isShuffled,
-                  activeThumbColor: Colors.deepPurpleAccent,
+                  activeColor: Colors.deepPurpleAccent,
                   onChanged: (_) {
                     _toggleShuffle();
                     setSheet(() {});
