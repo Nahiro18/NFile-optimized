@@ -2001,6 +2001,8 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 
       // 3. Request remote port forwarding
       _sshForward = await _sshClient!.forwardRemote(port: 80);
+  // SSH Tunnel stdout subscription
+  _stdoutSubscription = null;
       if (_sshForward == null) {
         throw Exception('Remote port forwarding request denied by proxy server.');
       }
@@ -2043,7 +2045,6 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       final session = await _sshClient!.execute('');
       var stdoutBuffer = '';
       session.stdout.cast<List<int>>().transform(utf8.decoder).listen((data) async {
-        debugPrint('Localhost.run Banner: $data');
         stdoutBuffer += data;
         final regExp = RegExp(r'([a-zA-Z0-9.-]+\.(localhost\.run|lhr\.life))');
         final match = regExp.firstMatch(stdoutBuffer);
@@ -2059,10 +2060,10 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
               'isInternet': true,
             });
           } catch (e) {
-            debugPrint('Failed to update native web sharing service with link: $e');
+            // debugPrint removed for security
           }
         }
-      });
+      }).onCancel(() => _stdoutSubscription?.cancel());
 
       // Start client real traffic speed timer
       _startSpeedTimer();
