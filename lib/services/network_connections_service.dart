@@ -1,53 +1,48 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/network_connection_model.dart';
 
 class NetworkConnectionsService {
   static const String _keyConnections = 'network_connections';
+  static const String _keyEncryptionKey = '_enc_key';
   static SharedPreferences? _prefs;
   static String _encryptionKey = '';
   static Random _rng = Random.secure();
 
-  NetworkConnectionsService._internal();
-  static final NetworkConnectionsService _instance =
-      NetworkConnectionsService._internal();
-  static NetworkConnectionsService get instance => _instance;
-
-  Future<void> init() async {
+  static Future<void> init() async {
     _prefs ??= await SharedPreferences.getInstance();
-    final securePrefs = await _getSecurePreferences();
-    _encryptionKey = securePrefs.getString('_enc_key') ?? '';
+    _encryptionKey = _prefs!.getString(_keyEncryptionKey) ?? '';
     if (_encryptionKey.isEmpty) {
-      final key = _generateKey(32);
-      _encryptionKey = key;
-      await securePrefs.setString('_enc_key', _encryptionKey);
+      _encryptionKey = _generateKey(32);
+      await _prefs!.setString(_keyEncryptionKey, _encryptionKey);
     }
   }
 
-  String _aesEncrypt(String plain) {
+  static String _aesEncrypt(String plain) {
     final keyBytes = utf8.encode(_encryptionKey.padRight(32).substring(0, 32));
-    final iv = List<int>.generate(16, (_) => _rng.nextInt(256));
-    final cipher = AES(keyBytes, CBCMode(iv: IvSpec(iv, 'AES')));
-    final encrypted = cipher.encrypt(plain);
-    return base64.encode(iv ..= encrypted.bytes);
+    final key = encrypt.Key(Uint8List.fromList(keyBytes));
+    final iv = encrypt.IV.fromSecureRandom(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+    final encrypted = encrypter.encrypt(plain, iv: iv);
+    return base64.encode(iv.bytes + encrypted.bytes);
   }
 
-  String _aesDecrypt(String ciphertext) {
+  static String _aesDecrypt(String ciphertext) {
     final data = base64.decode(ciphertext);
-    final iv = data.sublist(0, 16);
+    final ivBytes = data.sublist(0, 16);
     final encryptedBytes = data.sublist(16);
     final keyBytes = utf8.encode(_encryptionKey.padRight(32).substring(0, 32));
-    final cipher = AES(keyBytes, CBCMode(iv: IvSpec(iv, 'AES')));
-    final decrypted = cipher.decrypt(encryptedBytes);
-    return String.fromCharCodes(decrypted);
+    final key = encrypt.Key(Uint8List.fromList(keyBytes));
+    final iv = encrypt.IV(Uint8List.fromList(ivBytes));
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+    final decrypted = encrypter.decrypt(encrypt.Encrypted(Uint8List.fromList(encryptedBytes)), iv: iv);
+    return decrypted;
   }
 
-  Future<SharedPreferences> _getSecurePreferences() async {
-    return await _prefs!;
-  }
-
-  String _generateKey(int length) {
+  static String _generateKey(int length) {
     final list = List<int>.generate(length, (_) => _rng.nextInt(256));
     return base64.encode(list);
   }
@@ -57,7 +52,7 @@ class NetworkConnectionsService {
     final str = _prefs!.getString(_keyConnections);
     if (str == null || str.isEmpty) return [];
     try {
-      final decrypted = _instance._aesDecrypt(str);
+      final decrypted = _aesDecrypt(str);
       final list = json.decode(decrypted) as List<dynamic>;
       return list
           .map((e) => NetworkConnectionModel.fromJson(e as Map<String, dynamic>))
@@ -76,7 +71,8 @@ class NetworkConnectionsService {
     } else {
       current.add(conn);
     }
-    final encrypted = _instance._aesEncrypt(current.map((e) => e.toJson()).toString());
+    final jsonStr = json.encode(current.map((e) => e.toJson()).toList());
+    final encrypted = _aesEncrypt(jsonStr);
     await _prefs?.setString(_keyConnections, encrypted);
   }
 
@@ -84,7 +80,9 @@ class NetworkConnectionsService {
     await init();
     final current = getConnections();
     current.removeWhere((c) => c.id == id);
-    final encrypted = _instance._aesEncode(current.map((e) => e.toJson()).toString());
+    final jsonStr = json.encode(current.map((e) => e.toJson()).toList());
+    final encrypted = _aesEncrypt(jsonStr);
     await _prefs?.setString(_keyConnections, encrypted);
   }
 }
+

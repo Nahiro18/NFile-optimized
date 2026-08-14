@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
@@ -28,6 +29,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 
   SSHClient? _sshClient;
   SSHRemoteForward? _sshForward;
+  StreamSubscription<String>? _stdoutSubscription;
 
   HttpServer? _localServer;
   bool _isLocalActive = false;
@@ -153,16 +155,20 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 
   // --- Real HTTP File System Router ---
   Future<void> _handleHttpRequest(HttpRequest request, String rootDir) async {
+    final response = request.response;
+
     // auth: check token
     final token = request.headers[_authHeader];
     if (_authToken != null && token != _authToken) {
       response.statusCode = HttpStatus.forbidden;
+      response.headers.add('content-security-policy', "default-src 'none'");
+      response.headers.add('x-content-type-options', 'nosniff');
+      response.headers.add('x-frame-options', 'DENY');
       response.write('403 Forbidden: Invalid or missing authentication token.');
       await response.close();
       return;
     }
 
-    final response = request.response;
     final uriPath = Uri.decodeComponent(request.uri.path);
 
     // Security check: prevent directory traversal attacks
@@ -2001,8 +2007,6 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 
       // 3. Request remote port forwarding
       _sshForward = await _sshClient!.forwardRemote(port: 80);
-  // SSH Tunnel stdout subscription
-  _stdoutSubscription = null;
       if (_sshForward == null) {
         throw Exception('Remote port forwarding request denied by proxy server.');
       }
@@ -2044,7 +2048,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       // 5. Start a session to obtain the allocated dynamic domain name from stdout
       final session = await _sshClient!.execute('');
       var stdoutBuffer = '';
-      session.stdout.cast<List<int>>().transform(utf8.decoder).listen((data) async {
+      _stdoutSubscription = session.stdout.cast<List<int>>().transform(utf8.decoder).listen((data) async {
         stdoutBuffer += data;
         final regExp = RegExp(r'([a-zA-Z0-9.-]+\.(localhost\.run|lhr\.life))');
         final match = regExp.firstMatch(stdoutBuffer);
@@ -2063,7 +2067,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
             // debugPrint removed for security
           }
         }
-      }).onCancel(() => _stdoutSubscription?.cancel());
+      });
 
       // Start client real traffic speed timer
       _startSpeedTimer();

@@ -4,12 +4,15 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:path_provider/path_generator.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
-import 'package:pointycastle/key_derivators/pbkdf2.dart' as pbkdf2;
+import 'package:pointycastle/key_derivators/api.dart';
+import 'package:pointycastle/key_derivators/pbkdf2.dart';
+import 'package:pointycastle/macs/hmac.dart';
+import 'package:pointycastle/digests/sha256.dart';
 import 'secure_delete_service.dart';
 
 /// Registro de archivo en la bóveda
@@ -552,11 +555,12 @@ class VaultService {
   /// Deriva clave de cifrado usando PBKDF2 real de pointycastle
   static List<int> _deriveEncryptionKey(String password, List<int> salt) {
     final passwordBytes = utf8.encode(password);
-    final derivator = pbkdf2.Pbkdf2Sha256();
-    final key = derivator
-        .deriveKey(Uint8List.fromList(passwordBytes), Uint8List.fromList(salt), 
-            600000, _keyLength * 8);
-    return List<int>.from(key.buffer.asUint8List().sublist(0, _keyLength));
+    final derivator = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64));
+    final params = Pbkdf2Parameters(Uint8List.fromList(salt), 600000, _keyLength);
+    derivator.init(params);
+    final key = Uint8List(_keyLength);
+    derivator.deriveKey(Uint8List.fromList(passwordBytes), 0, key, 0);
+    return List<int>.from(key);
   }
 
   /// Hashea contraseña con PBKDF2 para almacenamiento

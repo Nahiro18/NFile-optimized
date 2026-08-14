@@ -1655,6 +1655,14 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
   }
 
   void requestNotify() => notifyListeners();
+
+  @override
+  void dispose() {
+    _autoDeselectTimer?.cancel();
+    _refreshTimer?.cancel();
+    _batchRefreshTimer?.cancel();
+    super.dispose();
+  }
 }
 
 
@@ -1679,11 +1687,5 @@ class FileOperationProgress {
     required this.bytesProcessed,
   });
 }
-  @override
-  void dispose() {
-    _autoDeselectTimer?.cancel();
-    _refreshTimer?.cancel();
-    _batchRefreshTimer?.cancel();
-    super.dispose();
-  }
+
 

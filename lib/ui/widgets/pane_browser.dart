@@ -428,7 +428,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                         _activatePane(provider);
                         if (provider.showDragDropDialog) {
                           DragDropActionDialog.show(
-                            context: handlerContext,
+                            context: context,
                             sourcePaths: data.paths,
                             initialTargetPath: tab.currentPath,
                           );

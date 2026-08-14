@@ -127,7 +127,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
           await Permission.notification.request();
           await _webService.startInternetTunnel(shareDir);
           if (dialogContext.mounted) {
-            dialogContext.scaffoldMessengerKey.currentState?.showSnackBar(
+            ScaffoldMessenger.of(dialogContext).showSnackBar(
               SnackBar(
                 content: const Text('Internet cloud tunnel online! Temporary link active.'),
                 behavior: SnackBarBehavior.floating,
@@ -152,7 +152,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
     Clipboard.setData(ClipboardData(text: text));
     final clipboardContext = context;
     if (clipboardContext.mounted) {
-      clipboardContext.scaffoldMessengerKey.currentState?.showSnackBar(
+      ScaffoldMessenger.of(clipboardContext).showSnackBar(
         const SnackBar(
           content: Text('Link copied to clipboard!'),
           behavior: SnackBarBehavior.floating,
