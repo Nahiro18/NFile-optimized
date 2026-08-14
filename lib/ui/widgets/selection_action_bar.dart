@@ -141,9 +141,10 @@ class SelectionActionBar extends StatelessWidget {
                     );
                   }
                 } else if (action == 'paste') {
-                  await provider.pasteFile(context);
-                  provider.clearSelection();
-                  if (context.mounted) {
+                  final pasteContext = context;
+              await provider.pasteFile(pasteContext);
+              provider.clearSelection();
+              if (pasteContext.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Pasted items successfully')),
                     );

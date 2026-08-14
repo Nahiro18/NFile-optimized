@@ -217,6 +217,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
                   isMultiSelection: selectedCount > 1,
                 );
                 if (res != null) {
+                  final sheetContext = context;
                   await provider.createArchive(
                     archiveName: res.archiveName,
                     format: res.format,
@@ -226,7 +227,7 @@ class SelectionContextBottomSheet extends StatelessWidget {
                     deleteSource: res.deleteSource,
                     separateArchives: res.separateArchives,
                     targetPaths: provider.selectedPaths.toList(),
-                    context: context,
+                    context: sheetContext,
                   );
                   provider.clearSelection();
                 }

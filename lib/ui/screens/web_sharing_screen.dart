@@ -119,19 +119,22 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
         },
       );
 
+      final dialogContext = context;
       Future.delayed(const Duration(milliseconds: 1400), () async {
-        if (!mounted) return;
-        Navigator.pop(context); // Pop dialog
+        if (!dialogContext.mounted) return;
+        Navigator.pop(dialogContext); // Pop dialog
         try {
           await Permission.notification.request();
           await _webService.startInternetTunnel(shareDir);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Internet cloud tunnel online! Temporary link active.'),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          if (dialogContext.mounted) {
+            dialogContext.scaffoldMessengerKey.currentState?.showSnackBar(
+              SnackBar(
+                content: const Text('Internet cloud tunnel online! Temporary link active.'),
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: Theme.of(dialogContext).colorScheme.primary,
+              ),
+            );
+          }
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -147,22 +150,26 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
 
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Link copied to clipboard!'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    final clipboardContext = context;
+    if (clipboardContext.mounted) {
+      clipboardContext.scaffoldMessengerKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text('Link copied to clipboard!'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   // Beautiful QR code overlay modal
   void _showQrCodeDialog(String link, String type) {
-    final theme = Theme.of(context);
+    final qrContext = context;
+    final theme = Theme.of(qrContext);
     final isDark = theme.brightness == Brightness.dark;
 
     showDialog(
-      context: context,
-      builder: (context) {
+      context: qrContext,
+      builder: (qrContext) {
         return Dialog(
           backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),

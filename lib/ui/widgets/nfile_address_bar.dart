@@ -363,10 +363,12 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
 
     // Check if the path exists
     final isDir = await Directory(path).exists();
+    if (!mounted) return;
     if (isDir) {
       provider.loadDirectory(path);
     } else {
       final isFile = await File(path).exists();
+      if (!mounted) return;
       if (isFile) {
         provider.openFileNatively(context, path);
       } else {

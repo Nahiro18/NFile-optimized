@@ -95,7 +95,8 @@ class _PaneBrowserState extends State<PaneBrowser> {
   }
 
   void _handleAction(BuildContext context, String action, String path) async {
-    final provider = context.read<FileManagerProvider>();
+    final handlerContext = context;
+    final provider = handlerContext.read<FileManagerProvider>();
     _activatePane(provider);
     switch (action) {
       case 'archive':
@@ -114,12 +115,12 @@ class _PaneBrowserState extends State<PaneBrowser> {
             deleteSource: res.deleteSource,
             separateArchives: res.separateArchives,
             targetPaths: [path],
-            context: context,
+            context: handlerContext,
           );
         }
         break;
       case 'extract':
-        await provider.extractArchiveDirectly(context, path);
+        await provider.extractArchiveDirectly(handlerContext, path);
         break;
       case 'copy':
         provider.copyFile(path);
@@ -130,7 +131,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
       case 'rename':
         final isMulti = provider.selectedPaths.isNotEmpty && provider.selectedPaths.contains(path);
         if (isMulti && provider.selectedPaths.length > 1) {
-          await BatchRenameDialog.show(context, provider);
+          await BatchRenameDialog.show(handlerContext, provider);
         } else {
           final currentName = p.basename(path);
           final newName = await FileActionDialogs.showTextInputDialog(
@@ -427,7 +428,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                         _activatePane(provider);
                         if (provider.showDragDropDialog) {
                           DragDropActionDialog.show(
-                            context: context,
+                            context: handlerContext,
                             sourcePaths: data.paths,
                             initialTargetPath: tab.currentPath,
                           );
