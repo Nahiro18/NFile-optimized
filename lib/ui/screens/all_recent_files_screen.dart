@@ -51,6 +51,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
   Future<List<FileItemModel>> _scanRecentFiles() async {
     final list = <FileSystemEntity>[];
     final seen = <String>{};
+    final mediaProvider = context.read<MediaProvider>();
 
     final rootDir = Directory('/storage/emulated/0');
     if (await rootDir.exists()) {
@@ -100,8 +101,6 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
         }));
       } catch (_) {}
     }
-
-    final mediaProvider = context.read<MediaProvider>();
 
     void addFromMediaList(List<FileSystemEntity> mediaList) {
       for (final entity in mediaList) {
@@ -256,6 +255,7 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
         });
       }
       _clearSelection();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully deleted items')));
     }
   }

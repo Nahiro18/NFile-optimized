@@ -58,6 +58,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
   Future<void> _toggleLocalServer(String rootPath) async {
     if (_webService.isLocalActive) {
       await _webService.stopLocalServer();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Local HTTP Sharing Server stopped.'),
@@ -68,6 +69,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
       try {
         await Permission.notification.request();
         await _webService.startLocalServer(rootPath);
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Local HTTP Sharing Server started! URL: ${_webService.localServerUrl}'),
@@ -76,6 +78,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
           ),
         );
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error starting HTTP Server: $e'),
@@ -136,7 +139,8 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
             );
           }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          if (!dialogContext.mounted) return;
+          ScaffoldMessenger.of(dialogContext).showSnackBar(
             SnackBar(
               content: Text('Failed to start Cloud Share: $e'),
               behavior: SnackBarBehavior.floating,

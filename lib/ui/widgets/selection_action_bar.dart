@@ -128,6 +128,7 @@ class SelectionActionBar extends StatelessWidget {
                     isMultiSelection: selectedCount > 1,
                   );
                   if (res != null) {
+                    if (!context.mounted) return;
                     await provider.createArchive(
                       archiveName: res.archiveName,
                       format: res.format,

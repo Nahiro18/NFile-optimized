@@ -391,6 +391,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
         if (newName != null && newName.isNotEmpty && mounted) {
           await context.read<FileManagerProvider>().renameFile(filePath, newName);
           _clearSelection();
+          if (!mounted) return;
           await context.read<MediaProvider>().loadMedia(forceRefresh: true);
         }
       }
@@ -728,6 +729,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                     );
                     if (newName != null && newName.isNotEmpty && mounted) {
                       await context.read<FileManagerProvider>().renameFile(filePath, newName);
+                      if (!mounted) return;
                       context.read<MediaProvider>().loadMedia(forceRefresh: true);
                     }
                   },

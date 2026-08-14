@@ -254,6 +254,7 @@ class BackgroundArchiveService {
       await provider.loadDirectory(provider.currentPath, showLoading: false);
     } catch (_) {}
 
+    if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),

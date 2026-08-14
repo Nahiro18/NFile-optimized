@@ -348,6 +348,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         });
       }
       _clearSelection();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully deleted items')));
     }
   }

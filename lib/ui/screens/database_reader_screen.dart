@@ -186,6 +186,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
       final exportFile = File('${directory.path}/${baseName}_${suffix}_export.csv');
       await exportFile.writeAsString(buffer.toString());
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Successfully exported to ${p.basename(exportFile.path)}'),
@@ -193,6 +194,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Export failed: $e'), backgroundColor: Colors.redAccent),
       );

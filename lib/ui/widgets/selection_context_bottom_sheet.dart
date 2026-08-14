@@ -210,14 +210,15 @@ class SelectionContextBottomSheet extends StatelessWidget {
               icon: Broken.box_add,
               label: 'Archive (Compress)',
               onTap: () async {
-                Navigator.pop(context);
+                final sheetContext = context;
+                Navigator.pop(sheetContext);
                 final res = await CreateArchiveDialog.show(
-                  context,
+                  sheetContext,
                   initialName: p.basename(provider.currentPath).isEmpty ? 'archive' : p.basename(provider.currentPath),
                   isMultiSelection: selectedCount > 1,
                 );
                 if (res != null) {
-                  final sheetContext = context;
+                  if (!sheetContext.mounted) return;
                   await provider.createArchive(
                     archiveName: res.archiveName,
                     format: res.format,

@@ -129,15 +129,17 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   }
 
   void _handleAction(BuildContext context, String action, String path) async {
-    final provider = context.read<FileManagerProvider>();
+    final handlerContext = context;
+    final provider = handlerContext.read<FileManagerProvider>();
     switch (action) {
       case 'archive':
         final res = await CreateArchiveDialog.show(
-          context,
+          handlerContext,
           initialName: p.basename(path),
           isMultiSelection: false,
         );
         if (res != null) {
+          if (!handlerContext.mounted) return;
           await provider.createArchive(
             archiveName: res.archiveName,
             format: res.format,
@@ -147,12 +149,12 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             deleteSource: res.deleteSource,
             separateArchives: res.separateArchives,
             targetPaths: [path],
-            context: context,
+            context: handlerContext,
           );
         }
         break;
       case 'extract':
-        await provider.extractArchiveDirectly(context, path);
+        await provider.extractArchiveDirectly(handlerContext, path);
         break;
       case 'copy':
         provider.copyFile(path);
@@ -273,7 +275,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
       case 'archive':
         final currentFolderName = p.basename(provider.currentPath);
         final res = await CreateArchiveDialog.show(
-          context,
+          handlerContext,
           initialName: currentFolderName.isEmpty
               ? 'archive'
               : currentFolderName,
@@ -289,7 +291,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             deleteSource: res.deleteSource,
             separateArchives: res.separateArchives,
             targetPaths: [provider.currentPath],
-            context: context,
+            context: handlerContext,
           );
         }
         break;
@@ -1185,16 +1187,18 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                             icon: const Icon(Icons.add_link_rounded, size: 20),
                             tooltip: 'Add Network Connection',
                             onPressed: () async {
-                              Navigator.pop(ctx);
+                              final outerContext = context;
+                              final sheetContext = ctx;
+                              Navigator.pop(sheetContext);
                               final added = await Navigator.push(
-                                context,
+                                outerContext,
                                 MaterialPageRoute(
                                   builder: (_) =>
                                       const NetworkConnectionWizardScreen(),
                                 ),
                               );
-                              if (added == true) {
-                                _showStorageVolumeModal(context, provider);
+                              if (added == true && outerContext.mounted) {
+                                _showStorageVolumeModal(outerContext, provider);
                               }
                             },
                           ),
@@ -1271,11 +1275,15 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           ),
                           tooltip: 'Remove Connection',
                           onPressed: () async {
+                            final outerContext = context;
                             await NetworkConnectionsService.deleteConnection(
                               conn.id,
                             );
+                            if (!outerContext.mounted) return;
                             Navigator.pop(ctx);
-                            _showStorageVolumeModal(context, provider);
+                            if (outerContext.mounted) {
+                              _showStorageVolumeModal(outerContext, provider);
+                            }
                           },
                         ),
                         onTap: () {

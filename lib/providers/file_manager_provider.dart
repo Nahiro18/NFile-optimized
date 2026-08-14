@@ -1474,6 +1474,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
   }
 
   Future<void> openFile(BuildContext context, String path, {bool showOpenWithPopup = false, bool forceOpenWith = false}) async {
+    final openContext = context;
     highlightedPaths.clear();
     highlightedPaths.add(path);
     notifyListeners();
@@ -1511,7 +1512,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     if (hasNativeViewer(targetPath)) {
       final defaultAction = PreferencesService.getDefaultOpenAction(ext);
       if (defaultAction == 'native') {
-        await openFileNatively(context, targetPath);
+        await openFileNatively(openContext, targetPath);
         return;
       } else if (defaultAction == 'external') {
         await OpenFilex.open(targetPath);

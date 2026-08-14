@@ -101,11 +101,12 @@ class _PaneBrowserState extends State<PaneBrowser> {
     switch (action) {
       case 'archive':
         final res = await CreateArchiveDialog.show(
-          context,
+          handlerContext,
           initialName: p.basename(path),
           isMultiSelection: false,
         );
         if (res != null) {
+          if (!handlerContext.mounted) return;
           await provider.createArchive(
             archiveName: res.archiveName,
             format: res.format,

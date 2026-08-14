@@ -81,8 +81,9 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
       for (final item in itemsToRestore) {
         await RecycleBinService.restoreItem(item);
       }
-      if (mounted) Navigator.pop(context); // Dismiss loading
-      
+      if (!mounted) return;
+      Navigator.pop(context); // Dismiss loading
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Restored ${itemsToRestore.length} item(s) successfully'),
@@ -90,7 +91,8 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
         ),
       );
     } catch (e) {
-      if (mounted) Navigator.pop(context); // Dismiss loading
+      if (!mounted) return;
+      Navigator.pop(context); // Dismiss loading
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error restoring items: $e'),
@@ -140,7 +142,8 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
       for (final item in itemsToDelete) {
         await RecycleBinService.deletePermanently(item);
       }
-      if (mounted) Navigator.pop(context); // Dismiss loading
+      if (!mounted) return;
+      Navigator.pop(context); // Dismiss loading
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -149,7 +152,8 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
         ),
       );
     } catch (e) {
-      if (mounted) Navigator.pop(context); // Dismiss loading
+      if (!mounted) return;
+      Navigator.pop(context); // Dismiss loading
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error deleting items: $e'),
@@ -196,8 +200,9 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
 
     try {
       await RecycleBinService.emptyBin();
-      if (mounted) Navigator.pop(context); // Dismiss loading
-      
+      if (!mounted) return;
+      Navigator.pop(context); // Dismiss loading
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Recycle Bin emptied successfully'),
@@ -205,7 +210,8 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
         ),
       );
     } catch (e) {
-      if (mounted) Navigator.pop(context); // Dismiss loading
+      if (!mounted) return;
+      Navigator.pop(context); // Dismiss loading
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error emptying bin: $e'),

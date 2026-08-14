@@ -258,6 +258,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
       }
     }
 
+    if (!mounted) return;
     Navigator.pop(context); // Dismiss loading dialog
     await _loadVaultData();
 
@@ -284,6 +285,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
 
     try {
       await VaultService.unlockFile(record: record, password: widget.password);
+      if (!mounted) return;
       Navigator.pop(context); // Dismiss loader
       await _loadVaultData();
       if (mounted) {
@@ -296,6 +298,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       Navigator.pop(context);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -375,6 +378,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
         record: record,
         password: widget.password,
       );
+      if (!mounted) return;
       Navigator.pop(context); // Dismiss loading dialog
 
       final path = tempFile.path;
@@ -417,6 +421,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
         }
       } catch (_) {}
     } catch (e) {
+      if (!mounted) return;
       Navigator.pop(context); // Dismiss loading dialog
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
