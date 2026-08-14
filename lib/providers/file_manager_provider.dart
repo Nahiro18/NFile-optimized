@@ -42,7 +42,6 @@ import '../services/remote/lan_client.dart';
 import '../services/remote/saf_client.dart';
 import 'media_provider.dart';
 import '../core/isolate_utils.dart';
-import 'dart:typed_data';
 
 part 'preferences_mixin.dart';
 

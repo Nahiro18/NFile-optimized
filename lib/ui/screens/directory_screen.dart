@@ -2259,7 +2259,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                       .selectedPaths
                                                       .contains(item.path);
                                                   if (item.isDirectory) {
-                                                    final itemLongPress = () {
+                                                    void itemLongPress() {
                                                       if (isSelectionMode &&
                                                           isSelected) {
                                                         SelectionContextBottomSheet.show(
@@ -2273,7 +2273,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                               item.path,
                                                             );
                                                       }
-                                                    };
+  }
                                                     return DragDropHandler(
                                                       path: item.path,
                                                       isDirectory: true,
@@ -2316,7 +2316,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                       ),
                                                     );
                                                   } else {
-                                                    final itemLongPress = () {
+                                                    void itemLongPress() {
                                                       if (isSelectionMode &&
                                                           isSelected) {
                                                         SelectionContextBottomSheet.show(
@@ -2330,7 +2330,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                               item.path,
                                                             );
                                                       }
-                                                    };
+  }
                                                     return DragDropHandler(
                                                       path: item.path,
                                                       isDirectory: false,
@@ -2388,7 +2388,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                       .selectedPaths
                                                       .contains(item.path);
                                                   if (item.isDirectory) {
-                                                    final itemLongPress = () {
+                                                    void itemLongPress() {
                                                       if (isSelectionMode &&
                                                           isSelected) {
                                                         SelectionContextBottomSheet.show(
@@ -2402,7 +2402,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                               item.path,
                                                             );
                                                       }
-                                                    };
+  }
                                                     return DragDropHandler(
                                                       path: item.path,
                                                       isDirectory: true,
@@ -2445,7 +2445,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                       ),
                                                     );
                                                   } else {
-                                                    final itemLongPress = () {
+                                                    void itemLongPress() {
                                                       if (isSelectionMode &&
                                                           isSelected) {
                                                         SelectionContextBottomSheet.show(
@@ -2459,7 +2459,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                               item.path,
                                                             );
                                                       }
-                                                    };
+  }
                                                     return DragDropHandler(
                                                       path: item.path,
                                                       isDirectory: false,

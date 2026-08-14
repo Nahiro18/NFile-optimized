@@ -569,14 +569,14 @@ class _PaneBrowserState extends State<PaneBrowser> {
                                                       final item = tab.displayFiles[index];
                                                       final isSelected = tab.selectedPaths.contains(item.path);
                                                       if (item.isDirectory) {
-                                                        final itemLongPress = () {
+                                                        void itemLongPress() {
                                                           _activatePane(provider);
                                                           if (isSelectionMode && isSelected) {
                                                             SelectionContextBottomSheet.show(context, provider, item.path);
                                                           } else {
                                                             provider.toggleSelection(item.path);
                                                           }
-                                                        };
+                                                        }
                                                         return DragDropHandler(
                                                           path: item.path,
                                                           isDirectory: true,
@@ -600,7 +600,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                                                           ),
                                                         );
                                                       } else {
-                                                        final itemLongPress = () {
+                                                        void itemLongPress() {
                                                           _activatePane(provider);
                                                           if (isSelectionMode && isSelected) {
                                                             SelectionContextBottomSheet.show(context, provider, item.path);
@@ -687,14 +687,14 @@ class _PaneBrowserState extends State<PaneBrowser> {
     final theme = Theme.of(context);
     final isHighlighted = provider.forceHighlightedPaths.contains(folder.path) || (provider.enableFolderHighlight && provider.highlightedPaths.contains(folder.path));
 
-    final itemLongPress = () {
+    void itemLongPress() {
       _activatePane(provider);
       if (isSelectionMode && isSelected) {
         SelectionContextBottomSheet.show(context, provider, folder.path);
       } else {
         provider.toggleSelection(folder.path);
       }
-    };
+    }
 
     return DragDropHandler(
       path: folder.path,
@@ -853,14 +853,14 @@ class _PaneBrowserState extends State<PaneBrowser> {
     final isHighlighted = provider.forceHighlightedPaths.contains(file.path) || (provider.enableFolderHighlight && provider.highlightedPaths.contains(file.path));
     final iconColor = FileUtils.getColorForFile(file.path, context);
 
-    final itemLongPress = () {
+    void itemLongPress() {
       _activatePane(provider);
       if (isSelectionMode && isSelected) {
         SelectionContextBottomSheet.show(context, provider, file.path);
       } else {
         provider.toggleSelection(file.path);
       }
-    };
+    }
 
     return DragDropHandler(
       path: file.path,
@@ -1139,14 +1139,14 @@ class _CompactMediaThumbnailState extends State<_CompactMediaThumbnail> {
         final ext = extIndex != -1 ? nameLower.substring(extIndex) : '';
         if (ext.isNotEmpty) {
           final baseName = nameLower.substring(0, extIndex);
-          if (titleLower == baseName || '${titleLower}${ext}' == nameLower) {
+          if (titleLower == baseName || '$titleLower$ext' == nameLower) {
             return true;
           }
         }
         
         // Case 3: Match via mimeType
         final mimeExt = v.mimeType?.split("/").last.toLowerCase();
-        if (mimeExt != null && '${titleLower}.$mimeExt' == nameLower) {
+        if (mimeExt != null && '$titleLower.$mimeExt' == nameLower) {
           return true;
         }
         

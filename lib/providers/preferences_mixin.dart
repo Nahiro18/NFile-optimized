@@ -956,25 +956,25 @@ mixin PreferencesMixin on ChangeNotifier {
       return;
     }
 
-    final isImage = (String name) {
+    bool isImage(String name) {
       final ext = p.extension(name).toLowerCase();
       return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.heic', '.avif'].contains(ext);
-    };
+    }
 
-    final isVideo = (String name) {
+    bool isVideo(String name) {
       final ext = p.extension(name).toLowerCase();
       return ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm', '.ts'].contains(ext);
-    };
+    }
 
-    final isAudio = (String name) {
+    bool isAudio(String name) {
       final ext = p.extension(name).toLowerCase();
       return ['.mp3', '.m4a', '.wav', '.flac', '.aac', '.ogg', '.opus', '.amr'].contains(ext);
-    };
+    }
 
-    final isDoc = (String name) {
+    bool isDoc(String name) {
       final ext = p.extension(name).toLowerCase();
       return ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv'].contains(ext);
-    };
+    }
 
     bool matchFilter(String name, bool isDirEntity) {
       if (filter == 'All') return true;

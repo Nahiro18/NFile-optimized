@@ -242,6 +242,7 @@ class MediaThumbnail extends StatefulWidget {
   final Color iconColor;
 
   const MediaThumbnail({
+    super.key,
     required this.file,
     required this.iconScale,
     required this.isSelected,
