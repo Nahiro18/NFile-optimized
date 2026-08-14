@@ -1896,7 +1896,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                         : CustomScrollView(
                                             key: const ValueKey('content'),
                                             controller: _scrollController,
-                                scrollCacheExtent: 1500.0, // Virtualización para Listas Largas
+                                scrollCacheExtent: const ScrollCacheExtent(1500.0), // Virtualización para Listas Largas
                                 physics: const BouncingScrollPhysics(
                                   parent: AlwaysScrollableScrollPhysics(),
                                 ),
