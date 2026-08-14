@@ -97,15 +97,26 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
       Future.delayed(const Duration(milliseconds: 200), () async {
         if (_inputBuffer == _tempPassword) {
           HapticFeedback.mediumImpact();
-          await VaultService.setPassword(_inputBuffer);
-          await AppLockService.cacheVaultPassword(_inputBuffer);
           if (mounted) {
             setState(() {
-              _isPasswordSet = true;
-              _isConfirmMode = false;
-              _message = 'PIN Set Successfully!';
+              _message = 'Securing your vault...';
             });
-            _unlockWallet(_inputBuffer);
+          }
+          try {
+            await VaultService.setPassword(_inputBuffer);
+            await AppLockService.cacheVaultPassword(_inputBuffer);
+            if (mounted) {
+              _unlockWallet(_inputBuffer);
+            }
+          } catch (e) {
+            if (mounted) {
+              HapticFeedback.heavyImpact();
+              setState(() {
+                _inputBuffer = '';
+                _isError = true;
+                _message = 'Error setting PIN: $e';
+              });
+            }
           }
         } else {
           HapticFeedback.heavyImpact();
@@ -120,19 +131,36 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
     } else if (_inputBuffer.length == 4 && _isPasswordSet) {
       // Unlock verification check
       Future.delayed(const Duration(milliseconds: 200), () async {
-        final success = await VaultService.verifyPassword(_inputBuffer);
-        if (success) {
-          HapticFeedback.mediumImpact();
-          await AppLockService.cacheVaultPassword(_inputBuffer);
-          _unlockWallet(_inputBuffer);
-        } else {
-          HapticFeedback.heavyImpact();
-          _shakeController.forward(from: 0.0);
+        if (mounted) {
           setState(() {
-            _inputBuffer = '';
-            _isError = true;
-            _message = 'Incorrect PIN. Try again!';
+            _message = 'Verifying...';
           });
+        }
+        try {
+          final success = await VaultService.verifyPassword(_inputBuffer);
+          if (!mounted) return;
+          if (success) {
+            HapticFeedback.mediumImpact();
+            await AppLockService.cacheVaultPassword(_inputBuffer);
+            _unlockWallet(_inputBuffer);
+          } else {
+            HapticFeedback.heavyImpact();
+            _shakeController.forward(from: 0.0);
+            setState(() {
+              _inputBuffer = '';
+              _isError = true;
+              _message = 'Incorrect PIN. Try again!';
+            });
+          }
+        } catch (e) {
+          if (mounted) {
+            HapticFeedback.heavyImpact();
+            setState(() {
+              _inputBuffer = '';
+              _isError = true;
+              _message = 'Error verifying PIN: $e';
+            });
+          }
         }
       });
     }

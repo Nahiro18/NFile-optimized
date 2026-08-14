@@ -641,17 +641,18 @@ class VaultService {
   /// Mucho más resistente que PBKDF2 contra ataques con GPU/ASIC
   static List<int> _deriveEncryptionKey(String password, List<int> salt) {
     final passwordBytes = utf8.encode(password);
-    // Argon2id: memory=64MB, iterations=3, parallelism=4, output=32 bytes
-    // Configuración recomendada por OWASP para Argon2id
+    // Argon2id: memory=19MB, iterations=2, parallelism=1, output=32 bytes
+    // Configuración balanceada para móvil (rápida pero segura)
+    // OWASP recomienda mínimo 19MB memory + 2 iterations para Argon2id
     // type=2 es Argon2id, version=0x13 es v1.3
     final argon2 = Argon2FfiFlutter();
     final result = argon2.argon2(Argon2Arguments(
       Uint8List.fromList(passwordBytes),
       Uint8List.fromList(salt),
-      65536, // memory (KB) = 64MB
-      3,     // iterations
+      19456, // memory (KB) = 19MB (mínimo OWASP)
+      2,     // iterations (mínimo OWASP)
       _keyLength,
-      4,     // parallelism
+      1,     // parallelism
       2,     // type: Argon2id
       0x13,  // version: 1.3
     ));
