@@ -4,11 +4,12 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_generator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
+import 'package:pointycastle/key_derivators/pbkdf2.dart' as pbkdf2;
 import 'secure_delete_service.dart';
 
 /// Registro de archivo en la bóveda
@@ -83,8 +84,6 @@ class VaultService {
     
     await prefs.setString('vault_salt', base64.encode(salt));
     await prefs.setString('vault_password_hash', base64.encode(hash));
-    
-    debugPrint('[VaultService] Password set successfully');
   }
 
   /// Verifica si la contraseña proporcionada es correcta
@@ -130,7 +129,6 @@ class VaultService {
       final list = jsonDecode(str) as List;
       return list.map((e) => VaultFileRecord.fromJson(e as Map<String, dynamic>)).toList();
     } catch (e) {
-      debugPrint('[VaultService] Error loading records: $e');
       return [];
     }
   }
@@ -254,7 +252,6 @@ class VaultService {
     records.add(record);
     await saveRecords(records);
 
-    debugPrint('[VaultService] File encrypted: ${record.originalName}');
     return record;
   }
 
@@ -385,7 +382,6 @@ class VaultService {
       records.removeWhere((e) => e.id == record.id);
       await saveRecords(records);
 
-      debugPrint('[VaultService] File decrypted: ${record.originalName}');
       return originalFile;
     } finally {
       await raf.close();
@@ -553,22 +549,14 @@ class VaultService {
     return List<int>.generate(length, (_) => random.nextInt(256));
   }
 
-  /// Deriva clave de cifrado usando PBKDF2
+  /// Deriva clave de cifrado usando PBKDF2 real de pointycastle
   static List<int> _deriveEncryptionKey(String password, List<int> salt) {
     final passwordBytes = utf8.encode(password);
-    
-    final hmac = Hmac(sha256, salt);
-    var block = List<int>.from(passwordBytes);
-    var result = List<int>.filled(_keyLength, 0);
-    
-    for (int i = 0; i < _pbkdf2Iterations; i++) {
-      block = hmac.convert(block).bytes;
-      for (int j = 0; j < _keyLength; j++) {
-        result[j] ^= block[j];
-      }
-    }
-    
-    return result;
+    final derivator = pbkdf2.Pbkdf2Sha256();
+    final key = derivator
+        .deriveKey(Uint8List.fromList(passwordBytes), Uint8List.fromList(salt), 
+            600000, _keyLength * 8);
+    return List<int>.from(key.buffer.asUint8List().sublist(0, _keyLength));
   }
 
   /// Hashea contraseña con PBKDF2 para almacenamiento
@@ -631,10 +619,9 @@ class VaultService {
             }
           }
         }
-        debugPrint('[VaultService] Temporary decrypted files cleared successfully');
+        
       }
     } catch (e) {
-      debugPrint('[VaultService] Error clearing temp files: $e');
-    }
+      }
   }
 }

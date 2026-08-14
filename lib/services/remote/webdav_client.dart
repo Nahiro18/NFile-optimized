@@ -85,7 +85,6 @@ class WebDavRemoteClient implements RemoteClient {
     }
 
     final url = Uri.parse(_baseUrl + Uri.encodeFull(normalizedPath));
-    print('[WebDAV DEBUG] PROPFIND URL: $url');
     final request = await _httpClient.openUrl('PROPFIND', url);
     request.headers.set('Depth', '1');
     final auth = _authHeader();
@@ -94,14 +93,11 @@ class WebDavRemoteClient implements RemoteClient {
     }
     
     final response = await request.close();
-    print('[WebDAV DEBUG] Response status: ${response.statusCode}');
     if (response.statusCode >= 400) {
       throw Exception('WebDAV list error: ${response.statusCode}');
     }
 
     final body = await response.transform(utf8.decoder).join();
-    print('[WebDAV DEBUG] Response body length: ${body.length}');
-    print('[WebDAV DEBUG] Response body: $body');
     final document = xml.XmlDocument.parse(body);
     
     // Find response tags under any namespace prefix case-insensitively

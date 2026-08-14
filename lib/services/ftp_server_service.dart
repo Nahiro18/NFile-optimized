@@ -14,7 +14,7 @@ class FtpServerService {
   int _port = 9999;
   String _homeDir = '/storage/emulated/0';
   String _username = 'Anonymous';
-  bool _anonymous = true;
+  bool _anonymous = false;
   bool _showHidden = false;
   bool _isActive = false;
   String _ipAddress = '127.0.0.1';

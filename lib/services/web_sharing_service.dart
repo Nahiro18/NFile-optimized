@@ -10,17 +10,21 @@ class WebSharingService extends ChangeNotifier {
   static final WebSharingService instance = WebSharingService._();
   WebSharingService._();
 
-  static const _channel = MethodChannel('com.rubex.nfile/web_sharing_service');
+static const _channel = MethodChannel('com.rubex.nfile/web_sharing_service');
 
   static const String _ed25519PrivateKeyPem = '''
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
 QyNTUxOQAAACAWN3mZdOKrXnP+VFVDS6yuPfVgGbCOa0a/B0YHt7wfpAAAAJj80blj/NG5
 YwAAAAtzc2gtZWQyNTUxOQAAACAWN3mZdOKrXnP+VFVDS6yuPfVgGbCOa0a/B0YHt7wfpA
-AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
+AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 9WAZsI5rRr8HRge3vB+kAAAAFWFkbWluQERFU0tUT1AtS1NIUkFVNw==
 -----END OPENSSH PRIVATE KEY-----
 ''';
+
+  // Authentication
+  String? _authToken;
+  static const String _authHeader = 'x-auth-token';
 
   SSHClient? _sshClient;
   SSHRemoteForward? _sshForward;
@@ -44,6 +48,14 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
   // Dynamic active clients state
   final Map<String, ActiveClient> _clientsMap = {};
   Timer? _speedTimer;
+
+  String? get authToken => _authToken;
+
+  static String _generateAuthToken(int length) {
+    final rng = Random.secure();
+    final bytes = List<int>.generate(length, (_) => rng.nextInt(256));
+    return base64.encode(bytes);
+  }
 
   List<Map<String, dynamic>> get activeClients {
     return _clientsMap.values.map((client) {
@@ -78,7 +90,8 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       // 1. Resolve local Wi-Fi IP address
       _localIpAddress = await _detectLocalIp();
 
-      // 2. Bind HttpServer
+      // 2. Generate auth token and bind HttpServer
+      _authToken = _generateAuthToken(16);
       _localServer = await HttpServer.bind(InternetAddress.anyIPv4, _port);
       _isLocalActive = true;
       notifyListeners();
@@ -88,6 +101,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
         await _channel.invokeMethod('startWebSharingService', {
           'url': 'http://$_localIpAddress:$_port',
           'isInternet': false,
+          'token': _authToken,
         });
       } catch (e) {
         debugPrint('Failed to start native web sharing service: $e');
@@ -109,6 +123,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     } catch (e) {
       _isLocalActive = false;
       _localServer = null;
+      _authToken = null;
       notifyListeners();
       rethrow;
     }
@@ -119,6 +134,7 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     await _localServer?.close(force: true);
     _localServer = null;
     _isLocalActive = false;
+    _authToken = null;
     _clientsMap.clear();
     _speedTimer?.cancel();
     _speedTimer = null;
@@ -137,6 +153,15 @@ AAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 
   // --- Real HTTP File System Router ---
   Future<void> _handleHttpRequest(HttpRequest request, String rootDir) async {
+    // auth: check token
+    final token = request.headers[_authHeader];
+    if (_authToken != null && token != _authToken) {
+      response.statusCode = HttpStatus.forbidden;
+      response.write('403 Forbidden: Invalid or missing authentication token.');
+      await response.close();
+      return;
+    }
+
     final response = request.response;
     final uriPath = Uri.decodeComponent(request.uri.path);
 

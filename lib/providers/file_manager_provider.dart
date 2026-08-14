@@ -79,6 +79,13 @@ Future<int> calculateDirectorySize(String path) async {
 
 class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
 
+  final _prefs = PreferencesService();
+
+  // Timers para evitar memory leaks
+  Timer? _autoDeselectTimer;
+  Timer? _refreshTimer;
+  Timer? _batchRefreshTimer;
+
   FileManagerProvider() {
     _sortType = PreferencesService.getSortType();
     _isGridView = PreferencesService.getIsGridView();
@@ -416,7 +423,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     highlightedPaths.clear();
     highlightedPaths.add(exitedPath);
     notifyListeners();
-    Timer(const Duration(milliseconds: 2000), () {
+    _autoDeselectTimer = Timer(const Duration(milliseconds: 2000), () {
       if (highlightedPaths.remove(exitedPath)) {
         notifyListeners();
       }
@@ -874,7 +881,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
       highlightedPaths.addAll(finalTopLevelDestPaths);
       shouldScrollToHighlight = true;
 
-      Timer(const Duration(milliseconds: 2000), () {
+      _refreshTimer = Timer(const Duration(milliseconds: 2000), () {
         bool changed = false;
         for (final path in finalTopLevelDestPaths) {
           if (highlightedPaths.remove(path)) {
@@ -1473,7 +1480,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     highlightedPaths.clear();
     highlightedPaths.add(path);
     notifyListeners();
-    Timer(const Duration(milliseconds: 2000), () {
+    _batchRefreshTimer = Timer(const Duration(milliseconds: 2000), () {
       if (highlightedPaths.remove(path)) {
         notifyListeners();
       }
@@ -1672,3 +1679,11 @@ class FileOperationProgress {
     required this.bytesProcessed,
   });
 }
+  @override
+  void dispose() {
+    _autoDeselectTimer?.cancel();
+    _refreshTimer?.cancel();
+    _batchRefreshTimer?.cancel();
+    super.dispose();
+  }
+
