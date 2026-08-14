@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -70,18 +69,14 @@ class VaultService {
   static const int _keyLength = 32; // 256 bits
   static const int _ivLength = 16; // 128 bits
   static const int _saltLength = 32; // 256 bits
-  static const int _pbkdf2Iterations = 100000;
 
   // ============ AUTO-LOCK ============
   static const Duration _autoLockTimeout = Duration(minutes: 5);
   static Timer? _autoLockTimer;
-  static DateTime? _lastActivityTime;
   static bool _isUnlocked = false;
-  static String? _currentSessionKey;
 
   /// Registra actividad del usuario para resetear el timer de auto-lock
   static void recordActivity() {
-    _lastActivityTime = DateTime.now();
     _resetAutoLockTimer();
   }
 
@@ -95,10 +90,8 @@ class VaultService {
   /// Bloquea la bóveda manualmente o por inactividad
   static void lock() {
     _isUnlocked = false;
-    _currentSessionKey = null;
     _autoLockTimer?.cancel();
     _autoLockTimer = null;
-    _lastActivityTime = null;
   }
 
   /// Verifica si la bóveda está desbloqueada

@@ -78,8 +78,6 @@ Future<int> calculateDirectorySize(String path) async {
 
 class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
 
-  final _prefs = PreferencesService();
-
   // Timers para evitar memory leaks
   Timer? _autoDeselectTimer;
   Timer? _refreshTimer;
