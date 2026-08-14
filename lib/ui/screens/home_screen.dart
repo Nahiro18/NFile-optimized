@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
             opacity: anim1,
             child: PopScope(
               canPop: false,
-              onPopInvoked: (didPop) {
+              onPopInvokedWithResult: (didPop, result) {
                 if (didPop) return;
                 SystemNavigator.pop();
               },
@@ -179,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
 
     return PopScope(
       canPop: canPopHomeScreen,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         if (_currentIndex == 1) {
           if (!provider.canGoBack) {

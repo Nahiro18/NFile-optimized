@@ -208,7 +208,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
 
     return PopScope(
       canPop: !_isSearching,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         if (_isSearching) {
           setState(() {

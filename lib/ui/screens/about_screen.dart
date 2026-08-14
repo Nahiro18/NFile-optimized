@@ -287,10 +287,10 @@ class AboutNFileScreen extends StatelessWidget {
                     icon: Broken.send,
                     label: 'Share App with Friends',
                     onTap: () {
-                      Share.share(
-                        'Check out NFile, a beautiful offline file manager and media hub: https://github.com/Senzme/NFile/releases',
+                      SharePlus.instance.share(ShareParams(
+                        text: 'Check out NFile, a beautiful offline file manager and media hub: https://github.com/Senzme/NFile/releases',
                         subject: 'NFile - Beautiful File Manager',
-                      );
+                      ));
                     },
                   ),
                   const SizedBox(height: 10),

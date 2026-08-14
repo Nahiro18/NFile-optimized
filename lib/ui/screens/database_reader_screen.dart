@@ -424,7 +424,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                             headingRowHeight: 40,
                             dataRowMinHeight: 36,
                             dataRowMaxHeight: 48,
-                            headingRowColor: MaterialStateProperty.all(theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)),
+                            headingRowColor: WidgetStateProperty.all(theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)),
                             columns: _tableColumns.map((col) {
                               return DataColumn(
                                 label: Text(
@@ -731,7 +731,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                                   headingRowHeight: 38,
                                   dataRowMinHeight: 34,
                                   dataRowMaxHeight: 46,
-                                  headingRowColor: MaterialStateProperty.all(theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)),
+                                  headingRowColor: WidgetStateProperty.all(theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)),
                                   columns: _sqlResultColumns.map((col) {
                                     return DataColumn(
                                       label: Text(

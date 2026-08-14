@@ -116,7 +116,7 @@ class _CreateArchiveDialogState extends State<CreateArchiveDialog> {
 
               // Format Selection
               DropdownButtonFormField<String>(
-                value: _format,
+                initialValue: _format,
                 decoration: InputDecoration(
                   labelText: 'Archive Format',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),

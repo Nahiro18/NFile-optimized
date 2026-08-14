@@ -552,7 +552,7 @@ class _VaultExplorerScreenState extends State<VaultExplorerScreen> {
                           return IconButton(
                             icon: Icon(
                               isEnabled ? Broken.finger_cricle : Icons.fingerprint_rounded,
-                              color: isEnabled ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.5),
+                              color: isEnabled ? theme.colorScheme.primary : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                             ),
                             tooltip: 'Biometric Unlock',
                             onPressed: () async {

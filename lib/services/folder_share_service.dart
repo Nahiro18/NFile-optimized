@@ -77,7 +77,7 @@ class FolderShareService {
       }
 
       if (filesToShare.isNotEmpty) {
-        await Share.shareXFiles(filesToShare);
+        await SharePlus.instance.share(ShareParams(files: filesToShare));
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

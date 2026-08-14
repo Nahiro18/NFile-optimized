@@ -211,6 +211,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     notifyListeners();
   }
 
+  @override
   Future<void> loadDirectory(String path, {bool showLoading = true, bool clearCache = false}) async {
     deactivateSearchForTab(activeTab);
     // Normalize legacy sdcard paths to canonical /storage/emulated/0

@@ -316,7 +316,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
 
     if (filesToShare.isNotEmpty) {
       try {
-        await Share.shareXFiles(filesToShare);
+        await SharePlus.instance.share(ShareParams(files: filesToShare));
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -768,7 +768,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
                   }
                   if (target != null && FileSystemEntity.isFileSync(target)) {
                     try {
-                      await Share.shareXFiles([XFile(target)]);
+                      await SharePlus.instance.share(ShareParams(files: [XFile(target)]));
                     } catch (e) {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(

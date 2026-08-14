@@ -534,7 +534,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                 ),
                 trailing: Switch(
                   value: _isShuffled,
-                  activeColor: Colors.deepPurpleAccent,
+                  activeThumbColor: Colors.deepPurpleAccent,
                   onChanged: (_) {
                     _toggleShuffle();
                     setSheet(() {});

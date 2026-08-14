@@ -191,7 +191,7 @@ class AppManagerService {
       }
 
       if (filesToShare.isNotEmpty) {
-        await Share.shareXFiles(filesToShare, text: 'Sharing APK for ${app.name}');
+        await SharePlus.instance.share(ShareParams(files: filesToShare, text: 'Sharing APK for ${app.name}'));
       }
     } catch (e) {
       debugPrint('Error sharing app: $e');
@@ -216,7 +216,7 @@ class AppManagerService {
       }
 
       if (filesToShare.isNotEmpty) {
-        await Share.shareXFiles(filesToShare, text: 'Sharing APKs of selected apps');
+        await SharePlus.instance.share(ShareParams(files: filesToShare, text: 'Sharing APKs of selected apps'));
       }
     } catch (e) {
       debugPrint('Error batch sharing apps: $e');
