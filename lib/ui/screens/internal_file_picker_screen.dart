@@ -263,7 +263,7 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
                       final isSelected = _activeRootPath == vol.path;
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                        color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4) : theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+                        color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4) : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -320,7 +320,7 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
                     }),
                     Card(
                       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                      color: _activeRootPath == '/' ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4) : theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+                      color: _activeRootPath == '/' ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4) : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),

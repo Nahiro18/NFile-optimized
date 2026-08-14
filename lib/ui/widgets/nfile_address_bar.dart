@@ -413,7 +413,7 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
         height: 48,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.35),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _isEditing ? theme.colorScheme.primary.withValues(alpha: 0.5) : theme.dividerColor.withValues(alpha: 0.1),
@@ -569,8 +569,9 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
                                     }
 
                                     return DragTarget<DragPayload>(
-                                      onWillAccept: (data) {
-                                        if (data == null || data.paths.isEmpty) return false;
+                                      onWillAcceptWithDetails: (details) {
+                                        final data = details.data;
+                                        if (data.paths.isEmpty) return false;
                                         if (data.paths.contains(segment.path)) return false;
                                         if (data.paths.any((x) => segment.path.startsWith(x + p.separator))) return false;
 
@@ -594,7 +595,8 @@ class _NFileAddressBarState extends State<NFileAddressBar> {
                                         _hoverTimers[segment.path]?.cancel();
                                         _hoverTimers.remove(segment.path);
                                       },
-                                      onAccept: (data) {
+                                      onAcceptWithDetails: (details) {
+                                        final data = details.data;
                                         setStateSegment(() {
                                           isDragOverSegment = false;
                                         });

@@ -296,7 +296,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
+                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
                       ),
@@ -357,7 +357,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
+                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: TextField(
@@ -422,7 +422,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                             headingRowHeight: 40,
                             dataRowMinHeight: 36,
                             dataRowMaxHeight: 48,
-                            headingRowColor: MaterialStateProperty.all(theme.colorScheme.surfaceVariant.withValues(alpha: 0.4)),
+                            headingRowColor: MaterialStateProperty.all(theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)),
                             columns: _tableColumns.map((col) {
                               return DataColumn(
                                 label: Text(
@@ -527,7 +527,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: isPk ? theme.colorScheme.primary.withValues(alpha: 0.15) : theme.colorScheme.surfaceVariant,
+              backgroundColor: isPk ? theme.colorScheme.primary.withValues(alpha: 0.15) : theme.colorScheme.surfaceContainerHighest,
               child: Icon(
                 isPk ? Broken.key : Broken.document_text,
                 color: isPk ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
@@ -592,7 +592,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
           padding: const EdgeInsets.all(12.0),
           child: Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.15)),
             ),
@@ -729,7 +729,7 @@ class _DatabaseReaderScreenState extends State<DatabaseReaderScreen> with Single
                                   headingRowHeight: 38,
                                   dataRowMinHeight: 34,
                                   dataRowMaxHeight: 46,
-                                  headingRowColor: MaterialStateProperty.all(theme.colorScheme.surfaceVariant.withValues(alpha: 0.3)),
+                                  headingRowColor: MaterialStateProperty.all(theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)),
                                   columns: _sqlResultColumns.map((col) {
                                     return DataColumn(
                                       label: Text(

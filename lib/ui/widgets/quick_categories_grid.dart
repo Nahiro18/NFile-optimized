@@ -501,7 +501,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
               ],
               Switch(
                 value: widget.isEnabled,
-                activeColor: theme.colorScheme.primary,
+                activeThumbColor: theme.colorScheme.primary,
                 onChanged: (val) => widget.provider.toggleCategory(label),
               ),
               const SizedBox(width: 12),
@@ -618,7 +618,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+                          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Row(

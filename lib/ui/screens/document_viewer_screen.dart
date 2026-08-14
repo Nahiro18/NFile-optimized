@@ -464,7 +464,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             style: TextStyle(fontSize: 12),
                           ),
                           value: _pdfEnableTextSelection,
-                          activeColor: theme.colorScheme.primary,
+                          activeThumbColor: theme.colorScheme.primary,
                           onChanged: (val) {
                             setModalState(() {
                               _pdfEnableTextSelection = val;

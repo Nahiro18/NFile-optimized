@@ -287,7 +287,7 @@ class NFileDrawer extends StatelessWidget {
                         scale: 0.85,
                         child: Switch(
                           value: isDark,
-                          activeColor: theme.colorScheme.primary,
+                          activeThumbColor: theme.colorScheme.primary,
                           onChanged: (_) => toggleTheme(),
                         ),
                       ),

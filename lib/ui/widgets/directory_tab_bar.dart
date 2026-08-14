@@ -47,7 +47,7 @@ class DirectoryTabBar extends StatelessWidget implements PreferredSizeWidget {
                   child: Material(
                     color: isSelected
                         ? theme.colorScheme.primaryContainer.withValues(alpha: 0.8)
-                        : theme.colorScheme.surfaceVariant.withValues(alpha: 0.4),
+                        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12),
                     child: InkWell(
                       onTap: () => provider.setActiveTab(index),

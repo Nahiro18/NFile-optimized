@@ -1455,7 +1455,7 @@ class _MediaCategoryScreenState extends State<MediaCategoryScreen>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Container(
-                color: theme.colorScheme.surfaceVariant,
+                color: theme.colorScheme.surfaceContainerHighest,
                 padding: const EdgeInsets.all(8),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

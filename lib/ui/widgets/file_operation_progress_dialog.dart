@@ -119,7 +119,7 @@ class FileOperationProgressDialog extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.4),
+                            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.06)),
                           ),
@@ -294,7 +294,7 @@ class FileOperationProgressDialog extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.2),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.04)),
       ),

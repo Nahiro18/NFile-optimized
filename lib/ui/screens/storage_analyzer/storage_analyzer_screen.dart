@@ -227,7 +227,7 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> with Sing
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.2),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: theme.dividerColor.withValues(alpha: 0.05)),
               ),

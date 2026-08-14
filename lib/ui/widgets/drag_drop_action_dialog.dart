@@ -232,7 +232,7 @@ class _DragDropActionDialogState extends State<DragDropActionDialog> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.35),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.06)),
                   ),

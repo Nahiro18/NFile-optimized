@@ -23,7 +23,7 @@ class SettingsSearchBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark 
             ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
-            : theme.colorScheme.surfaceVariant.withValues(alpha: 0.4),
+            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: theme.colorScheme.outline.withValues(alpha: 0.08),

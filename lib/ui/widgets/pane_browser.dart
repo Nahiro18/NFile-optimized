@@ -222,7 +222,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                     decoration: BoxDecoration(
                       color: isActive 
                           ? theme.colorScheme.primary.withValues(alpha: 0.06) 
-                          : theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+                          : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       border: Border(
                         bottom: BorderSide(
                           color: theme.colorScheme.outline.withValues(alpha: 0.1),
@@ -278,7 +278,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.15),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.15),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),
@@ -305,7 +305,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                     // Search Input Row
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.08),
+                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.08),
                       child: Row(
                         children: [
                           Expanded(
@@ -352,7 +352,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
                     Container(
                       height: 40,
                       padding: const EdgeInsets.symmetric(vertical: 4),
-                      color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.04),
+                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.04),
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -417,14 +417,16 @@ class _PaneBrowserState extends State<PaneBrowser> {
                   // --- Pane Body ---
                   Expanded(
                     child: DragTarget<DragPayload>(
-                      onWillAccept: (data) {
-                        if (data == null || data.paths.isEmpty) return false;
+                      onWillAcceptWithDetails: (details) {
+                        final data = details.data;
+                        if (data.paths.isEmpty) return false;
                         final sourceParent = p.dirname(data.paths.first);
                         if (sourceParent == tab.currentPath) return false;
                         if (data.paths.any((x) => tab.currentPath == x || tab.currentPath.startsWith(x + p.separator))) return false;
                         return true;
                       },
-                      onAccept: (data) {
+                      onAcceptWithDetails: (details) {
+                        final data = details.data;
                         _activatePane(provider);
                         if (provider.showDragDropDialog) {
                           DragDropActionDialog.show(

@@ -1295,7 +1295,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     activeTab.isLoading = true;
     notifyListeners();
 
-    if (context != null) {
+    if (context != null && context.mounted) {
       selectedPaths.clear();
       final destinationPath = p.join(currentPath, '$archiveName.$format');
       await BackgroundArchiveService.instance.startCompression(
@@ -1543,14 +1543,14 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
         final selectedType = result.substring('always_'.length);
         await PreferencesService.saveDefaultOpenAction(ext, selectedType);
         if (selectedType == 'native') {
-          await openFileNatively(context, targetPath);
+          if (context.mounted) await openFileNatively(context, targetPath);
         } else {
           await OpenFilex.open(targetPath);
         }
       } else if (result.startsWith('just_once_')) {
         final selectedType = result.substring('just_once_'.length);
         if (selectedType == 'native') {
-          await openFileNatively(context, targetPath);
+          if (context.mounted) await openFileNatively(context, targetPath);
         } else {
           await OpenFilex.open(targetPath);
         }
@@ -1558,7 +1558,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
       return;
     }
 
-    await openFileNatively(context, targetPath);
+    if (context.mounted) await openFileNatively(context, targetPath);
   }
 
   Future<void> moveItem(BuildContext context, String sourcePath, String destFolderPath, {bool showToast = true}) async {

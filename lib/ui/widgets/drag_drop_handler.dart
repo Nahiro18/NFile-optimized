@@ -197,8 +197,9 @@ class _DragDropHandlerState extends State<DragDropHandler> {
     // If it's a directory, wrap in a DragTarget to allow dropping items onto it
     if (widget.isDirectory) {
       return DragTarget<DragPayload>(
-        onWillAccept: (data) {
-          if (data == null || data.paths.isEmpty) return false;
+        onWillAcceptWithDetails: (details) {
+          final data = details.data;
+          if (data.paths.isEmpty) return false;
           if (data.paths.contains(widget.path)) return false;
           if (data.paths.any((x) => widget.path.startsWith(x + p.separator))) return false;
           
@@ -221,7 +222,8 @@ class _DragDropHandlerState extends State<DragDropHandler> {
           });
           _hoverTimer?.cancel();
         },
-        onAccept: (data) async {
+        onAcceptWithDetails: (details) async {
+          final data = details.data;
           setState(() {
             _isDragOver = false;
           });

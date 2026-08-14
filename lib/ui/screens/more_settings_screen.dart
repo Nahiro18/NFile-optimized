@@ -410,7 +410,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.defaultToBrowseScreen,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleDefaultToBrowseScreen(),
                           ),
                         ),
@@ -425,7 +425,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.rememberLastFolder,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleRememberLastFolder(),
                           ),
                         ),
@@ -440,7 +440,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showHomeBrowseNav,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleShowHomeBrowseNav(),
                           ),
                         ),
@@ -455,7 +455,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.hideNavLabels,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleHideNavLabels(),
                           ),
                         ),
@@ -470,7 +470,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.hideNavigationBar,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleHideNavigationBar(),
                           ),
                         ),
@@ -485,7 +485,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.disableLeftBackGesture,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleDisableLeftBackGesture(),
                           ),
                         ),
@@ -509,7 +509,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showBottomActionBar,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleBottomActionBar(),
                           ),
                         ),
@@ -524,7 +524,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.hideActionText,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleHideActionText(),
                           ),
                         ),
@@ -546,7 +546,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showRecentFiles,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleShowRecentFiles(),
                           ),
                         ),
@@ -586,7 +586,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.amoledMode,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleAmoledMode(),
                           ),
                         ),
@@ -619,7 +619,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showAddressBar,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleShowAddressBar(),
                           ),
                         ),
@@ -634,7 +634,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showFloatingAddButton,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleFloatingAddButton(),
                           ),
                         ),
@@ -649,7 +649,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showHiddenFiles,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleHiddenFiles(),
                           ),
                         ),
@@ -664,7 +664,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.enableFolderHighlight,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleEnableFolderHighlight(),
                           ),
                         ),
@@ -679,7 +679,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.enableMultipleTabs,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleMultipleTabs(),
                           ),
                         ),
@@ -694,7 +694,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.enableSplitScreen,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleSplitScreen(),
                           ),
                         ),
@@ -709,7 +709,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.enableDragDrop,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleEnableDragDrop(),
                           ),
                         ),
@@ -726,7 +726,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                             scale: 0.85,
                             child: Switch(
                               value: fileManager.showDragDropDialog,
-                              activeColor: theme.colorScheme.primary,
+                              activeThumbColor: theme.colorScheme.primary,
                               onChanged: (_) => fileManager.toggleShowDragDropDialog(),
                             ),
                           ),
@@ -746,7 +746,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showFolderFileCount,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleFolderFileCount(),
                           ),
                         ),
@@ -761,7 +761,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showFolderContentsCount,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleFolderContentsCount(),
                           ),
                         ),
@@ -776,7 +776,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showFolderSizes,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleShowFolderSizes(),
                           ),
                         ),
@@ -791,7 +791,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.use24HourFormat,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleUse24HourFormat(),
                           ),
                         ),
@@ -806,7 +806,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.hideTimeAndDate,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleHideTimeAndDate(),
                           ),
                         ),
@@ -821,7 +821,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.adaptiveMultiLineNames,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleAdaptiveMultiLineNames(),
                           ),
                         ),
@@ -836,7 +836,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.hideActionMenuButtons,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleHideActionMenuButtons(),
                           ),
                         ),
@@ -862,7 +862,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: _preferFolders,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (val) {
                               setState(() {
                                 _preferFolders = val;
@@ -888,7 +888,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.showMediaPreviews,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleMediaPreviews(),
                           ),
                         ),
@@ -903,7 +903,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: fileManager.skipOpenWithDialog,
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (_) => fileManager.toggleSkipOpenWithDialog(),
                           ),
                         ),
@@ -939,7 +939,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                           scale: 0.85,
                           child: Switch(
                             value: RecycleBinService.isEnabled(),
-                            activeColor: theme.colorScheme.primary,
+                            activeThumbColor: theme.colorScheme.primary,
                             onChanged: (val) {
                               setState(() {
                                 RecycleBinService.setEnabled(val);
@@ -1115,7 +1115,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.defaultToBrowseScreen,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleDefaultToBrowseScreen(),
                 ),
               ),
@@ -1129,7 +1129,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.rememberLastFolder,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleRememberLastFolder(),
                 ),
               ),
@@ -1143,7 +1143,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showHomeBrowseNav,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleShowHomeBrowseNav(),
                 ),
               ),
@@ -1157,7 +1157,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.hideNavLabels,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleHideNavLabels(),
                 ),
               ),
@@ -1171,7 +1171,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.hideNavigationBar,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleHideNavigationBar(),
                 ),
               ),
@@ -1185,7 +1185,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showBottomActionBar,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleBottomActionBar(),
                 ),
               ),
@@ -1199,7 +1199,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.hideActionText,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleHideActionText(),
                 ),
               ),
@@ -1219,7 +1219,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showRecentFiles,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleShowRecentFiles(),
                 ),
               ),
@@ -1233,7 +1233,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.disableLeftBackGesture,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleDisableLeftBackGesture(),
                 ),
               ),
@@ -1301,7 +1301,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.amoledMode,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleAmoledMode(),
                 ),
               ),
@@ -1327,7 +1327,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.useMaterialIcons,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (val) => fileManager.setUseMaterialIcons(val),
                 ),
               ),
@@ -1369,7 +1369,7 @@ class ExplorerSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showAddressBar,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleShowAddressBar(),
                 ),
               ),
@@ -1383,7 +1383,7 @@ class ExplorerSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showFloatingAddButton,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleFloatingAddButton(),
                 ),
               ),
@@ -1397,7 +1397,7 @@ class ExplorerSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showHiddenFiles,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleHiddenFiles(),
                 ),
               ),
@@ -1411,7 +1411,7 @@ class ExplorerSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.enableFolderHighlight,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleEnableFolderHighlight(),
                 ),
               ),
@@ -1425,7 +1425,7 @@ class ExplorerSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.enableMultipleTabs,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleMultipleTabs(),
                 ),
               ),
@@ -1439,7 +1439,7 @@ class ExplorerSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.enableSplitScreen,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleSplitScreen(),
                 ),
               ),
@@ -1453,7 +1453,7 @@ class ExplorerSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.enableDragDrop,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleEnableDragDrop(),
                 ),
               ),
@@ -1470,7 +1470,7 @@ class ExplorerSettingsScreen extends StatelessWidget {
                     scale: 0.85,
                     child: Switch(
                       value: fileManager.showDragDropDialog,
-                      activeColor: theme.colorScheme.primary,
+                      activeThumbColor: theme.colorScheme.primary,
                       onChanged: (_) => fileManager.toggleShowDragDropDialog(),
                     ),
                   ),
@@ -1513,7 +1513,7 @@ class LayoutSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showFolderFileCount,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleFolderFileCount(),
                 ),
               ),
@@ -1527,7 +1527,7 @@ class LayoutSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showFolderContentsCount,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleFolderContentsCount(),
                 ),
               ),
@@ -1541,7 +1541,7 @@ class LayoutSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showFolderSizes,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleShowFolderSizes(),
                 ),
               ),
@@ -1555,7 +1555,7 @@ class LayoutSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.use24HourFormat,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleUse24HourFormat(),
                 ),
               ),
@@ -1569,7 +1569,7 @@ class LayoutSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.hideTimeAndDate,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleHideTimeAndDate(),
                 ),
               ),
@@ -1583,7 +1583,7 @@ class LayoutSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.adaptiveMultiLineNames,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleAdaptiveMultiLineNames(),
                 ),
               ),
@@ -1597,7 +1597,7 @@ class LayoutSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.hideActionMenuButtons,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleHideActionMenuButtons(),
                 ),
               ),
@@ -1659,7 +1659,7 @@ class _MediaSettingsScreenState extends State<MediaSettingsScreen> {
                 scale: 0.85,
                 child: Switch(
                   value: _preferFolders,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (val) {
                     setState(() {
                       _preferFolders = val;
@@ -1684,7 +1684,7 @@ class _MediaSettingsScreenState extends State<MediaSettingsScreen> {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.showMediaPreviews,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleMediaPreviews(),
                 ),
               ),
@@ -1726,7 +1726,7 @@ class ActionsSettingsScreen extends StatelessWidget {
                 scale: 0.85,
                 child: Switch(
                   value: fileManager.skipOpenWithDialog,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (_) => fileManager.toggleSkipOpenWithDialog(),
                 ),
               ),
@@ -1788,7 +1788,7 @@ class _TrashSettingsScreenState extends State<TrashSettingsScreen> {
                 scale: 0.85,
                 child: Switch(
                   value: RecycleBinService.isEnabled(),
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (val) {
                     setState(() {
                       RecycleBinService.setEnabled(val);
@@ -2424,7 +2424,7 @@ Widget _buildIconOptionCard(
   final isSelected = fileManager.activeAppIcon == id;
 
   return Card(
-    color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4) : theme.colorScheme.surfaceVariant.withValues(alpha: 0.15),
+    color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4) : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.15),
     elevation: 0,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(16),
