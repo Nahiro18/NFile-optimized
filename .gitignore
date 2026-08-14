@@ -12,6 +12,12 @@
 .swiftpm/
 migrate_working_dir/
 
+# Dev-only tooling (AI agent configs, scratch refactor scripts)
+scratch/
+gemini/
+refactor_*.py
+tools/
+
 # IntelliJ related
 *.iml
 *.ipr

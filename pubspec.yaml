@@ -17,7 +17,6 @@ dependency_overrides:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
   path_provider: ^2.1.3
   shared_preferences: ^2.2.3
   permission_handler: any
@@ -56,12 +55,9 @@ dependencies:
   dartssh2: ^2.8.2
   audio_service: ^0.18.17
   device_info_plus: any
-  qr_flutter: ^4.1.0
-  
+
   # NUEVAS DEPENDENCIAS PARA SEGURIDAD
   encrypt: ^5.0.3
-  pointycastle: ^3.7.3
-  collection: ^1.18.0
   event_bus: ^2.0.1
   shimmer: ^3.0.0
   get_it: ^9.2.1
@@ -72,7 +68,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: any
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
