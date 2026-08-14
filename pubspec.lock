@@ -9,14 +9,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.6.1"
-  argon2_ffi_base:
-    dependency: "direct main"
-    description:
-      name: argon2_ffi_base
-      sha256: "6e8dcdd6cf7f31287a7f7c9ab1db349b3b0ff8f87866dbb1c2582140f79d60aa"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.1"
   args:
     dependency: transitive
     description:

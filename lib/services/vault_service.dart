@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:archive/archive.dart';
-import 'package:argon2_ffi_base/argon2_ffi_base.dart';
+import 'package:crypto/crypto.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'secure_delete_service.dart';
@@ -637,29 +637,60 @@ class VaultService {
     return List<int>.generate(length, (_) => random.nextInt(256));
   }
 
-  /// Deriva clave de cifrado usando Argon2id (estándar moderno)
-  /// Mucho más resistente que PBKDF2 contra ataques con GPU/ASIC
+  /// Deriva clave de cifrado usando PBKDF2-HMAC-SHA256
+  /// Estándar seguro y portable (funciona en todas las plataformas sin librerías nativas)
   static List<int> _deriveEncryptionKey(String password, List<int> salt) {
     final passwordBytes = utf8.encode(password);
-    // Argon2id: memory=19MB, iterations=2, parallelism=1, output=32 bytes
-    // Configuración balanceada para móvil (rápida pero segura)
-    // OWASP recomienda mínimo 19MB memory + 2 iterations para Argon2id
-    // type=2 es Argon2id, version=0x13 es v1.3
-    final argon2 = Argon2FfiFlutter();
-    final result = argon2.argon2(Argon2Arguments(
-      Uint8List.fromList(passwordBytes),
-      Uint8List.fromList(salt),
-      19456, // memory (KB) = 19MB (mínimo OWASP)
-      2,     // iterations (mínimo OWASP)
-      _keyLength,
-      1,     // parallelism
-      2,     // type: Argon2id
-      0x13,  // version: 1.3
-    ));
-    return List<int>.from(result);
+    // PBKDF2-HMAC-SHA256: 100,000 iteraciones, output=32 bytes (256 bits)
+    // Estándar NIST recomendado para derivación de claves
+    return _pbkdf2(
+      passwordBytes: passwordBytes,
+      salt: salt,
+      iterations: 100000,
+      keyLength: _keyLength,
+    );
   }
 
-  /// Hashea contraseña con Argon2id para almacenamiento
+  /// Implementación PBKDF2-HMAC-SHA256
+  static List<int> _pbkdf2({
+    required List<int> passwordBytes,
+    required List<int> salt,
+    required int iterations,
+    required int keyLength,
+  }) {
+    final hmac = Hmac(sha256, passwordBytes);
+    final result = <int>[];
+    final blockCount = (keyLength + 31) ~/ 32; // SHA-256 produce 32 bytes
+
+    for (int block = 1; block <= blockCount; block++) {
+      final blockSalt = [...salt, ..._intToBytes(block)];
+      var u = hmac.convert(blockSalt).bytes;
+      var t = List<int>.from(u);
+
+      for (int i = 1; i < iterations; i++) {
+        u = hmac.convert(u).bytes;
+        for (int j = 0; j < t.length; j++) {
+          t[j] ^= u[j];
+        }
+      }
+
+      result.addAll(t);
+    }
+
+    return result.sublist(0, keyLength);
+  }
+
+  /// Convierte int a bytes (big-endian, 4 bytes)
+  static List<int> _intToBytes(int value) {
+    return [
+      (value >> 24) & 0xFF,
+      (value >> 16) & 0xFF,
+      (value >> 8) & 0xFF,
+      value & 0xFF,
+    ];
+  }
+
+  /// Hashea contraseña con PBKDF2 para almacenamiento
   static List<int> _hashPasswordWithPBKDF2(String password, List<int> salt) {
     return _deriveEncryptionKey(password, salt);
   }
