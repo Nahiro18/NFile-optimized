@@ -24,7 +24,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
   
   // Input State
   String _inputBuffer = '';
-  String _message = 'Enter Password to Unlock';
+  String _message = 'Enter 6-digit PIN to Unlock';
   bool _isError = false;
 
   late final AnimationController _shakeController;
@@ -51,7 +51,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
       setState(() {
         _isPasswordSet = isSet;
         _checkingPasswordStatus = false;
-        _message = isSet ? 'Enter PIN to Unlock Vault' : 'Set your 4-digit Vault PIN';
+        _message = isSet ? 'Enter PIN to Unlock Vault' : 'Set your 6-digit Vault PIN';
       });
     }
     
@@ -82,17 +82,17 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
       _inputBuffer += key;
     });
 
-    if (_inputBuffer.length == 4 && !_isPasswordSet && !_isConfirmMode) {
+    if (_inputBuffer.length == 6 && !_isPasswordSet && !_isConfirmMode) {
       // First time set password: proceed to confirm
       Future.delayed(const Duration(milliseconds: 200), () {
         setState(() {
           _tempPassword = _inputBuffer;
           _inputBuffer = '';
           _isConfirmMode = true;
-          _message = 'Confirm your 4-digit PIN';
+          _message = 'Confirm your 6-digit PIN';
         });
       });
-    } else if (_inputBuffer.length == 4 && !_isPasswordSet && _isConfirmMode) {
+    } else if (_inputBuffer.length == 6 && !_isPasswordSet && _isConfirmMode) {
       // Confirm password matching check
       Future.delayed(const Duration(milliseconds: 200), () async {
         if (_inputBuffer == _tempPassword) {
@@ -128,7 +128,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
           });
         }
       });
-    } else if (_inputBuffer.length == 4 && _isPasswordSet) {
+    } else if (_inputBuffer.length == 6 && _isPasswordSet) {
       // Unlock verification check
       Future.delayed(const Duration(milliseconds: 200), () async {
         if (mounted) {

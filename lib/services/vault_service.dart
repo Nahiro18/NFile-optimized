@@ -245,12 +245,18 @@ class VaultService {
     final originalName = customName ?? p.basename(originalPath);
     final size = await file.length();
     final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    final randomId = _generateSecureRandom(8).map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 
     // Determinar ruta de destino
     String scrambledPath;
     if (inPlace) {
       final dir = isFolder ? originalPath : p.dirname(originalPath);
-      scrambledPath = p.join(dir, '.vault_$timestamp.nfv');
+      // Crear carpeta oculta .nvault para mejor ocultación
+      final hiddenDir = Directory(p.join(dir, '.nvault'));
+      if (!await hiddenDir.exists()) {
+        await hiddenDir.create(recursive: true);
+      }
+      scrambledPath = p.join(hiddenDir.path, '.v_$randomId.nfv');
     } else {
       final vaultDir = await getVaultDir();
       scrambledPath = p.join(vaultDir.path, 'vault_$timestamp.nfv');
