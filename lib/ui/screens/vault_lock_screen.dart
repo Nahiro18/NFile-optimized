@@ -293,7 +293,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
                 controller: _shakeController,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(4, (index) {
+                  children: List.generate(6, (index) {
                     final isFilled = index < _inputBuffer.length;
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
