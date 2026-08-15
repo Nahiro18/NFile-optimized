@@ -27,23 +27,42 @@ class SecureDeleteService {
   }
 
   /// Borra un archivo sobreescribiéndolo con bytes aleatorios y ceros
+  /// Usa chunks de 64KB para no saturar la memoria RAM
   static Future<void> _deleteFileSecurely(File file) async {
     if (!await file.exists()) return;
 
     try {
       final length = await file.length();
       if (length > 0) {
+        const chunkSize = 64 * 1024; // 64KB por chunk
+
         // Pase 1: Sobreescribir con datos aleatorios
         final randomFile = await file.open(mode: FileMode.write);
-        final randomBytes = List<int>.generate(length, (i) => _random.nextInt(256));
-        await randomFile.writeFrom(randomBytes);
+        int written = 0;
+        while (written < length) {
+          final remaining = length - written;
+          final writeSize = remaining < chunkSize ? remaining : chunkSize;
+          final chunk = List<int>.generate(writeSize, (_) => _random.nextInt(256));
+          await randomFile.writeFrom(chunk);
+          written += writeSize;
+        }
         await randomFile.flush();
         await randomFile.close();
 
         // Pase 2: Sobreescribir con ceros
         final zeroFile = await file.open(mode: FileMode.write);
-        final zeroBytes = List<int>.filled(length, 0);
-        await zeroFile.writeFrom(zeroBytes);
+        final zeroChunk = List<int>.filled(chunkSize, 0);
+        written = 0;
+        while (written < length) {
+          final remaining = length - written;
+          final writeSize = remaining < chunkSize ? remaining : chunkSize;
+          if (writeSize == chunkSize) {
+            await zeroFile.writeFrom(zeroChunk);
+          } else {
+            await zeroFile.writeFrom(List<int>.filled(writeSize, 0));
+          }
+          written += writeSize;
+        }
         await zeroFile.flush();
         await zeroFile.close();
       }
