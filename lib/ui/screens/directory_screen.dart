@@ -28,9 +28,6 @@ import '../../services/pin_service.dart';
 import '../../services/folder_share_service.dart';
 import '../widgets/pane_browser.dart';
 import '../widgets/nfile_address_bar.dart';
-import '../../services/network_connections_service.dart';
-import 'network_connection_wizard_screen.dart';
-import 'remote_explorer_screen.dart';
 import '../widgets/skeletons/skeleton_loader.dart';
 
 class DirectoryScreen extends StatefulWidget {
@@ -928,7 +925,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        final connections = NetworkConnectionsService.getConnections();
         return SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -1165,141 +1161,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                     );
                   }),
 
-                  // Network Connections Section
-                  if (connections.isNotEmpty) ...[
-                    const SizedBox(height: 24),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 4.0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Network Connections',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.primary,
-                              fontFamily: 'LexendDeca',
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.add_link_rounded, size: 20),
-                            tooltip: 'Add Network Connection',
-                            onPressed: () async {
-                              final outerContext = context;
-                              final sheetContext = ctx;
-                              Navigator.pop(sheetContext);
-                              final added = await Navigator.push(
-                                outerContext,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const NetworkConnectionWizardScreen(),
-                                ),
-                              );
-                              if (added == true && outerContext.mounted) {
-                                _showStorageVolumeModal(outerContext, provider);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Divider(height: 8, thickness: 1),
-                    ),
-                    ...connections.map((conn) {
-                      IconData iconData;
-                      switch (conn.type) {
-                        case 'Google Drive':
-                          iconData = Icons.cloud_circle_rounded;
-                          break;
-                        case 'Dropbox':
-                          iconData = Icons.folder_shared_rounded;
-                          break;
-                        case 'OneDrive':
-                          iconData = Icons.cloud_queue_rounded;
-                          break;
-                        case 'Box':
-                          iconData = Icons.all_inbox_rounded;
-                          break;
-                        case 'LAN/SMB':
-                          iconData = Icons.dns_rounded;
-                          break;
-                        case 'FTP':
-                          iconData = Icons.swap_horizontal_circle_rounded;
-                          break;
-                        case 'SFTP':
-                          iconData = Icons.vpn_lock_rounded;
-                          break;
-                        case 'WebDav':
-                          iconData = Icons.web_rounded;
-                          break;
-                        default:
-                          iconData = Broken.wifi;
-                      }
-                      return ListTile(
-                        leading: Container(
-                          width: 42,
-                          height: 42,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            iconData,
-                            color: theme.colorScheme.primary,
-                            size: 22,
-                          ),
-                        ),
-                        title: Text(
-                          conn.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                        subtitle: Text(
-                          '${conn.type} • ${conn.host}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                          ),
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(
-                            Broken.trash,
-                            size: 20,
-                            color: Colors.redAccent,
-                          ),
-                          tooltip: 'Remove Connection',
-                          onPressed: () async {
-                            final outerContext = context;
-                            await NetworkConnectionsService.deleteConnection(
-                              conn.id,
-                            );
-                            if (!outerContext.mounted) return;
-                            Navigator.pop(ctx);
-                            if (outerContext.mounted) {
-                              _showStorageVolumeModal(outerContext, provider);
-                            }
-                          },
-                        ),
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  RemoteExplorerScreen(connection: conn),
-                            ),
-                          );
-                        },
-                      );
-                    }),
-                  ],
+
                 ],
               ),
             ),

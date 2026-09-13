@@ -4,12 +4,7 @@ import '../../core/icon_fonts/broken_icons.dart';
 import '../../providers/file_manager_provider.dart';
 import '../screens/more_settings_screen.dart';
 import '../screens/vault_lock_screen.dart';
-import '../screens/ftp_server_screen.dart';
-import '../../services/network_connections_service.dart';
-import '../screens/network_connection_wizard_screen.dart';
-import '../screens/remote_explorer_screen.dart';
 import '../screens/about_screen.dart';
-import '../screens/web_sharing_screen.dart';
 import '../screens/app_logs_screen.dart';
 import '../../providers/media_provider.dart';
 import 'quick_categories_grid.dart';
@@ -29,7 +24,6 @@ class NFileDrawer extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final fileManager = context.watch<FileManagerProvider>();
     final mediaProvider = context.watch<MediaProvider>();
-    final connections = NetworkConnectionsService.getConnections();
     final allCategoriesMap = QuickCategoriesGrid.getAllCategoriesMap(context, isDark, onNavigateTab ?? (index) {});
     final activeList = mediaProvider.categoryOrder
         .where((label) => mediaProvider.activeCategories.contains(label) && allCategoriesMap.containsKey(label))
@@ -147,24 +141,6 @@ class NFileDrawer extends StatelessWidget {
                             ),
                             _buildDrawerTile(
                               context,
-                              icon: Broken.wifi,
-                              title: 'FTP Server',
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const FtpServerScreen()));
-                              },
-                            ),
-                            _buildDrawerTile(
-                              context,
-                              icon: Icons.language_rounded,
-                              title: 'Web Sharing',
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const WebSharingScreen()));
-                              },
-                            ),
-                            _buildDrawerTile(
-                              context,
                               icon: Icons.bug_report_rounded,
                               title: 'App Logs',
                               onTap: () {
@@ -172,53 +148,7 @@ class NFileDrawer extends StatelessWidget {
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => const AppLogsScreen()));
                               },
                             ),
-                            ...connections.map((conn) {
-                              IconData iconData;
-                              switch (conn.type) {
-                                case 'LAN/SMB':
-                                  iconData = Icons.dns_rounded;
-                                  break;
-                                case 'FTP':
-                                  iconData = Icons.swap_horizontal_circle_rounded;
-                                  break;
-                                case 'SFTP':
-                                  iconData = Icons.vpn_lock_rounded;
-                                  break;
-                                case 'WebDav':
-                                  iconData = Icons.web_rounded;
-                                  break;
-                                default:
-                                  iconData = Broken.wifi;
-                              }
-                              return _buildDrawerTile(
-                                context,
-                                icon: iconData,
-                                title: conn.name,
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => RemoteExplorerScreen(connection: conn),
-                                    ),
-                                  );
-                                },
-                              );
-                            }),
-                            _buildDrawerTile(
-                              context,
-                              icon: Icons.add_link_rounded,
-                              title: 'Add Remote Connection',
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const NetworkConnectionWizardScreen(),
-                                  ),
-                                );
-                              },
-                            ),
+
                           ],
                         ),
                       ),
