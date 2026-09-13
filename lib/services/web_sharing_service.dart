@@ -45,7 +45,10 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
   String get localIpAddress => _localIpAddress;
   int get port => _port;
   String get internetShareLink => _internetShareLink;
-  String get localServerUrl => 'http://$_localIpAddress:$_port';
+  String get localServerUrl {
+    if (_authToken == null) return 'http://$_localIpAddress:$_port';
+    return 'http://$_localIpAddress:$_port?token=${Uri.encodeComponent(_authToken!)}';
+  }
 
   // Dynamic active clients state
   final Map<String, ActiveClient> _clientsMap = {};
@@ -157,9 +160,11 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
   Future<void> _handleHttpRequest(HttpRequest request, String rootDir) async {
     final response = request.response;
 
-    // auth: check token
-    final token = request.headers[_authHeader];
-    if (_authToken != null && (token == null || token.first != _authToken)) {
+    // auth: check token via header (API clients) or ?token= query (browsers)
+    final headerToken = request.headers[_authHeader];
+    final queryToken = request.uri.queryParameters['token'];
+    final token = (headerToken != null && headerToken.isNotEmpty) ? headerToken.first : queryToken;
+    if (_authToken != null && token != _authToken) {
       response.statusCode = HttpStatus.forbidden;
       response.headers.add('content-security-policy', "default-src 'none'");
       response.headers.add('x-content-type-options', 'nosniff');
@@ -235,7 +240,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       final host = request.headers.value(HttpHeaders.hostHeader) ?? '';
       final isInternet = host.contains('lhr.life') || host.contains('localhost.run');
 
-      final html = _generateExplorerHtml(uriPath, items, rootDir, isInternet);
+      final html = _generateExplorerHtml(uriPath, items, rootDir, isInternet, queryToken ?? '');
       response.headers.contentType = ContentType.html;
       response.write(html);
       await response.close();
@@ -331,16 +336,18 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
   }
 
   // --- Beautiful served Dark HTML Page Builder ---
-  String _generateExplorerHtml(String currentPath, List<FileSystemEntity> items, String rootDir, bool isInternet) {
+  String _generateExplorerHtml(String currentPath, List<FileSystemEntity> items, String rootDir, bool isInternet, String authToken) {
     final title = currentPath == '/' ? 'Root' : p.posix.basename(currentPath);
+    // Browsers can't send custom headers, so the token travels in the URL query.
+    final tokenSuffix = authToken.isEmpty ? '' : '?token=${Uri.encodeComponent(authToken)}';
 
     // Build breadcrumbs list
     final parts = currentPath.split('/').where((p) => p.isNotEmpty).toList();
-    var breadcrumbsHtml = '<a href="/">Root</a>';
+    var breadcrumbsHtml = '<a href="/$tokenSuffix">Root</a>';
     var pathAccumulator = '';
     for (int i = 0; i < parts.length; i++) {
       pathAccumulator += '/${parts[i]}';
-      breadcrumbsHtml += ' <span class="arrow">&gt;</span> <a href="$pathAccumulator">${parts[i]}</a>';
+      breadcrumbsHtml += ' <span class="arrow">&gt;</span> <a href="$pathAccumulator$tokenSuffix">${parts[i]}</a>';
     }
 
     // Build directories list & files lists
@@ -358,7 +365,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
 
     if (currentPath != '/') {
       final parentPath = p.posix.dirname(currentPath);
-      final parentUrl = parentPath == '.' || parentPath == '' ? '/' : parentPath;
+      final parentUrl = (parentPath == '.' || parentPath == '' ? '/' : parentPath) + tokenSuffix;
       listHtml += '''
         <div class="explorer-item parent-dir" onclick="window.location.href='$parentUrl'">
           <div class="item-icon-wrapper dir-icon">$backSvg</div>
@@ -1625,6 +1632,13 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
   </footer>
 
   <script>
+    // Auth token travels in the URL query because browsers can't send custom headers.
+    const AUTH_TOKEN = new URLSearchParams(window.location.search).get('token') || '';
+    function withToken(url) {
+      if (!AUTH_TOKEN) return url;
+      return url + (url.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(AUTH_TOKEN);
+    }
+
     // Search Filtering logic
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', (e) => {
@@ -1717,7 +1731,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     function uploadSingleFile(file, onProgress) {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', window.location.pathname, true);
+        xhr.open('POST', withToken(window.location.pathname), true);
         xhr.setRequestHeader('x-file-name', encodeURIComponent(file.name));
         
         xhr.upload.onprogress = (e) => {
@@ -1787,16 +1801,16 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       const mime = el.getAttribute('data-mime');
       
       if (type === 'directory') {
-        window.location.href = url;
+        window.location.href = withToken(url);
         return;
       }
-      
-      currentModalUrl = url;
-      
+
+      currentModalUrl = withToken(url);
+
       // Update basic fields
       document.getElementById('modalTitle').textContent = name;
       document.getElementById('modalMeta').textContent = `\${size} • \${modified}`;
-      document.getElementById('modalDownloadBtn').href = url;
+      document.getElementById('modalDownloadBtn').href = withToken(url);
       document.getElementById('modalDownloadBtn').setAttribute('download', name);
       
       // Dynamic Icon wrapper styling
@@ -1814,7 +1828,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
         body.innerHTML = `
           <div class="video-container">
             <video controls autoplay class="preview-video">
-              <source src="\${url}" type="\${mime}">
+              <source src="\${withToken(url)}" type="\${mime}">
               Your browser does not support the video streaming tag.
             </video>
           </div>
@@ -1824,7 +1838,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
           <div class="audio-container">
             <div class="audio-art-disc">🎵</div>
             <audio controls autoplay class="preview-audio">
-              <source src="\${url}" type="\${mime}">
+              <source src="\${withToken(url)}" type="\${mime}">
               Your browser does not support the audio element.
             </audio>
           </div>
@@ -1832,16 +1846,16 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
       } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
         body.innerHTML = `
           <div class="image-container">
-            <img src="\${url}" class="preview-image" alt="\${name}">
+            <img src="\${withToken(url)}" class="preview-image" alt="\${name}">
           </div>
         `;
       } else if (ext === 'pdf') {
         body.innerHTML = `
-          <iframe src="\${url}" class="preview-pdf"></iframe>
+          <iframe src="\${withToken(url)}" class="preview-pdf"></iframe>
         `;
       } else if (['txt', 'log', 'json', 'md', 'xml', 'js', 'css', 'html'].includes(ext)) {
         body.innerHTML = `<div class="preview-text-loading">Loading preview...</div>`;
-        fetch(url)
+        fetch(withToken(url))
           .then(res => res.text())
           .then(text => {
             const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -1884,7 +1898,7 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
     function downloadFile(url, filename, event) {
       if (event) event.stopPropagation();
       const a = document.createElement('a');
-      a.href = url;
+      a.href = withToken(url);
       a.download = filename;
       document.body.appendChild(a);
       a.click();
@@ -2054,7 +2068,8 @@ AAAAEBbg6hQHydFb0ZGHuYq+gCui5fFtXW1X2e3Ok3UKTfXMhY3eZl04qtec/5UVUNLrK49
         final match = regExp.firstMatch(stdoutBuffer);
         if (match != null) {
           final domain = match.group(1)!;
-          _internetShareLink = 'https://$domain';
+          final tokenQuery = _authToken == null ? '' : '?token=${Uri.encodeComponent(_authToken!)}';
+          _internetShareLink = 'https://$domain$tokenQuery';
           notifyListeners();
 
           // Update Foreground Service with real public URL!

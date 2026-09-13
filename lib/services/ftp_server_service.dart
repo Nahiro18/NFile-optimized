@@ -102,13 +102,27 @@ class FtpServerService {
 
   Future<String> _getLocalIp() async {
     try {
-      for (var interface in await NetworkInterface.list()) {
+      final interfaces = await NetworkInterface.list();
+      // Prefer Wi-Fi interfaces first (wlan), then any private LAN address.
+      // The first non-loopback IPv4 is often mobile data, unreachable from Wi-Fi clients.
+      String? privateFallback;
+      String? anyFallback;
+      for (var interface in interfaces) {
+        final name = interface.name.toLowerCase();
+        final isWifi = name.contains('wlan') || name.contains('wifi') || name.contains('ap');
         for (var addr in interface.addresses) {
-          if (addr.type == InternetAddressType.IPv4 && !addr.isLoopback) {
-            return addr.address;
+          if (addr.type != InternetAddressType.IPv4 || addr.isLoopback) continue;
+          final ip = addr.address;
+          final isPrivate = ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.');
+          if (isPrivate && isWifi) return ip;
+          if (isPrivate) {
+            privateFallback ??= ip;
+          } else {
+            anyFallback ??= ip;
           }
         }
       }
+      return privateFallback ?? anyFallback ?? '127.0.0.1';
     } catch (_) {}
     return '127.0.0.1';
   }
@@ -215,6 +229,39 @@ class FtpSession {
       case 'TYPE':
         sendResponse('200 Type set to $arg');
         break;
+      case 'STRU':
+        // Only file-no-record structure is supported
+        if (arg.trim().toUpperCase() == 'F' || arg.trim().isEmpty) {
+          sendResponse('200 Structure set to F.');
+        } else {
+          sendResponse('504 Structure not supported.');
+        }
+        break;
+      case 'MODE':
+        // Only stream mode is supported
+        if (arg.trim().toUpperCase() == 'S' || arg.trim().isEmpty) {
+          sendResponse('200 Mode set to S.');
+        } else {
+          sendResponse('504 Mode not supported.');
+        }
+        break;
+      case 'REST':
+        // Resume offsets: only restart from 0 is supported (full transfer)
+        if (arg.trim() == '0' || arg.trim().isEmpty) {
+          sendResponse('350 Restart position accepted.');
+        } else {
+          sendResponse('502 Resume offset not supported, use full transfer.');
+        }
+        break;
+      case 'EPSV':
+        await _enterPassiveMode(epsv: true);
+        break;
+      case 'NLST':
+        await _handleNlst(arg);
+        break;
+      case 'MDTM':
+        _handleMdtm(arg);
+        break;
       case 'PASV':
         await _enterPassiveMode();
         break;
@@ -267,21 +314,25 @@ class FtpSession {
     }
   }
 
-  Future<void> _enterPassiveMode() async {
+  Future<void> _enterPassiveMode({bool epsv = false}) async {
     try {
       passiveServer?.close();
       passiveServer = await ServerSocket.bind(InternetAddress.anyIPv4, 0);
       server._activeDataSockets.add(passiveServer!);
 
       final port = passiveServer!.port;
-      final ipParts = server.ipAddress.split('.');
-      if (ipParts.length != 4) {
-        sendResponse('500 Internal error');
-        return;
+      if (epsv) {
+        sendResponse('229 Entering Extended Passive Mode (|||$port|)');
+      } else {
+        final ipParts = server.ipAddress.split('.');
+        if (ipParts.length != 4) {
+          sendResponse('500 Internal error');
+          return;
+        }
+        final p1 = port >> 8;
+        final p2 = port & 0xFF;
+        sendResponse('227 Entering Passive Mode (${ipParts.join(",")},$p1,$p2)');
       }
-      final p1 = port >> 8;
-      final p2 = port & 0xFF;
-      sendResponse('227 Entering Passive Mode (${ipParts.join(",")},$p1,$p2)');
 
       passiveServer!.listen((socket) {
         passiveDataSocket = socket;
@@ -290,6 +341,56 @@ class FtpSession {
       });
     } catch (e) {
       sendResponse('451 Local error in processing.');
+    }
+  }
+
+  String _stripListFlags(String arg) {
+    final tokens = arg.trim().split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+    final pathTokens = tokens.where((t) => !t.startsWith('-')).toList();
+    return pathTokens.isEmpty ? '' : pathTokens.join(' ');
+  }
+
+  Future<void> _handleNlst(String arg) async {
+    final dataSocket = await _getDataSocket();
+    if (dataSocket == null) {
+      sendResponse('425 Can\'t open data connection.');
+      return;
+    }
+    sendResponse('150 Opening ASCII mode data connection for name list.');
+    try {
+      final targetPath = _getAbsolutePath(_stripListFlags(arg));
+      final dir = Directory(targetPath);
+      if (await dir.exists()) {
+        final buffer = StringBuffer();
+        await for (var entity in dir.list()) {
+          final name = p.basename(entity.path);
+          if (!server.showHidden && name.startsWith('.')) continue;
+          buffer.write('$name\r\n');
+        }
+        dataSocket.write(buffer.toString());
+      }
+      await dataSocket.flush();
+    } catch (_) {} finally {
+      await dataSocket.close();
+      sendResponse('226 Transfer complete.');
+    }
+  }
+
+  void _handleMdtm(String arg) async {
+    final absPath = _getAbsolutePath(arg.trim());
+    final type = await FileSystemEntity.type(absPath);
+    if (type == FileSystemEntityType.file) {
+      final stat = await File(absPath).stat();
+      final m = stat.modified.toUtc();
+      final stamp = '${m.year.toString().padLeft(4, '0')}'
+          '${m.month.toString().padLeft(2, '0')}'
+          '${m.day.toString().padLeft(2, '0')}'
+          '${m.hour.toString().padLeft(2, '0')}'
+          '${m.minute.toString().padLeft(2, '0')}'
+          '${m.second.toString().padLeft(2, '0')}';
+      sendResponse('213 $stamp');
+    } else {
+      sendResponse('550 File not found.');
     }
   }
 
@@ -338,7 +439,9 @@ class FtpSession {
     sendResponse('150 Opening ASCII mode data connection for file list.');
 
     try {
-      final targetPath = _getAbsolutePath(arg);
+      // FTP clients often send flags like "LIST -la" or "LIST -a /path".
+      // Strip dash-flags so they aren't treated as paths.
+      final targetPath = _getAbsolutePath(_stripListFlags(arg));
       final dir = Directory(targetPath);
       if (await dir.exists()) {
         final buffer = StringBuffer();

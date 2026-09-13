@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../services/web_sharing_service.dart';
-import 'dart:math' as math;
 
 class WebSharingScreen extends StatefulWidget {
   const WebSharingScreen({super.key});
@@ -202,7 +202,7 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                 ),
                 const SizedBox(height: 24),
 
-                // Gorgeous concentric Vector QR Code CustomPainter
+                // Real scannable QR code encoding the share link
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -216,9 +216,19 @@ class _WebSharingScreenState extends State<WebSharingScreen> with SingleTickerPr
                       ),
                     ],
                   ),
-                  child: CustomPaint(
-                    size: const Size(200, 200),
-                    painter: PremiumQrPainter(color: theme.colorScheme.primary),
+                  child: QrImageView(
+                    data: link,
+                    version: QrVersions.auto,
+                    size: 200,
+                    backgroundColor: Colors.white,
+                    eyeStyle: QrEyeStyle(
+                      eyeShape: QrEyeShape.square,
+                      color: theme.colorScheme.primary,
+                    ),
+                    dataModuleStyle: QrDataModuleStyle(
+                      dataModuleShape: QrDataModuleShape.square,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
 
@@ -871,87 +881,5 @@ class RadarPulsePainter extends CustomPainter {
     return oldDelegate.animationValue != animationValue ||
         oldDelegate.isActive != isActive ||
         oldDelegate.color != color;
-  }
-}
-
-// High-fidelity dynamic QR Code painter
-class PremiumQrPainter extends CustomPainter {
-  final Color color;
-
-  PremiumQrPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-
-    // 1. Draw three standard scanner anchor blocks
-    _drawScannerBlock(canvas, const Offset(0, 0), paint);
-    _drawScannerBlock(canvas, Offset(size.width - 40, 0), paint);
-    _drawScannerBlock(canvas, Offset(0, size.height - 40), paint);
-
-    // 2. Draw a highly premium stylized dot grid representing the code payload
-    final rand = math.Random(42); // Fixed seed to draw consistent aesthetic pattern
-    const dotsCount = 14;
-    final dotSize = size.width / dotsCount;
-
-    for (int r = 0; r < dotsCount; r++) {
-      for (int c = 0; c < dotsCount; c++) {
-        // Skip scanner anchor blocks layout area
-        if ((r < 4 && c < 4) || (r < 4 && c >= dotsCount - 4) || (r >= dotsCount - 4 && c < 4)) {
-          continue;
-        }
-
-        // Randomly draw clean circular dots in HSL primary color
-        if (rand.nextBool()) {
-          canvas.drawRRect(
-            RRect.fromRectAndRadius(
-              Rect.fromLTWH(
-                c * dotSize + 2,
-                r * dotSize + 2,
-                dotSize - 4,
-                dotSize - 4,
-              ),
-              Radius.circular(dotSize / 2),
-            ),
-            paint,
-          );
-        }
-      }
-    }
-  }
-
-  void _drawScannerBlock(Canvas canvas, Offset offset, Paint paint) {
-    // Outer border
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(offset.dx, offset.dy, 40, 40),
-        const Radius.circular(8),
-      ),
-      paint,
-    );
-    // White space
-    final whitePaint = Paint()..color = Colors.white;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(offset.dx + 5, offset.dy + 5, 30, 30),
-        const Radius.circular(6),
-      ),
-      whitePaint,
-    );
-    // Inner dot
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(offset.dx + 11, offset.dy + 11, 18, 18),
-        const Radius.circular(4),
-      ),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant PremiumQrPainter oldDelegate) {
-    return oldDelegate.color != color;
   }
 }
