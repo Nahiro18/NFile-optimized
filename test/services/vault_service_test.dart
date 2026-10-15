@@ -28,6 +28,11 @@ void main() {
         if (methodCall.method == 'getApplicationDocumentsDirectory') {
           return tempDir.path;
         }
+        if (methodCall.method == 'getTemporaryDirectory') {
+          final tmp = Directory('${tempDir.path}/tmp');
+          if (!tmp.existsSync()) tmp.createSync(recursive: true);
+          return tmp.path;
+        }
         return null;
       });
     });
@@ -149,8 +154,43 @@ void main() {
         inPlace: true,
       );
 
-      expect(record.scrambledPath, contains('.vault_'));
+      expect(record.scrambledPath, contains('.nvault'));
       expect(record.scrambledPath, endsWith('.nfv'));
+    });
+
+    test('lockDirectory inPlace must NOT delete its own encrypted archive',
+        () async {
+      await VaultService.setPassword(testPassword);
+
+      final folder = Directory('${tempDir.path}/MiCarpeta');
+      await folder.create(recursive: true);
+      await File('${folder.path}/doc.txt').writeAsString('hola');
+      await Directory('${folder.path}/sub').create();
+      await File('${folder.path}/sub/a.txt').writeAsString('a');
+
+      final record = await VaultService.lockDirectory(
+        directory: folder,
+        password: testPassword,
+        inPlace: true,
+      );
+
+      // El archivo cifrado debe seguir existiendo (antes se borraba solo).
+      expect(
+        File(record.scrambledPath).existsSync(),
+        isTrue,
+        reason: 'El archivo cifrado fue destruido al limpiar la carpeta origen',
+      );
+
+      // Y debe poder descifrarse de vuelta al contenido original.
+      final restored = await VaultService.unlockFile(
+        record: record,
+        password: testPassword,
+      );
+      expect(restored, isA<File>());
+      expect(
+        File('${folder.path}/doc.txt').readAsStringSync(),
+        'hola',
+      );
     });
   });
 }

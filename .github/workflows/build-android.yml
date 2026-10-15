@@ -32,6 +32,13 @@ jobs:
       - name: Descargar dependencias
         run: flutter pub get
 
+      # Gate de calidad: sin esto, codigo roto y tests rojos llegaban al APK.
+      - name: Analisis estatico
+        run: flutter analyze --no-fatal-infos
+
+      - name: Tests
+        run: flutter test
+
       - name: Compilar APK (arm64)
         run: flutter build apk --target-platform android-arm64
 

@@ -13,7 +13,9 @@ class NetworkConnectionsService {
   static final Random _rng = Random.secure();
 
   static Future<void> init() async {
-    _prefs ??= await SharedPreferences.getInstance();
+    // No cachear con ??=: getInstance() ya es un singleton barato, y cachearlo
+    // dejaba el servicio apuntando a una instancia obsoleta.
+    _prefs = await SharedPreferences.getInstance();
     _encryptionKey = _prefs!.getString(_keyEncryptionKey) ?? '';
     if (_encryptionKey.isEmpty) {
       _encryptionKey = _generateKey(32);

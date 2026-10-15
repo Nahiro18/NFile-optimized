@@ -75,7 +75,9 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
   }
 
   void _onKeyPress(String key) {
-    if (_inputBuffer.length >= 8) return;
+    // 6 digitos exactos. Aceptar mas hacia que un 7to toque dentro de la
+    // ventana de 200ms corrompiera el PIN y nunca se pudiera desbloquear.
+    if (_inputBuffer.length >= 6) return;
     HapticFeedback.lightImpact();
     setState(() {
       _isError = false;
@@ -84,9 +86,11 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
 
     if (_inputBuffer.length == 6 && !_isPasswordSet && !_isConfirmMode) {
       // First time set password: proceed to confirm
+      final captured = _inputBuffer;
       Future.delayed(const Duration(milliseconds: 200), () {
+        if (!mounted) return;
         setState(() {
-          _tempPassword = _inputBuffer;
+          _tempPassword = captured;
           _inputBuffer = '';
           _isConfirmMode = true;
           _message = 'Confirm your 6-digit PIN';
@@ -94,19 +98,19 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
       });
     } else if (_inputBuffer.length == 6 && !_isPasswordSet && _isConfirmMode) {
       // Confirm password matching check
+      final confirmPin = _inputBuffer;
       Future.delayed(const Duration(milliseconds: 200), () async {
-        if (_inputBuffer == _tempPassword) {
+        if (!mounted) return;
+        if (confirmPin == _tempPassword) {
           HapticFeedback.mediumImpact();
-          if (mounted) {
-            setState(() {
-              _message = 'Securing your vault...';
-            });
-          }
+          setState(() {
+            _message = 'Securing your vault...';
+          });
           try {
-            await VaultService.setPassword(_inputBuffer);
-            await AppLockService.cacheVaultPassword(_inputBuffer);
+            await VaultService.setPassword(confirmPin);
+            await AppLockService.cacheVaultPassword(confirmPin);
             if (mounted) {
-              _unlockWallet(_inputBuffer);
+              _unlockWallet(confirmPin);
             }
           } catch (e) {
             if (mounted) {
@@ -130,19 +134,19 @@ class _VaultLockScreenState extends State<VaultLockScreen> with SingleTickerProv
       });
     } else if (_inputBuffer.length == 6 && _isPasswordSet) {
       // Unlock verification check
+      final unlockPin = _inputBuffer;
       Future.delayed(const Duration(milliseconds: 200), () async {
-        if (mounted) {
-          setState(() {
-            _message = 'Verifying...';
-          });
-        }
+        if (!mounted) return;
+        setState(() {
+          _message = 'Verifying...';
+        });
         try {
-          final success = await VaultService.verifyPassword(_inputBuffer);
+          final success = await VaultService.verifyPassword(unlockPin);
           if (!mounted) return;
           if (success) {
             HapticFeedback.mediumImpact();
-            await AppLockService.cacheVaultPassword(_inputBuffer);
-            _unlockWallet(_inputBuffer);
+            await AppLockService.cacheVaultPassword(unlockPin);
+            _unlockWallet(unlockPin);
           } else {
             HapticFeedback.heavyImpact();
             _shakeController.forward(from: 0.0);

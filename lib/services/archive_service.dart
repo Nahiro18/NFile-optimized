@@ -6,6 +6,20 @@ import 'package:dart_lz4/dart_lz4.dart';
 import 'package:just_zstd/just_zstd.dart';
 
 class ArchiveService {
+
+  /// Resuelve la ruta de destino de una entrada del archivo comprimido
+  /// garantindo que quede DENTRO de [destinationDir].
+  ///
+  /// Sin esto, una entrada llamada `../../../../data/data/.../archivo` o
+  /// `/ruta/absoluta` escapaba del directorio destino y sobrescribia
+  /// cualquier archivo que la app pudiera escribir (Zip Slip).
+  /// Devuelve null si la entrada es insegura.
+  static String? resolveSafeExtractPath(String destinationDir, String entryName) {
+    final root = p.normalize(p.absolute(destinationDir));
+    final target = p.normalize(p.absolute(p.join(root, entryName)));
+    if (!p.isWithin(root, target)) return null;
+    return target;
+  }
   /// Creates an archive or multiple separate archives.
   static Future<void> createArchive({
     required List<String> sourcePaths,
@@ -177,7 +191,11 @@ class ArchiveService {
         
         for (final fileEntry in archive.files) {
           final filename = fileEntry.name;
-          final destPath = p.join(destinationDir, filename);
+          final destPath = ArchiveService.resolveSafeExtractPath(destinationDir, filename);
+if (destPath == null) {
+            debugPrint('[Archive] Entrada insegura descartada: $filename');
+            continue;
+          }
           if (fileEntry.isFile) {
             final outputStream = OutputFileStream(destPath);
             fileEntry.writeContent(outputStream);
@@ -203,7 +221,11 @@ class ArchiveService {
         final archive = TarDecoder().decodeBuffer(tarInputStream);
         for (final fileEntry in archive.files) {
           final filename = fileEntry.name;
-          final destPath = p.join(destinationDir, filename);
+          final destPath = ArchiveService.resolveSafeExtractPath(destinationDir, filename);
+if (destPath == null) {
+            debugPrint('[Archive] Entrada insegura descartada: $filename');
+            continue;
+          }
           if (fileEntry.isFile) {
             final outputStream = OutputFileStream(destPath);
             fileEntry.writeContent(outputStream);
@@ -225,7 +247,11 @@ class ArchiveService {
         final archive = TarDecoder().decodeBuffer(inputStream);
         for (final fileEntry in archive.files) {
           final filename = fileEntry.name;
-          final destPath = p.join(destinationDir, filename);
+          final destPath = ArchiveService.resolveSafeExtractPath(destinationDir, filename);
+if (destPath == null) {
+            debugPrint('[Archive] Entrada insegura descartada: $filename');
+            continue;
+          }
           if (fileEntry.isFile) {
             final outputStream = OutputFileStream(destPath);
             fileEntry.writeContent(outputStream);
@@ -285,7 +311,11 @@ class ArchiveService {
           final zipArchive = ZipDecoder().decodeBuffer(inputStream, password: password != null && password.isNotEmpty ? password : null);
           for (final fileEntry in zipArchive.files) {
             final filename = fileEntry.name;
-            final destPath = p.join(destinationDir, filename);
+            final destPath = ArchiveService.resolveSafeExtractPath(destinationDir, filename);
+if (destPath == null) {
+            debugPrint('[Archive] Entrada insegura descartada: $filename');
+            continue;
+          }
             if (fileEntry.isFile) {
               final outputStream = OutputFileStream(destPath);
               fileEntry.writeContent(outputStream);

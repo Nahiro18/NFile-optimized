@@ -640,72 +640,6 @@ class MainActivity : AudioServiceFragmentActivity() {
             }
         }
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rubex.nfile/ftp_service").setMethodCallHandler { call, result ->
-            when (call.method) {
-                "startFtpService" -> {
-                    val ip = call.argument<String>("ip") ?: "127.0.0.1"
-                    val port = call.argument<Int>("port") ?: 9999
-                    try {
-                        val intent = Intent(this, FtpForegroundService::class.java).apply {
-                            putExtra("ip", ip)
-                            putExtra("port", port)
-                        }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            startForegroundService(intent)
-                        } else {
-                            startService(intent)
-                        }
-                        result.success(true)
-                    } catch (e: Exception) {
-                        result.error("START_FAILED", e.message, null)
-                    }
-                }
-                "stopFtpService" -> {
-                    try {
-                        val intent = Intent(this, FtpForegroundService::class.java)
-                        stopService(intent)
-                        result.success(true)
-                    } catch (e: Exception) {
-                        result.error("STOP_FAILED", e.message, null)
-                    }
-                }
-                else -> result.notImplemented()
-            }
-        }
-
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rubex.nfile/web_sharing_service").setMethodCallHandler { call, result ->
-            when (call.method) {
-                "startWebSharingService" -> {
-                    val url = call.argument<String>("url") ?: "http://127.0.0.1:8080"
-                    val isInternet = call.argument<Boolean>("isInternet") ?: false
-                    try {
-                        val intent = Intent(this, WebSharingForegroundService::class.java).apply {
-                            putExtra("url", url)
-                            putExtra("isInternet", isInternet)
-                        }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            startForegroundService(intent)
-                        } else {
-                            startService(intent)
-                        }
-                        result.success(true)
-                    } catch (e: Exception) {
-                        result.error("START_FAILED", e.message, null)
-                    }
-                }
-                "stopWebSharingService" -> {
-                    try {
-                        val intent = Intent(this, WebSharingForegroundService::class.java)
-                        stopService(intent)
-                        result.success(true)
-                    } catch (e: Exception) {
-                        result.error("STOP_FAILED", e.message, null)
-                    }
-                }
-                else -> result.notImplemented()
-            }
-        }
-
         notificationsChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rubex.nfile/notifications")
         notificationsChannel?.setMethodCallHandler { call, result ->
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -1059,32 +993,27 @@ class MainActivity : AudioServiceFragmentActivity() {
     }
 
     private fun runShellCommand(command: String, useRoot: Boolean): String {
+        // Se fusiona stderr en stdout (2>&1). Leerlos por separado y en
+        // secuencia provocaba un deadlock permanente: si el proceso escribia
+        // mucho en stderr llenaba el pipe y esperaba, mientras nosotros
+        // esperabamos stdout -> el Future de Dart nunca completaba y la UI
+        // se quedaba colgada.
+        val shellCommand = "$command 2>&1"
+
         val process: java.lang.Process = if (useRoot) {
-            Runtime.getRuntime().exec(arrayOf("su", "-c", command))
+            Runtime.getRuntime().exec(arrayOf("su", "-c", shellCommand))
         } else {
             val method = Shizuku::class.java.getDeclaredMethod("newProcess", Array<String>::class.java, Array<String>::class.java, String::class.java)
             method.isAccessible = true
-            method.invoke(null, arrayOf("sh", "-c", command), null, null) as java.lang.Process
+            method.invoke(null, arrayOf("sh", "-c", shellCommand), null, null) as java.lang.Process
         }
 
-        val reader = BufferedReader(InputStreamReader(process.inputStream))
-        val errReader = BufferedReader(InputStreamReader(process.errorStream))
-
-        val output = StringBuilder()
-        var line: String?
-        while (reader.readLine().also { line = it } != null) {
-            output.append(line).append("\n")
-        }
-
-        val errOutput = StringBuilder()
-        while (errReader.readLine().also { line = it } != null) {
-            errOutput.append(line).append("\n")
-        }
+        val output = process.inputStream.bufferedReader().use { it.readText() }
 
         val exitCode = process.waitFor()
-        if (exitCode != 0 && output.isEmpty() && errOutput.isNotEmpty()) {
-            throw Exception(errOutput.toString().trim())
+        if (exitCode != 0 && output.isBlank()) {
+            throw Exception("Comando terminado con codigo $exitCode")
         }
-        return output.toString()
+        return output
     }
 }

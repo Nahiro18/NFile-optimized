@@ -281,9 +281,6 @@ class VaultService {
     final raf = await file.open(mode: FileMode.read);
     final scrambleBytes = await raf.read(scrambleLen);
 
-    // Cifrar la firma con AES-256-GCM
-    final encryptedScramble = _encryptAESGCM(scrambleBytes, key, iv);
-
     // Preparar metadata
     final metadata = {
       'name': originalName,
@@ -293,15 +290,23 @@ class VaultService {
       'isFolder': isFolder,
     };
     final metadataBytes = utf8.encode(jsonEncode(metadata));
-    
+
+    // Nonces GCM distintos para firma y metadata (nunca reutilizar con la
+    // misma clave). Derivados de la semilla aleatoria de 128 bits del header.
+    final scrambleNonce = _deriveNonce(0, iv, key);
+    final metadataNonce = _deriveNonce(1, iv, key);
+
+    // Cifrar la firma con AES-256-GCM
+    final encryptedScramble = _encryptAESGCM(scrambleBytes, key, scrambleNonce);
+
     // Cifrar metadata
-    final encryptedMetadata = _encryptAESGCM(metadataBytes, key, iv);
+    final encryptedMetadata = _encryptAESGCM(metadataBytes, key, metadataNonce);
 
     // Construir archivo final usando un Stream/Sink para no sobrecargar la RAM
     final headerBytes = BytesBuilder();
     headerBytes.add(utf8.encode(_magicTag)); // 14 bytes
     headerBytes.add(salt); // 32 bytes
-    headerBytes.add(iv); // 16 bytes
+    headerBytes.add(iv); // 16 bytes (semilla)
 
     // Metadata length (4 bytes big-endian)
     final metaLen = encryptedMetadata.length;
@@ -400,13 +405,20 @@ class VaultService {
 
       // Derivar clave
       final key = _deriveEncryptionKey(password, salt);
+      final scrambleNonce = _deriveNonce(0, iv, key);
+      final metadataNonce = _deriveNonce(1, iv, key);
 
-      // Descifrar metadata
+      // Descifrar metadata. Formato actual: nonces distintos derivados.
+      // Formato legado (archivos anteriores): reutilizaba el IV completo.
       List<int> decryptedMetadataBytes;
       try {
-        decryptedMetadataBytes = _decryptAESGCM(encryptedMetadata, key, iv);
-      } catch (e) {
-        throw Exception('Incorrect password or corrupted file');
+        decryptedMetadataBytes = _decryptAESGCM(encryptedMetadata, key, metadataNonce);
+      } catch (_) {
+        try {
+          decryptedMetadataBytes = _decryptAESGCM(encryptedMetadata, key, iv);
+        } catch (e) {
+          throw Exception('Incorrect password or corrupted file');
+        }
       }
 
       final metadataStr = utf8.decode(decryptedMetadataBytes);
@@ -423,7 +435,16 @@ class VaultService {
       }
 
       // Descifrar firma
-      final decryptedScramble = _decryptAESGCM(encryptedScramble, key, iv);
+      List<int> decryptedScramble;
+      try {
+        decryptedScramble = _decryptAESGCM(encryptedScramble, key, scrambleNonce);
+      } catch (_) {
+        try {
+          decryptedScramble = _decryptAESGCM(encryptedScramble, key, iv);
+        } catch (e) {
+          throw Exception('Incorrect password or corrupted file');
+        }
+      }
 
       // Reconstruir archivo de destino
       final destinationDir = p.dirname(record.originalPath);
@@ -539,11 +560,17 @@ class VaultService {
 
       // Limpiar carpeta original de forma segura
       if (inPlace) {
+        final vaultPath = record.scrambledPath;
         final children = directory.listSync();
         for (final child in children) {
-          if (child.path != record.scrambledPath) {
-            await SecureDeleteService.deleteSecurely(child);
+          // Nunca tocar la carpeta oculta .nvault: contiene el archivo cifrado
+          // que acabamos de escribir. Sin esta guarda, el archivo cifrado de la
+          // carpeta se borraba a si mismo (perdida total de datos).
+          if (p.equals(child.path, vaultPath) ||
+              p.isWithin(child.path, vaultPath)) {
+            continue;
           }
+          await SecureDeleteService.deleteSecurely(child);
         }
       } else {
         await SecureDeleteService.deleteSecurely(directory);
@@ -722,6 +749,19 @@ class VaultService {
     }
 
     return result.sublist(0, keyLength);
+  }
+
+  /// Deriva un nonce GCM de 96 bits (12 bytes, el tamano estandar de GCM) a
+  /// partir de la semilla de 16 bytes guardada en el header.
+  ///
+  /// Es OBLIGATORIO que la firma y la metadata usen nonces DISTINTOS: con
+  /// AES-GCM, reutilizar (clave, nonce) para dos mensajes permite recuperar el
+  /// flujo de bytes por XOR y falsificar etiquetas de autenticacion. La
+  /// semilla sigue siendo aleatoria de 128 bits; `index` solo separa los
+  /// dos usos de forma determinista, de modo que siempre se puedan recuperar.
+  static List<int> _deriveNonce(int index, List<int> seed, List<int> key) {
+    final mac = Hmac(sha256, key).convert(<int>[...seed, index]);
+    return mac.bytes.sublist(0, 12);
   }
 
   /// Convierte int a bytes (big-endian, 4 bytes)

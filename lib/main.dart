@@ -40,6 +40,7 @@ void main() async {
   await NetworkConnectionsService.init();
   await RecycleBinService.init();
   await AppLockService.init();
+  await AppLockService.loadVaultPassword();
 
   // Load custom font dynamically if configured
   try {

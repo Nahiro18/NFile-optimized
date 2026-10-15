@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:archive/archive_io.dart';
 import 'package:dart_lz4/dart_lz4.dart';
 import 'package:just_zstd/just_zstd.dart';
+import 'archive_service.dart';
 import '../providers/file_manager_provider.dart';
 import 'package:provider/provider.dart';
 import '../ui/widgets/background_operation_progress_dialog.dart';
@@ -415,7 +416,11 @@ class BackgroundArchiveService {
           });
 
           final filename = fileEntry.name;
-          final destPath = p.join(destinationDir, filename);
+          final destPath = ArchiveService.resolveSafeExtractPath(destinationDir, filename);
+if (destPath == null) {
+            debugPrint('[Archive] Entrada insegura descartada: $filename');
+            continue;
+          }
           if (fileEntry.isFile) {
             final outputStream = OutputFileStream(destPath);
             fileEntry.writeContent(outputStream);
@@ -454,7 +459,11 @@ class BackgroundArchiveService {
           });
 
           final filename = fileEntry.name;
-          final destPath = p.join(destinationDir, filename);
+          final destPath = ArchiveService.resolveSafeExtractPath(destinationDir, filename);
+if (destPath == null) {
+            debugPrint('[Archive] Entrada insegura descartada: $filename');
+            continue;
+          }
           if (fileEntry.isFile) {
             final outputStream = OutputFileStream(destPath);
             fileEntry.writeContent(outputStream);
@@ -488,7 +497,11 @@ class BackgroundArchiveService {
           });
 
           final filename = fileEntry.name;
-          final destPath = p.join(destinationDir, filename);
+          final destPath = ArchiveService.resolveSafeExtractPath(destinationDir, filename);
+if (destPath == null) {
+            debugPrint('[Archive] Entrada insegura descartada: $filename');
+            continue;
+          }
           if (fileEntry.isFile) {
             final outputStream = OutputFileStream(destPath);
             fileEntry.writeContent(outputStream);
@@ -565,7 +578,11 @@ class BackgroundArchiveService {
             });
 
             final filename = fileEntry.name;
-            final destPath = p.join(destinationDir, filename);
+            final destPath = ArchiveService.resolveSafeExtractPath(destinationDir, filename);
+if (destPath == null) {
+            debugPrint('[Archive] Entrada insegura descartada: $filename');
+            continue;
+          }
             if (fileEntry.isFile) {
               final outputStream = OutputFileStream(destPath);
               fileEntry.writeContent(outputStream);
