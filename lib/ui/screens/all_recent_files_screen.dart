@@ -245,19 +245,22 @@ class _AllRecentFilesScreenState extends State<AllRecentFilesScreen> {
       content: 'Are you sure you want to delete ${_selectedPaths.length} selected item(s)? This cannot be undone.',
     );
 
-    if (confirm) {
+    if (!confirm || !mounted) return;
+
       final provider = context.read<FileManagerProvider>();
       final toDelete = _selectedPaths.toList();
       for (final path in toDelete) {
         await provider.deleteFile(path);
+        // Sin este guardia, pulsar atras durante el borrado lanzaba
+        // "setState() called after dispose()".
+        if (!mounted) return;
         setState(() {
           _recentFiles.removeWhere((e) => e.path == path);
         });
       }
-      _clearSelection();
       if (!mounted) return;
+      _clearSelection();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully deleted items')));
-    }
   }
 
   void _handleAction(BuildContext context, String action, String path) async {

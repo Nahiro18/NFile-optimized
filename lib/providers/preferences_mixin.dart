@@ -224,7 +224,21 @@ mixin PreferencesMixin on ChangeNotifier {
 
   final Map<String, int> _folderMatchingFileCounts = {};
 
-  Future<int> getMatchingFileCount(String folderPath, FileFilterType filter) async {
+  /// Cache de los Futures de conteo/tamanio.
+  ///
+  /// Estos metodos se usan como `FutureBuilder(future: ...)` dentro de build().
+  /// Al ser async, cada llamada devolvia un Future NUEVO, asi que el
+  /// FutureBuilder volvia a `waiting` en cada rebuild y la etiqueta parpadeaba
+  /// entre "..." y el numero. Devolviendo el mismo Future para la misma ruta,
+  /// el FutureBuilder conserva el resultado ya resuelto.
+  final Map<String, Future<int>> _countFutures = {};
+
+  Future<int> getMatchingFileCount(String folderPath, FileFilterType filter) {
+    final cacheKey = '$folderPath:${filter.name}';
+    return _countFutures[cacheKey] ??= _computeMatchingFileCount(folderPath, filter);
+  }
+
+  Future<int> _computeMatchingFileCount(String folderPath, FileFilterType filter) async {
     final cacheKey = '$folderPath:${filter.name}';
     if (_folderMatchingFileCounts.containsKey(cacheKey)) {
       return _folderMatchingFileCounts[cacheKey]!;
@@ -459,7 +473,11 @@ mixin PreferencesMixin on ChangeNotifier {
 
   final Map<String, int> _folderItemCounts = {};
 
-  Future<int> getFolderItemCount(String folderPath) async {
+  Future<int> getFolderItemCount(String folderPath) {
+    return _countFutures['items:$folderPath'] ??= _computeFolderItemCount(folderPath);
+  }
+
+  Future<int> _computeFolderItemCount(String folderPath) async {
     if (_folderItemCounts.containsKey(folderPath)) {
       return _folderItemCounts[folderPath]!;
     }
@@ -486,7 +504,11 @@ mixin PreferencesMixin on ChangeNotifier {
 
   final Map<String, int> _folderSizes = {};
 
-  Future<int> getFolderSize(String folderPath) async {
+  Future<int> getFolderSize(String folderPath) {
+    return _countFutures['size:$folderPath'] ??= _computeFolderSize(folderPath);
+  }
+
+  Future<int> _computeFolderSize(String folderPath) async {
     if (_folderSizes.containsKey(folderPath)) {
       return _folderSizes[folderPath]!;
     }
@@ -499,6 +521,12 @@ mixin PreferencesMixin on ChangeNotifier {
   void clearFolderItemCountsCache() {
     _folderItemCounts.clear();
     _folderSizes.clear();
+    // Este cache no se limpiaba, asi que el numero de archivos de una carpeta
+    // quedaba congelado aunque se crearan o borraran archivos dentro.
+    _folderMatchingFileCounts.clear();
+    // Invalidar tambien los Futures ya resueltos, o el FutureBuilder seguiria
+    // mostrando el valor viejo aunque los caches esten vacios.
+    _countFutures.clear();
   }
 
   bool _showBottomActionBar = false;
@@ -720,6 +748,7 @@ mixin PreferencesMixin on ChangeNotifier {
   int _activeTabIndex = 0;
   final Map<String, StreamSubscription<FileSystemEntity>?> _searchSubscriptions = {};
   final Map<String, int> _searchGenerations = {};
+  final Map<String, Timer> _searchDebounceTimers = {};
 
 
   int get activeTabIndex => _activeTabIndex;
@@ -864,12 +893,36 @@ mixin PreferencesMixin on ChangeNotifier {
 
     if (tab.searchQuery.isEmpty) {
       tab.isSearching = false;
+      // Cancel any pending debounced run
+      _searchDebounceTimers.remove(tab.id)?.cancel();
       notifyListeners();
       return;
     }
 
     tab.isSearching = true;
     notifyListeners();
+
+    // Debounce: escribir "report" son 6 teclas y antes cada una lanzaba un
+    // recorrido completo del disco. Se espera a que el usuario se detenga.
+    _searchDebounceTimers.remove(tab.id)?.cancel();
+    _searchDebounceTimers[tab.id] = Timer(
+      const Duration(milliseconds: 300),
+      () {
+        _searchDebounceTimers.remove(tab.id);
+        if (generation != _searchGenerations[tab.id]) return;
+        _runSearch(tabIndex, tab, generation, filter, mediaProvider);
+      },
+    );
+  }
+
+  /// Recorrido real del arbol de archivos para la consulta de [tab].
+  void _runSearch(
+    int tabIndex,
+    FolderTab tab,
+    int generation,
+    String filter,
+    MediaProvider mediaProvider,
+  ) {
 
     final qLower = tab.searchQuery.toLowerCase();
     // If the query is a bare extension like ".pdf" or ".py", match by extension
@@ -1067,6 +1120,7 @@ mixin PreferencesMixin on ChangeNotifier {
   void cancelSearchForTab(String tabId) {
     _searchSubscriptions[tabId]?.cancel();
     _searchSubscriptions[tabId] = null;
+    _searchDebounceTimers.remove(tabId)?.cancel();
   }
 
   // --- Active Tab Delegations ---

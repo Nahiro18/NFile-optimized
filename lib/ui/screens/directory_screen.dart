@@ -29,6 +29,7 @@ import '../../services/folder_share_service.dart';
 import '../widgets/pane_browser.dart';
 import '../widgets/nfile_address_bar.dart';
 import '../widgets/skeletons/skeleton_loader.dart';
+import '../../core/file_filters.dart';
 
 class DirectoryScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -50,14 +51,13 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   int _lastActiveTabIndex = -1;
   String _lastSearchQuery = '';
 
-  final List<String> _filters = [
-    'All',
-    'Folders',
-    'Images',
-    'Videos',
-    'Audio',
-    'Docs',
-  ];
+  static const List<String> _filters = FileFilters.all_;
+
+  // Provider cacheado: no se puede usar context.read dentro de dispose()
+  // (Flutter ya desactivó el elemento), y el fallo quedaba silenciado por
+  // un catch, dejando al provider con una referencia fuerte a esta pantalla
+  // ya destruida.
+  FileManagerProvider? _provider;
 
   @override
   void initState() {
@@ -65,7 +65,9 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     _searchController = TextEditingController();
     _searchFocusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final provider = context.read<FileManagerProvider>();
+      _provider = provider;
       provider.init();
       _lastActiveTabIndex = provider.activeTabIndex;
       _lastSearchQuery = provider.activeTab.searchQuery;
@@ -76,9 +78,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
 
   @override
   void dispose() {
-    try {
-      context.read<FileManagerProvider>().removeListener(_onProviderChanged);
-    } catch (_) {}
+    _provider?.removeListener(_onProviderChanged);
+    _provider = null;
     _searchController.dispose();
     _searchFocusNode.dispose();
     _scrollController.dispose();
@@ -289,6 +290,9 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             deleteSource: res.deleteSource,
             separateArchives: res.separateArchives,
             targetPaths: [provider.currentPath],
+            // createArchive valida `context.mounted` internamente antes de
+            // usarlo, asi que pasar el contexto tras el await es seguro.
+            // ignore: use_build_context_synchronously
             context: handlerContext,
           );
         }

@@ -173,23 +173,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<FileManagerProvider>();
+    // context.watch aqui reconstruia TODA la app en cada notifyListeners (el
+    // IndexedStack de abajo construye y lays out todos sus hijos). Con select
+    // solo se reconstruye cuando cambian los 4 campos que esta pantalla usa.
+    // Los usos puntuales de provider.* pasan a context.read.
+    final isSelectionMode =
+        context.select<FileManagerProvider, bool>((p) => p.isSelectionMode);
+    final canGoBack =
+        context.select<FileManagerProvider, bool>((p) => p.canGoBack);
+    final exitOption =
+        context.select<FileManagerProvider, String>((p) => p.exitOption);
+    final showHomeBrowseNav =
+        context.select<FileManagerProvider, bool>((p) => p.showHomeBrowseNav);
+    final hideNavLabels =
+        context.select<FileManagerProvider, bool>((p) => p.hideNavLabels);
+    final provider = context.read<FileManagerProvider>();
     final theme = Theme.of(context);
-    final canPopHomeScreen = _currentIndex == 1 && !provider.isSelectionMode && provider.canGoBack;
+    final canPopHomeScreen = _currentIndex == 1 && !isSelectionMode && canGoBack;
 
     return PopScope(
       canPop: canPopHomeScreen,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         if (_currentIndex == 1) {
-          if (!provider.canGoBack) {
+          if (!canGoBack) {
             setState(() {
               _currentIndex = 0;
             });
             context.read<MediaProvider>().refreshMediaBackground();
           }
         } else {
-          if (provider.exitOption == 'double_press') {
+          if (exitOption == 'double_press') {
             final now = DateTime.now();
             if (_lastPressedAt == null || now.difference(_lastPressedAt!) > const Duration(seconds: 2)) {
               _lastPressedAt = now;
@@ -228,10 +242,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
             ),
           ],
         ),
-        bottomNavigationBar: provider.showHomeBrowseNav
+        bottomNavigationBar: showHomeBrowseNav
             ? NavigationBar(
-                height: provider.hideNavLabels ? 58.0 : null,
-                labelBehavior: provider.hideNavLabels
+                height: hideNavLabels ? 58.0 : null,
+                labelBehavior: hideNavLabels
                     ? NavigationDestinationLabelBehavior.alwaysHide
                     : null,
                 selectedIndex: _currentIndex,

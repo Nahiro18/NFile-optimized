@@ -24,6 +24,7 @@ import 'selection_context_bottom_sheet.dart';
 import 'file_action_dialogs.dart';
 import 'create_archive_dialog.dart';
 import 'batch_rename_dialog.dart';
+import '../../core/file_filters.dart';
 
 class PaneBrowser extends StatefulWidget {
   final int tabIndex;
@@ -38,14 +39,7 @@ class _PaneBrowserState extends State<PaneBrowser> {
   late final TextEditingController _searchController;
   late final FocusNode _searchFocusNode;
 
-  final List<String> _filters = [
-    'All',
-    'Folders',
-    'Images',
-    'Videos',
-    'Audio',
-    'Docs',
-  ];
+  static const List<String> _filters = FileFilters.all_;
 
   @override
   void initState() {
@@ -1189,6 +1183,9 @@ class _CompactMediaThumbnailState extends State<_CompactMediaThumbnail> {
       return Image.memory(
         _apkIcon!,
         fit: BoxFit.cover,
+        // Decodificar a tamano de pantalla: sin esto se guarda la
+        // miniatura a resolucion completa en el ImageCache (OOM).
+        cacheWidth: 160,
         width: double.infinity,
         height: double.infinity,
         errorBuilder: (context, error, stackTrace) => Icon(Broken.mobile, color: widget.iconColor, size: 18),
@@ -1223,6 +1220,9 @@ class _CompactMediaThumbnailState extends State<_CompactMediaThumbnail> {
           Image.memory(
             _videoThumb!,
             fit: BoxFit.cover,
+            // Decodificar a tamano de pantalla: sin esto se guarda la
+            // miniatura a resolucion completa en el ImageCache (OOM).
+            cacheWidth: 160,
             width: double.infinity,
             height: double.infinity,
             errorBuilder: (context, error, stackTrace) => Icon(Broken.video, color: widget.iconColor, size: 18),
@@ -1245,6 +1245,9 @@ class _CompactMediaThumbnailState extends State<_CompactMediaThumbnail> {
           Image.memory(
             _audioThumb!,
             fit: BoxFit.cover,
+            // Decodificar a tamano de pantalla: sin esto se guarda la
+            // miniatura a resolucion completa en el ImageCache (OOM).
+            cacheWidth: 160,
             width: double.infinity,
             height: double.infinity,
             errorBuilder: (context, error, stackTrace) => Icon(Broken.music, color: widget.iconColor, size: 18),

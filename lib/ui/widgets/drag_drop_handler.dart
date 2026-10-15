@@ -95,8 +95,8 @@ class _DragDropHandlerState extends State<DragDropHandler> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<FileManagerProvider>();
-    
+    final provider = context.read<FileManagerProvider>();
+
     // If drag & drop is disabled in settings, return the child widget directly
     if (!provider.enableDragDrop) {
       return widget.child;
@@ -105,9 +105,14 @@ class _DragDropHandlerState extends State<DragDropHandler> {
     final theme = Theme.of(context);
     final fileName = p.basename(widget.path);
 
-    final isSelected = provider.selectedPaths.contains(widget.path);
-    final dragPaths = (isSelected && provider.selectedPaths.length > 1)
-        ? provider.selectedPaths.toList()
+    // select en vez de watch: antes cada fila se suscribia al provider, asi que
+    // cualquier notifyListeners() reconstruia todas las filas visibles y
+    // copiaba la lista de seleccion entera por cada una.
+    final selectedPaths =
+        context.select<FileManagerProvider, Set<String>>((p) => p.selectedPaths);
+    final isSelected = selectedPaths.contains(widget.path);
+    final dragPaths = (isSelected && selectedPaths.length > 1)
+        ? selectedPaths.toList()
         : [widget.path];
 
     final isMultiDrag = dragPaths.length > 1;

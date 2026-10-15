@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
+import '../core/isolate_utils.dart';
 import 'root_shizuku_service.dart';
 
 class RecycleBinItem {
@@ -158,9 +159,11 @@ class RecycleBinService {
   }
 
   static List<RecycleBinItem> getTrashItems() {
-    // Return sorted by deletion date descending (newest first)
-    _trashItems.sort((a, b) => b.deletedAt.compareTo(a.deletedAt));
-    return _trashItems;
+    // Copia + orden: antes ordenaba la lista interna EN EL GETTER y devolvia
+    // la referencia viva, asi que la pantalla quedaba con la misma lista que
+    // mutaba el servicio (removeWhere) sin ninguna notificacion.
+    return List<RecycleBinItem>.from(_trashItems)
+      ..sort((a, b) => b.deletedAt.compareTo(a.deletedAt));
   }
 
   static Future<void> moveToTrash(String path, {bool useRoot = false}) async {
@@ -319,16 +322,14 @@ class RecycleBinService {
   // --- Internals & Helpers ---
 
   static Future<int> _getFolderSize(String path) async {
-    int totalSize = 0;
+    // El recorrido con lengthSync() por archivo se ejecutaba en el hilo
+    // principal y congelaba la UI al borrar una carpeta grande. Se delega a
+    // un isolate con el helper que ya existia en el proyecto.
     try {
-      final dir = Directory(path);
-      await for (final entity in dir.list(recursive: true, followLinks: false)) {
-        if (entity is File) {
-          totalSize += entity.lengthSync();
-        }
-      }
-    } catch (_) {}
-    return totalSize;
+      return await calculateDirectorySizeAsync(path);
+    } catch (_) {
+      return 0;
+    }
   }
 
   static Future<void> _copyDirectory(String source, String destination) async {

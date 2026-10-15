@@ -250,6 +250,7 @@ class BackgroundArchiveService {
       }
     }
 
+    if (!context.mounted) return;
     try {
       final provider = Provider.of<FileManagerProvider>(context, listen: false);
       await provider.loadDirectory(provider.currentPath, showLoading: false);

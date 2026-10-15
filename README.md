@@ -19,7 +19,30 @@ With the latest update, NFile transitions from a simple file explorer to a compr
 - **Complete File Operations:** Easily copy, cut, paste, rename, and delete files or folders.
 - **Quick Categories:** One-tap access to your indexed media libraries.
 - **Storage Overview:** Visual representation of your device's internal storage usage.
+- **Private Vault:** Lock files with a 6-digit PIN (or biometrics). Files are encrypted
+  with AES-256-GCM using a PBKDF2-HMAC-SHA256 derived key, and a fresh salt and nonce per
+  file. Two storage modes:
+    - *In-Place (Fast):* the encrypted file is kept in a hidden `.nvault` folder next to
+      the original, so it does not take extra space.
+    - *Sandbox:* the file is moved into the app's private storage.
+    - The original file is securely overwritten in 64 KB chunks before deletion, so it
+    cannot be recovered from free disk space.
+    - The PIN is stored in the Android keystore (`flutter_secure_storage`), never in
+    plain preferences, and backups are disabled so credentials never leave the device.
+- **Recycle Bin:** Deleted files can be restored instead of being lost permanently.
 - **Fluid UI:** iOS-style bouncy physics and smooth transitions throughout the app.
+
+## Architecture
+The official CI artifact is built with `--target-platform android-arm64`, so it is an
+**arm64-v8a only APK**. It runs on most modern physical devices, but not on x86_64
+emulators or 32-bit devices. For a universal APK, build locally with `flutter build apk`.
+
+## Security notes
+- Vault files use AES-256-GCM with distinct nonces per encryption operation, so tampering
+  with a `.nfv` file is detected on read.
+- Archive extraction rejects entries containing `..` or absolute paths (Zip Slip), which
+  would otherwise allow writing outside the destination folder.
+- Backups are disabled (`allowBackup=false` plus explicit data extraction rules).
 
 ## Screenshots
 
@@ -32,6 +55,9 @@ With the latest update, NFile transitions from a simple file explorer to a compr
 The application requires the following permissions for full functionality:
 - `MANAGE_EXTERNAL_STORAGE`: For seamless file operations across the entire device.
 - `READ_MEDIA_IMAGES`, `READ_MEDIA_VIDEO`, `READ_MEDIA_AUDIO`: For high-speed native media indexing.
+- `ACCESS_MEDIA_LOCATION`: To read location metadata from indexed media.
+- `REQUEST_INSTALL_PACKAGES`: To open APKs for installation.
+- `WAKE_LOCK`: Keeps audio playback alive while the screen is off.
 
 ## Building and Running
 1. Clone this repository.

@@ -32,7 +32,6 @@
         android:label="NFile"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true"
         android:enableOnBackInvokedCallback="true"
         android:allowBackup="false"
         android:fullBackupContent="false"

@@ -15,6 +15,7 @@ import '../../services/folder_share_service.dart';
 import '../widgets/directory_tab_bar.dart';
 import '../../core/utils.dart';
 import '../widgets/selection_action_bar.dart';
+import '../../core/file_filters.dart';
 
 class GlobalSearchScreen extends StatefulWidget {
   final String? searchFolderPath;
@@ -32,6 +33,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   List<FileItemModel> _results = [];
   bool _isSearching = false;
   StreamSubscription<FileSystemEntity>? _searchSubscription;
+  FileManagerProvider? _fileProvider;
 
   final Set<String> _selectedPaths = {};
   bool get _isSelectionMode => _selectedPaths.isNotEmpty;
@@ -58,20 +60,14 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   String? _searchFolderPath;
   String? _lastActivePath;
 
-  final List<String> _filters = [
-    'All',
-    'Folders',
-    'Images',
-    'Videos',
-    'Audio',
-    'Docs',
-  ];
+  static const List<String> _filters = FileFilters.all_;
 
   @override
   void initState() {
     super.initState();
     _searchFolderPath = widget.searchFolderPath;
     final fileProvider = context.read<FileManagerProvider>();
+    _fileProvider = fileProvider;
     _lastActivePath = fileProvider.currentPath;
     fileProvider.addListener(_onFileManagerChanged);
   }
@@ -80,7 +76,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   void dispose() {
     _searchSubscription?.cancel();
     _searchController.dispose();
-    context.read<FileManagerProvider>().removeListener(_onFileManagerChanged);
+    // Usar el provider cacheado: context.read en dispose() lanza porque el
+    // elemento ya fue desactivado, y abortaba el unmount de todo el arbol.
+    _fileProvider?.removeListener(_onFileManagerChanged);
+    _fileProvider = null;
     super.dispose();
   }
 
@@ -338,19 +337,22 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       content: 'Are you sure you want to delete ${_selectedPaths.length} selected item(s)? This cannot be undone.',
     );
 
-    if (confirm) {
+    if (!confirm || !mounted) return;
+
       final provider = context.read<FileManagerProvider>();
       final toDelete = _selectedPaths.toList();
       for (final path in toDelete) {
         await provider.deleteFile(path);
+        // Sin este guardia, pulsar atras durante el borrado lanzaba
+        // "setState() called after dispose()".
+        if (!mounted) return;
         setState(() {
           _results.removeWhere((e) => e.path == path);
         });
       }
-      _clearSelection();
       if (!mounted) return;
+      _clearSelection();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully deleted items')));
-    }
   }
 
   void _handleAction(BuildContext context, String action, String path) async {

@@ -129,7 +129,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
       ),
     );
 
-    if (confirm != true) return;
+    if (confirm != true || !mounted) return;
 
     // Show loading indicator
     showDialog(
@@ -189,7 +189,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen> {
       ),
     );
 
-    if (confirm != true) return;
+    if (confirm != true || !mounted) return;
 
     // Show loading
     showDialog(

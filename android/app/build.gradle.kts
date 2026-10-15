@@ -51,8 +51,9 @@ android {
         androidResources {
             localeFilters.addAll(listOf("en"))
         }
-        // Declare use of MANAGE_EXTERNAL_STORAGE for Android 11+
-        manifestPlaceholders["requestLegacyExternalStorage"] = "true"
+        // requestLegacyExternalStorage se elimino: solo se honraba en API 29 y
+        // el placeholder no lo usaba nadie (el manifest lo traia hardcodeado).
+        // En Android 11+ el acceso se hace con MANAGE_EXTERNAL_STORAGE.
     }
 
     buildTypes {

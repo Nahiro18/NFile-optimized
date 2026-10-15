@@ -80,6 +80,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       final file = File(widget.filePath);
       if (await file.exists()) {
         final content = await file.readAsString();
+        // El controller se usa tras el await: si el usuario salio mientras
+        // cargaba, esto lanzaba "TextEditingController used after dispose".
+        if (!mounted) return;
         _textController.text = content;
         _textContent = content;
       }
@@ -99,6 +102,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       final file = File(widget.filePath);
       final bytes = await file.readAsBytes();
       final text = docxToText(bytes);
+      if (!mounted) return;
       _textContent = text;
       _textController.text = text;
     } catch (e) {
@@ -776,43 +780,58 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
         Expanded(
           child: rows.isEmpty
               ? const Center(child: Text('Empty Sheet'))
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
+              // Antes se usaba Table con children: rows.map(...) y dos
+              // rows.indexOf(row) por fila (O(n^2)). Ademas Table construye
+              // todas las filas de golpe, asi que una hoja grande no se podia
+              // renderizar. Ahora cada fila se construye bajo demanda y en
+              // anchura fija, sin medir el ancho intrinseco de cada celda.
+              : Scrollbar(
                   child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
                     physics: const BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Table(
-                        border: TableBorder.all(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                          width: 1,
-                        ),
-                        defaultColumnWidth: const IntrinsicColumnWidth(),
-                        children: rows.map((row) {
-                          final isHeader = rows.indexOf(row) == 0;
-                          return TableRow(
+                    child: SizedBox(
+                      width: 160.0 * (rows.first.isEmpty ? 1 : rows.first.length),
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: rows.length,
+                        itemExtent: 45,
+                        itemBuilder: (context, index) {
+                          final isHeader = index == 0;
+                          final row = rows[index];
+                          return Container(
                             decoration: BoxDecoration(
                               color: isHeader
                                   ? Colors.green.withValues(alpha: 0.15)
-                                  : (rows.indexOf(row) % 2 == 0
+                                  : (index % 2 == 0
                                       ? theme.colorScheme.surface.withValues(alpha: 0.5)
                                       : Colors.transparent),
+                              border: Border.all(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                                width: 1,
+                              ),
                             ),
-                            children: row.map((cell) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                child: Text(
-                                  cell.toString(),
-                                  style: TextStyle(
-                                    fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-                                    fontSize: 13,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: row.map((cell) {
+                                return SizedBox(
+                                  width: 160.0,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                    child: Text(
+                                      cell.toString(),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      style: TextStyle(
+                                        fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+                                        fontSize: 13,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              );
-                            }).toList(),
+                                );
+                              }).toList(),
+                            ),
                           );
-                        }).toList(),
+                        },
                       ),
                     ),
                   ),

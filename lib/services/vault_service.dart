@@ -35,7 +35,9 @@ class VaultFileRecord {
     required this.isInPlace,
     this.isFolder = false,
     String? displayName,
-  }) : displayName = displayName ?? 'archivo_${id.substring(0, 8)}';
+  }) : displayName = displayName ??
+            // clamp evita RangeError si un id guardado tiene menos de 8 chars.
+            'archivo_${id.substring(0, id.length.clamp(0, 8))}';
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -343,7 +345,9 @@ class VaultService {
 
     // Crear registro
     final record = VaultFileRecord(
-      id: timestamp,
+      // id unico: el timestamp en ms podia repetirse al bloquear varios archivos
+      // en el mismo milisegundo, y removeWhere por id habria borrado ambos.
+      id: randomId,
       originalName: originalName,
       originalPath: originalPath,
       scrambledPath: scrambledPath,

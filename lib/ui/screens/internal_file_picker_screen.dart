@@ -162,6 +162,9 @@ class _InternalFilePickerScreenState extends State<InternalFilePickerScreen> {
       actionText: 'Create',
     );
     if (newFolderName != null && newFolderName.isNotEmpty) {
+      // Sin este guardia, cerrar la pantalla mientras se muestra el dialogo
+      // lanzaba "setState() called after dispose()".
+      if (!mounted) return;
       setState(() => _isLoading = true);
       try {
         final provider = context.read<FileManagerProvider>();

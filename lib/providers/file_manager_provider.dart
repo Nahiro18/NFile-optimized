@@ -397,16 +397,21 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
       // Volver a verificar desvío de navegación
       if (activeTab.id != tabId || currentPath != directoryPath) return;
 
-      // Actualizar la lista en la pestaña activa
+      // Actualizar la lista en la pestaña activa.
+      // Antes se hacia indexWhere() por elemento (O(n) cada uno => O(n^2) en
+      // total por carpeta). Con un mapa ruta->indice el costo es lineal.
       final updatedList = List<FileItemModel>.from(currentTargetTab.currentFiles);
+      final indexByPath = <String, int>{
+        for (var k = 0; k < updatedList.length; k++) updatedList[k].path: k,
+      };
       for (int j = 0; j < chunk.length; j++) {
-        final originalIndex = updatedList.indexWhere((e) => e.path == chunk[j].path);
-        if (originalIndex != -1) {
+        final originalIndex = indexByPath[chunk[j].path];
+        if (originalIndex != null && originalIndex < updatedList.length) {
           updatedList[originalIndex] = resolvedChunk[j];
         }
       }
       currentTargetTab.currentFiles = updatedList;
-      notifyListeners();
+      if (hasListeners) notifyListeners();
 
       // Dar un respiro a la UI de Flutter (16ms = 1 frame a 60Hz)
       await Future.delayed(const Duration(milliseconds: 16));
@@ -421,6 +426,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     highlightedPaths.clear();
     highlightedPaths.add(exitedPath);
     notifyListeners();
+    _autoDeselectTimer?.cancel();
     _autoDeselectTimer = Timer(const Duration(milliseconds: 2000), () {
       if (highlightedPaths.remove(exitedPath)) {
         notifyListeners();
@@ -879,7 +885,8 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
       highlightedPaths.addAll(finalTopLevelDestPaths);
       shouldScrollToHighlight = true;
 
-      _refreshTimer = Timer(const Duration(milliseconds: 2000), () {
+      _refreshTimer?.cancel();
+    _refreshTimer = Timer(const Duration(milliseconds: 2000), () {
         bool changed = false;
         for (final path in finalTopLevelDestPaths) {
           if (highlightedPaths.remove(path)) {
@@ -1180,11 +1187,17 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
           await File(oldPath).rename(newPath);
         }
       }
+      _invalidateFolderCaches();
       await loadDirectory(currentPath, showLoading: false, clearCache: true);
     } catch (e) {
       debugPrint('Error renaming file: $e');
     }
   }
+
+  /// Invalida los conteos/tamanos de carpeta cacheados tras una mutacion.
+  /// Antes solo se hacia con pull-to-refresh, asi que crear o renombrar una
+  /// carpeta dejaba los numeros de la barra de estado desactualizados.
+  void _invalidateFolderCaches() => clearFolderItemCountsCache();
 
   Future<String?> createFolder(String name) async {
     try {
@@ -1200,6 +1213,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
         final newPath = p.join(currentPath, finalName);
         await Directory(newPath).create();
       }
+      _invalidateFolderCaches();
       await loadDirectory(currentPath, showLoading: false, clearCache: true);
       return finalName;
     } catch (e) {
@@ -1479,6 +1493,7 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     highlightedPaths.clear();
     highlightedPaths.add(path);
     notifyListeners();
+    _batchRefreshTimer?.cancel();
     _batchRefreshTimer = Timer(const Duration(milliseconds: 2000), () {
       if (highlightedPaths.remove(path)) {
         notifyListeners();
@@ -1513,6 +1528,9 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     if (hasNativeViewer(targetPath)) {
       final defaultAction = PreferencesService.getDefaultOpenAction(ext);
       if (defaultAction == 'native') {
+        // openFileNatively hace Navigator.push: si la pantalla se cerro
+        // durante la copia temporal, el context estaria desactivado.
+        if (!context.mounted) return;
         await openFileNatively(openContext, targetPath);
         return;
       } else if (defaultAction == 'external') {
@@ -1653,13 +1671,18 @@ class FileManagerProvider extends ChangeNotifier with PreferencesMixin {
     await loadDirectory(currentPath, showLoading: false, clearCache: true);
   }
 
-  void requestNotify() => notifyListeners();
+  void requestNotify() {
+    if (hasListeners) notifyListeners();
+  }
 
   @override
   void dispose() {
     _autoDeselectTimer?.cancel();
     _refreshTimer?.cancel();
     _batchRefreshTimer?.cancel();
+    // El ValueNotifier tambien debe liberarse; se creaba como campo y nunca
+    // se destruia, reteniendolo junto con sus listeners.
+    progressNotifier.dispose();
     super.dispose();
   }
 }

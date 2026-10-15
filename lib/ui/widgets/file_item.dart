@@ -386,6 +386,9 @@ class _MediaThumbnailState extends State<MediaThumbnail> {
       return Image.memory(
         _apkIcon!,
         fit: BoxFit.cover,
+        // Decodificar a tamano de pantalla: sin esto se guarda la
+        // miniatura a resolucion completa en el ImageCache (OOM).
+        cacheWidth: 160,
         width: double.infinity,
         height: double.infinity,
         errorBuilder: (context, error, stackTrace) => Icon(FileUtils.getAdaptiveIcon(Broken.mobile, useMaterialIcons), color: widget.iconColor, size: 28 * widget.iconScale),
@@ -420,6 +423,9 @@ class _MediaThumbnailState extends State<MediaThumbnail> {
           Image.memory(
             _videoThumb!,
             fit: BoxFit.cover,
+            // Decodificar a tamano de pantalla: sin esto se guarda la
+            // miniatura a resolucion completa en el ImageCache (OOM).
+            cacheWidth: 160,
             width: double.infinity,
             height: double.infinity,
             errorBuilder: (context, error, stackTrace) => Icon(FileUtils.getAdaptiveIcon(Broken.video, useMaterialIcons), color: widget.iconColor, size: 28 * widget.iconScale),
@@ -442,6 +448,9 @@ class _MediaThumbnailState extends State<MediaThumbnail> {
           Image.memory(
             _audioThumb!,
             fit: BoxFit.cover,
+            // Decodificar a tamano de pantalla: sin esto se guarda la
+            // miniatura a resolucion completa en el ImageCache (OOM).
+            cacheWidth: 160,
             width: double.infinity,
             height: double.infinity,
             errorBuilder: (context, error, stackTrace) => Icon(FileUtils.getAdaptiveIcon(Broken.music, useMaterialIcons), color: widget.iconColor, size: 28 * widget.iconScale),

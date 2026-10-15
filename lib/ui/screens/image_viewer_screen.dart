@@ -269,8 +269,11 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
                 final bool isValidFile = imgFile != null && imgFile.existsSync() && imgFile.lengthSync() > 16;
                 final bool isAvif = imgFile != null && imgFile.path.toLowerCase().endsWith('.avif');
 
-                final ImageProvider provider = isValidFile
-                    ? (isAvif ? FileImage(imgFile) : FileImage(imgFile)) as ImageProvider
+                // Ambas ramas del ternario eran FileImage (rama AVIF muerta). En Android
+                // < 11 no hay soporte de decodificacion AVIF, asi que se caia
+                // a "Failed to load image" teniendo la miniatura disponible.
+                final ImageProvider provider = (isValidFile && !isAvif)
+                    ? FileImage(imgFile)
                     : (thumbData != null ? MemoryImage(thumbData) : MemoryImage(_kTransparentImage));
 
                 return PhotoViewGalleryPageOptions(

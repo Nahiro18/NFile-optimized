@@ -1960,11 +1960,17 @@ class MediaProvider extends ChangeNotifier {
       }
     }
 
-    // Filter: remove parent dirs if a child also exists in the list
+    // Filter: remove parent dirs if a child also exists in the list.
+    // Antes era list.any() por cada entidad (O(n^2) de p.isWithin, que ademas
+    // reparsea ambas rutas cada llamada). Ahora es una sola pasada O(n).
+    final allPaths = list.map((e) => e.path).toList();
     final filteredList = <FileSystemEntity>[];
     for (final entity in list) {
       if (entity is Directory) {
-        bool hasChild = list.any((o) => o.path != entity.path && p.isWithin(entity.path, o.path));
+        final prefix = entity.path.endsWith(p.separator)
+            ? entity.path
+            : '${entity.path}${p.separator}';
+        final hasChild = allPaths.any((o) => o != entity.path && o.startsWith(prefix));
         if (hasChild) continue;
       }
       filteredList.add(entity);
