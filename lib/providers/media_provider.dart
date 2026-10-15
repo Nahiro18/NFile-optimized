@@ -2045,31 +2045,41 @@ class MediaProvider extends ChangeNotifier {
       });
     }
 
-    int fileSort(FileSystemEntity a, FileSystemEntity b) {
-      try {
-        final isSmallest = _sortOrder == MediaSortOrder.sizeSmallest;
-        final isLargest = _sortOrder == MediaSortOrder.sizeLargest;
+    // Ordenar pedia tamano y fecha AL DISCO en cada comparacion (n log n
+    // llamadas al sistema, todas bloqueantes y en el hilo principal). Ahora se
+    // lee cada archivo una sola vez y se ordena contra los valores en memoria.
+    final isSmallest = _sortOrder == MediaSortOrder.sizeSmallest;
+    final isLargest = _sortOrder == MediaSortOrder.sizeLargest;
+    final isOldest = _sortOrder == MediaSortOrder.oldest ||
+        _sortOrder == MediaSortOrder.oldestGrouped;
+    final bySize = isSmallest || isLargest;
 
-        if (isSmallest || isLargest) {
-          final aSize = (a as File).lengthSync();
-          final bSize = (b as File).lengthSync();
-          return isSmallest ? aSize.compareTo(bSize) : bSize.compareTo(aSize);
-        }
+    // Cache ruta -> valor para no repetir el stat si el mismo archivo aparece
+    // en varias listas.
+    final statCache = <String, (int, DateTime)>{};
 
-        final aTime = (a as File).lastModifiedSync();
-        final bTime = (b as File).lastModifiedSync();
-        return (_sortOrder == MediaSortOrder.oldest || _sortOrder == MediaSortOrder.oldestGrouped)
-            ? aTime.compareTo(bTime)
-            : bTime.compareTo(aTime);
-      } catch (_) {
-        return 0;
+    void sortList(List<FileSystemEntity> list) {
+      if (list.length < 2) return;
+      for (final e in list) {
+        statCache.putIfAbsent(e.path, () {
+          final f = e as File;
+          return (f.lengthSync(), f.lastModifiedSync());
+        });
       }
+      list.sort((a, b) {
+        final sa = statCache[a.path];
+        final sb = statCache[b.path];
+        if (sa == null || sb == null) return 0;
+        final cmp = bySize ? sa.$1.compareTo(sb.$1) : sa.$2.compareTo(sb.$2);
+        // De mayor a menor para "largest" y para "newest".
+        return (bySize ? isSmallest : !isOldest) ? cmp : -cmp;
+      });
     }
 
-    _documents.sort(fileSort);
-    _archives.sort(fileSort);
-    _downloads.sort(fileSort);
-    _apks.sort(fileSort);
+    sortList(_documents);
+    sortList(_archives);
+    sortList(_downloads);
+    sortList(_apks);
   }
 
   Future<void> deleteMediaItems({

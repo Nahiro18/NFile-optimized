@@ -4,6 +4,7 @@ import 'package:archive/archive.dart';
 import 'package:docx_to_text/docx_to_text.dart';
 import 'package:excel/excel.dart' as excel_pkg;
 import 'package:excel2003/excel2003.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -101,7 +102,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     try {
       final file = File(widget.filePath);
       final bytes = await file.readAsBytes();
-      final text = docxToText(bytes);
+      // docxToText descomprime y analiza el XML: puede tardar segundos en un
+      // .docx grande, asi que va en un isolate para no congelar la interfaz.
+      final text = await compute(_parseDocxInIsolate, bytes);
       if (!mounted) return;
       _textContent = text;
       _textController.text = text;
@@ -119,32 +122,17 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
 
       _excelSheets.clear();
 
-      if (_ext == '.xls') {
-        final xls = XlsReader.fromBytes(bytes);
-        for (final sheetName in xls.sheetNames) {
-          final sheet = xls.sheetByName(sheetName);
-          if (sheet != null) {
-            final List<List<dynamic>> rowsStr = [];
-            for (final r in sheet.rows) {
-              rowsStr.add(r.map((c) => c?.toString() ?? '').toList());
-            }
-            _excelSheets[sheetName] = rowsStr;
-          }
-        }
-      } else {
-        final excel = excel_pkg.Excel.decodeBytes(bytes);
-        for (final table in excel.tables.keys) {
-          final sheet = excel.tables[table]!;
-          final List<List<dynamic>> rows = [];
-          for (final row in sheet.rows) {
-            final List<dynamic> rowData = [];
-            for (final cell in row) {
-              rowData.add(cell?.value?.toString() ?? '');
-            }
-            rows.add(rowData);
-          }
-          _excelSheets[table] = rows;
-        }
+      // Igual que el .docx: decodificar una hoja grande congela la UI si se
+      // hace en el hilo principal.
+      final parsed =
+          await compute(_parseExcelInIsolate, <String, dynamic>{
+        'bytes': bytes,
+        'isXls': _ext == '.xls',
+      });
+      final sheets = (parsed as Map).cast<String, List>();
+      for (final entry in sheets.entries) {
+        _excelSheets[entry.key] =
+            entry.value.map((r) => (r as List).toList()).toList();
       }
 
       if (_excelSheets.isNotEmpty) {
@@ -161,26 +149,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     try {
       final file = File(widget.filePath);
       final bytes = await file.readAsBytes();
-      final archive = ZipDecoder().decodeBytes(bytes);
-
-      final slideMap = <int, String>{};
-
-      for (final file in archive.files) {
-        if (file.name.startsWith('ppt/slides/slide') && file.name.endsWith('.xml')) {
-          final match = RegExp(r'slide(\d+)\.xml').firstMatch(file.name);
-          if (match != null) {
-            final slideNum = int.parse(match.group(1)!);
-            final contentStr = utf8.decode(file.content as List<int>);
-            final doc = XmlDocument.parse(contentStr);
-            final textNodes = doc.findAllElements('a:t');
-            final slideText = textNodes.map((node) => node.innerText).where((t) => t.trim().isNotEmpty).join('\n');
-            slideMap[slideNum] = slideText.isEmpty ? '(Empty Slide)' : slideText;
-          }
-        }
-      }
-
-      final sortedKeys = slideMap.keys.toList()..sort();
-      _pptSlides = sortedKeys.map((k) => slideMap[k]!).toList();
+      final slides = await compute(_parsePptxInIsolate, bytes);
+      if (!mounted) return;
+      _pptSlides = slides;
     } catch (e) {
       debugPrint('Error reading PPTX: $e');
     } finally {
@@ -1059,4 +1030,62 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       ),
     );
   }
+}
+
+// --- Parseo de documentos en isolates -------------------------------
+// compute() exige funciones de nivel superior. Decodificar un .docx/.xlsx/
+// .pptx en el hilo principal congelaba la interfaz varios segundos.
+
+String _parseDocxInIsolate(Uint8List bytes) {
+  return docxToText(bytes);
+}
+
+Map<String, List<List<String>>> _parseExcelInIsolate(Map<String, dynamic> args) {
+  final bytes = args['bytes'] as Uint8List;
+  final isXls = args['isXls'] as bool;
+  final out = <String, List<List<String>>>{};
+
+  if (isXls) {
+    final xls = XlsReader.fromBytes(bytes);
+    for (final sheetName in xls.sheetNames) {
+      final sheet = xls.sheetByName(sheetName);
+      if (sheet == null) continue;
+      out[sheetName] =
+          sheet.rows.map((r) => r.map((c) => c?.toString() ?? '').toList()).toList();
+    }
+    return out;
+  }
+
+  final excel = excel_pkg.Excel.decodeBytes(bytes);
+  for (final table in excel.tables.keys) {
+    final sheet = excel.tables[table]!;
+    out[table] = sheet.rows
+        .map((row) => row.map((cell) => cell?.value?.toString() ?? '').toList())
+        .toList();
+  }
+  return out;
+}
+
+List<String> _parsePptxInIsolate(Uint8List bytes) {
+  final archive = ZipDecoder().decodeBytes(bytes);
+  final slideMap = <int, String>{};
+
+  for (final entry in archive.files) {
+    if (!entry.name.startsWith('ppt/slides/slide') || !entry.name.endsWith('.xml')) {
+      continue;
+    }
+    final match = RegExp(r'slide(\d+)\.xml').firstMatch(entry.name);
+    if (match == null) continue;
+    final slideNum = int.tryParse(match.group(1) ?? '');
+    if (slideNum == null) continue;
+    final contentStr = utf8.decode(entry.content as List<int>);
+    final doc = XmlDocument.parse(contentStr);
+    final textNodes = doc.findAllElements('a:t');
+    final slideText =
+        textNodes.map((node) => node.innerText).where((t) => t.trim().isNotEmpty).join('\n');
+    slideMap[slideNum] = slideText.isEmpty ? '(Empty Slide)' : slideText;
+  }
+
+  final sortedKeys = slideMap.keys.toList()..sort();
+  return sortedKeys.map((k) => slideMap[k]!).toList();
 }

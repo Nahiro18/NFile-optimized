@@ -628,6 +628,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                   provider.setIconScale(val);
                                   setStateModal(() {});
                                 },
+                                // Escribir a disco solo al soltar el dedo.
+                                onChangeEnd: (_) => provider.persistIconScale(),
                               ),
                               const SizedBox(height: 12),
                               Row(
@@ -659,6 +661,9 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                   provider.setItemPaddingMultiplier(val);
                                   setStateModal(() {});
                                 },
+                                // Escribir a disco solo al soltar el dedo.
+                                onChangeEnd: (_) =>
+                                    provider.persistItemPaddingMultiplier(),
                               ),
                             ],
                           ),

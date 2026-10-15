@@ -301,23 +301,37 @@ mixin PreferencesMixin on ChangeNotifier {
   double _iconScale = 1.0;
   double get iconScale => _iconScale;
 
+  /// Aplica el cambio en memoria y repinta, SIN escribir a disco.
+  ///
+  /// Antes cada onChanged del deslizador llamaba a PreferencesService y a
+  /// notifyListeners, es decir ~60 escrituras por segundo y 60 reconstrucciones
+  /// de la lista completa mientras se arrastra. El guardado se hace una sola
+  /// vez al soltar, en [persistIconScale] (onChangeEnd).
   void setIconScale(double scale) {
     final clamped = scale.clamp(0.7, 1.5);
     if (_iconScale == clamped) return;
     _iconScale = clamped;
-    PreferencesService.saveIconScale(_iconScale);
     notifyListeners();
+  }
+
+  /// Persiste el valor una vez, al terminar el gesto.
+  void persistIconScale() {
+    PreferencesService.saveIconScale(_iconScale);
   }
 
   double _itemPaddingMultiplier = 1.0;
   double get itemPaddingMultiplier => _itemPaddingMultiplier;
 
+  /// Igual que [setIconScale]: en memoria al arrastrar, a disco al soltar.
   void setItemPaddingMultiplier(double mult) {
     final clamped = mult.clamp(0.4, 2.0);
     if (_itemPaddingMultiplier == clamped) return;
     _itemPaddingMultiplier = clamped;
-    PreferencesService.saveItemPaddingMultiplier(_itemPaddingMultiplier);
     notifyListeners();
+  }
+
+  void persistItemPaddingMultiplier() {
+    PreferencesService.saveItemPaddingMultiplier(_itemPaddingMultiplier);
   }
 
   void sortList(List<FileItemModel> items, String path) {
@@ -872,6 +886,26 @@ mixin PreferencesMixin on ChangeNotifier {
     PreferencesService.saveSavedTabs(list);
   }
 
+  /// Carpetas que la busqueda nunca entra. Son ruido: ocupan mucho espacio,
+  /// enumerarlas es lento y casi nunca contienen lo que el usuario busca.
+  /// Coincide con lo que el explorador ya oculta por defecto.
+  ///
+  /// Se decide por ruta completa y no por nombre suelto para no confundir
+  /// /Android/data con una carpeta propia del usuario llamada "data".
+  static bool _skipSearchDirAtPath(String path) {
+    final name = p.basename(path);
+    if (name.startsWith('.')) return true; // .thumbnails, .cache, .git, ...
+    if (name == 'node_modules') return true;
+    if (Platform.isAndroid) {
+      const sandbox = '/storage/emulated/0/Android/';
+      if (path.startsWith(sandbox) &&
+          (path == '${sandbox}data' || path == '${sandbox}obb')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void executeSearchForTab(
     int tabIndex,
     String query,
@@ -1001,13 +1035,10 @@ mixin PreferencesMixin on ChangeNotifier {
       if (pending.isNotEmpty) flushPending();
     }
 
-    // 2. Robust traversal across filesystem (per-directory error isolation)
+    // 2. Robust traversal across filesystem (per-directory error isolation).
+    // No se comprueba existsSync(): es una llamada bloqueante en el hilo
+    // principal; si la ruta no existe, list() simplemente falla y se sigue.
     final rootDir = Directory(rootPath);
-    if (!rootDir.existsSync()) {
-      tab.isSearching = false;
-      notifyListeners();
-      return;
-    }
 
     bool isImage(String name) {
       final ext = p.extension(name).toLowerCase();
@@ -1044,13 +1075,21 @@ mixin PreferencesMixin on ChangeNotifier {
     }
 
     const int maxResults = 500;
-    const int flushThreshold = 100;
+    const int flushThreshold = 25;
+    // Techo de directorios visitados: evita que un arbol patologico (o un
+    // enlace simbolico en ciclo) deje la busqueda colgada indefinidamente.
+    const int maxDirsVisited = 6000;
+
+    int dirsVisited = 0;
 
     Future<void> walk(Directory start) async {
-      final queue = <Directory>[start];
+      // ListQueue hace pop() en O(1); removeAt(0) sobre una List era O(n) y
+      // convertia el recorrido en O(n^2).
+      final queue = ListQueue<Directory>()..add(start);
       while (queue.isNotEmpty) {
         if (generation != _searchGenerations[tab.id]) return;
-        final dir = queue.removeAt(0);
+        if (++dirsVisited > maxDirsVisited) return;
+        final dir = queue.removeFirst();
         List<FileSystemEntity> entities;
         try {
           entities = await dir.list(followLinks: false).toList();
@@ -1060,8 +1099,13 @@ mixin PreferencesMixin on ChangeNotifier {
         for (final entity in entities) {
           if (entity is Link) continue;
           final isDirEntity = entity is Directory;
-          if (isDirEntity) queue.add(entity);
           final name = p.basename(entity.path);
+          if (isDirEntity) {
+            // No entrar en carpetas que son ruido puro (Android/data y
+            // Android/obb ocupan decenas de GB y son lentas por SELinux).
+            if (_skipSearchDirAtPath(entity.path)) continue;
+            queue.add(entity);
+          }
           if (!matchesQuery(name) || !matchFilter(name, isDirEntity)) continue;
           if (!seenPaths.add(entity.path)) continue;
           pending.add(FileItemModel.fromEntity(entity));
